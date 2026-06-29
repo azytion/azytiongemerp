@@ -1,0 +1,45 @@
+{
+    "id": "/",
+    "name": "ZATION GemERP",
+    "short_name": "ZATION GemERP",
+    "description": "GEMSTONE INDUSTRY ERP",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "any",
+    "background_color": "#0f0f1a",
+    "theme_color": "#D4AF37",
+    "categories": ["business", "finance"],
+    "icons": [
+        {
+            "src": "/logo.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/logo.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "POS Terminal",
+            "short_name": "POS",
+            "description": "GEMSTONE INDUSTRY ERP",
+            "url": "/pos",
+            "icons": [{ "src": "/logo.png", "sizes": "96x96" }]
+        },
+        {
+            "name": "Sales History",
+            "short_name": "Sales",
+            "description": "GEMSTONE INDUSTRY ERP",
+            "url": "/sales",
+            "icons": [{ "src": "/logo.png", "sizes": "96x96" }]
+        }
+    ],
+    "screenshots": [],
+    "prefer_related_applications": false
+}

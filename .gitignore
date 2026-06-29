@@ -1,0 +1,87 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+*.log
+*_log.txt
+*_errors.txt
+eslint_report.txt
+server_debug.log
+
+# env files (can opt-in for committing if needed)
+.env*
+.jwt_secret
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# databases
+*.db
+*.db-shm
+*.db-wal
+
+# runtime uploads
+/public/uploads/
+
+# Electron build output
+dist/
+*.exe
+*.dmg
+*.AppImage
+*.deb
+
+# Electron cache
+electron-builder.yml
+
+# Local environment (contains secrets - never commit)
+.env.local
+*.env.local
+
+
+# Electron dist folders (contain old source copies that break Next.js)
+dist-new4/
+dist-new*/
+
+# Obsolete desktop/Electron files
+electron-main.js
+electron-preload.js
+ELECTRON-DEV-NOTES.md
+README-DESKTOP.md
+build-resources/
+ZATION Icon.ico
+test_print.ps1
+scripts/afterPack.js
+scripts/copy-native-modules.js
+scripts/prepare-native-modules.js
+scripts/rebuild-native.ps1

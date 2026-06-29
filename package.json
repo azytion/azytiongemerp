@@ -1,0 +1,61 @@
+{
+  "name": "zation-gemerp",
+  "productName": "ZATION GemERP",
+  "version": "1.0.0",
+  "description": "GEMSTONE INDUSTRY ERP",
+  "private": true,
+  "author": "ZATION",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "db:init": "node scripts/init-mysql.mjs"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.24.1",
+    "@simplewebauthn/browser": "^13.2.2",
+    "@simplewebauthn/server": "^13.2.2",
+    "@tanstack/react-query": "^5.90.12",
+    "@tanstack/react-query-devtools": "^5.91.1",
+    "@types/papaparse": "^5.5.2",
+    "bcryptjs": "^3.0.3",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "dexie": "4.2.1",
+    "dexie-react-hooks": "4.2.0",
+    "exceljs": "^4.4.0",
+    "framer-motion": "^12.34.0",
+    "html2canvas": "^1.4.1",
+    "jose": "^6.1.3",
+    "jsbarcode": "^3.12.1",
+    "jspdf": "^4.2.1",
+    "jspdf-autotable": "^5.0.7",
+    "jszip": "^3.10.1",
+    "lucide-react": "^0.556.0",
+    "mysql2": "^3.22.5",
+    "next": "^16.2.9",
+    "nodemailer": "^9.0.1",
+    "papaparse": "^5.5.3",
+    "qrcode": "^1.5.4",
+    "react": "19.2.1",
+    "react-dom": "19.2.1",
+    "react-markdown": "^10.1.0",
+    "react-to-print": "^3.2.0",
+    "recharts": "^3.5.1",
+    "sonner": "^2.0.7"
+  },
+  "overrides": {
+    "uuid": "^11.1.1"
+  },
+  "devDependencies": {
+    "@types/bcryptjs": "^2.4.6",
+    "@types/node": "^20",
+    "@types/nodemailer": "^7.0.4",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.0.10",
+    "typescript": "^5"
+  }
+}

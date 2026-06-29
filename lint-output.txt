@@ -1,0 +1,1538 @@
+
+> zation-gemerp@1.0.0 lint
+> eslint
+
+
+C:\xampp\htdocs\zgp\zationgempos\scripts\add-action-auth2.mjs
+  5:7  warning  'SKIP' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\scripts\remove-unused-autherror.mjs
+  9:7  warning  'content' is never reassigned. Use 'const' instead  prefer-const
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\actions\ai.ts
+  6:23  warning  'genAI' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\actions\auth.ts
+  7:10  warning  'revalidatePath' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\actions\categories.ts
+   75:14  warning  'error' is defined but never used. Allowed unused caught errors must match /^_/u  @typescript-eslint/no-unused-vars
+  102:14  warning  'error' is defined but never used. Allowed unused caught errors must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\actions\cheques.ts
+  4:10  warning  'nowLocalISO' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\actions\credit-notes-logic.ts
+  1:10  warning  'getDb' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\actions\credit-notes.ts
+  2:23  warning  'todayLocalDate' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\actions\customers.ts
+  139:14  warning  'error' is defined but never used. Allowed unused caught errors must match /^_/u   @typescript-eslint/no-unused-vars
+  238:22  warning  'ignore' is defined but never used. Allowed unused caught errors must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\actions\daybook.ts
+    7:10  warning  'getSession' is defined but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+    8:23  warning  'todayLocalDate' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+   39:15  warning  'localNow' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  177:14  warning  'error' is defined but never used. Allowed unused caught errors must match /^_/u     @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\actions\excel.ts
+  55:61  warning  'filters' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\actions\inventory.ts
+  129:62  warning  'userId' is defined but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\actions\ledger.ts
+  10:10  warning  'nowLocalISO' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\actions\memos.ts
+  4:10  warning  'nowLocalISO' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+  4:23  warning  'todayLocalDate' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\actions\pos.ts
+  62:14  warning  'e' is defined but never used. Allowed unused caught errors must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\actions\printing.ts
+  4:10  warning  'requireSession' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\actions\products.ts
+    5:10  warning  'redirect' is defined but never used. Allowed unused vars must match /^_/u          @typescript-eslint/no-unused-vars
+   65:11  warning  'session' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  402:14  warning  'error' is defined but never used. Allowed unused caught errors must match /^_/u    @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\actions\purchase-orders.ts
+  4:23  warning  'todayLocalDate' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\actions\refunds.ts
+  4:23  warning  'todayLocalDate' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\actions\reports.ts
+  6:10  warning  'getSession' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\actions\reports_advanced.ts
+  24:9  warning  'now' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\actions\reports_comprehensive.ts
+  7:10  warning  'getSession' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\actions\reports_staff.ts
+  6:10  warning  'formatCurrency' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\actions\sales.ts
+   8:10  warning  'postSaleToJournal' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+  61:5   warning  'redeemedPoints' is assigned a value but never used. Allowed unused args must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\actions\suppliers.ts
+  139:14  warning  'error' is defined but never used. Allowed unused caught errors must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\api\setup\route.ts
+  3:18  warning  'getDb' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\barcodes\manual\page.tsx
+   6:8   warning  'JsBarcode' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+  20:15  warning  Error: Cannot call impure function during render
+
+`Math.random` is an impure function. Calling an impure function can produce unstable results that update unpredictably when the component happens to re-render. (https://react.dev/reference/rules/components-and-hooks-must-be-pure#components-and-hooks-must-be-idempotent).
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\barcodes\manual\page.tsx:20:15
+  18 | export default function ManualBarcodePage() {
+  19 |     const [items, setItems] = useState<ManualItem[]>([
+> 20 |         { id: Math.random().toString(), label: '', code: '', price: '', copies: 1 }
+     |               ^^^^^^^^^^^^^ Cannot call impure function
+  21 |     ]);
+  22 |     const [currencySymbol] = useState(getCurrentCurrencySymbol());
+  23 |  react-hooks/purity
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\certificates\page.tsx
+   6:63  warning  'Download' is defined but never used. Allowed unused vars must match /^_/u                 @typescript-eslint/no-unused-vars
+  37:7   warning  'CERT_PROVIDERS' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\contacts\components\AgingContactTab.tsx
+  4:51  warning  'TrendingDown' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\contacts\components\BrokersContactTab.tsx
+    8:25  warning  'TrendingUp' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+    8:37  warning  'ShoppingCart' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+    9:29  warning  'Calendar' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+   10:26  warning  'UserCheck' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+   66:52  warning  React Hook useEffect has a missing dependency: 'load'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                react-hooks/exhaustive-deps
+  341:23  warning  Error: Cannot access variable before it is declared
+
+`load` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\contacts\components\BrokersContactTab.tsx:341:23
+  339 |     const [filterType, setFilterType] = useState<'all' | 'custom'>('all');
+  340 |
+> 341 |     useEffect(() => { load(); }, [search, filterType, dateRange.start, dateRange.end]);
+      |                       ^^^^ `load` accessed before it is declared
+  342 |
+  343 |     async function load() {
+  344 |         setLoading(true);
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\contacts\components\BrokersContactTab.tsx:343:5
+  341 |     useEffect(() => { load(); }, [search, filterType, dateRange.start, dateRange.end]);
+  342 |
+> 343 |     async function load() {
+      |     ^^^^^^^^^^^^^^^^^^^^^^^
+> 344 |         setLoading(true);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 345 |         const range = filterType === 'custom' && dateRange.start && dateRange.end ? dateRange : undefined;
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 346 |         const data = await getBrokerCommissionReport(range, search || undefined);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 347 |         setBrokers(data);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 348 |         setLoading(false);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 349 |     }
+      | ^^^^^^ `load` is declared here
+  350 |
+  351 |     async function toggleBroker(brokerId: number) {
+  352 |         if (expandedBroker === brokerId) { setExpandedBroker(null); return; }  react-hooks/immutability
+  341:34  warning  React Hook useEffect has a missing dependency: 'load'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                react-hooks/exhaustive-deps
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\contacts\components\CustomersContactTab.tsx
+   5:69  warning  'Send' is defined but never used. Allowed unused vars must match /^_/u                                   @typescript-eslint/no-unused-vars
+  30:12  warning  'sendingStatement' is assigned a value but never used. Allowed unused vars must match /^_/u              @typescript-eslint/no-unused-vars
+  30:30  warning  'setSendingStatement' is assigned a value but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
+  35:34  warning  React Hook useEffect has a missing dependency: 'load'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\contacts\page.tsx
+  21:46  warning  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\contacts\page.tsx:21:46
+  19 |     useEffect(() => {
+  20 |         const tab = searchParams.get('tab') as TabId;
+> 21 |         if (tab && VALID_TABS.includes(tab)) setActiveTab(tab);
+     |                                              ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  22 |     }, [searchParams]);
+  23 |
+  24 |     function handleTabChange(tab: TabId) {  react-hooks/set-state-in-effect
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\customers\[id]\page.tsx
+   5:74  warning  'TrendingUp' is defined but never used. Allowed unused vars must match /^_/u                             @typescript-eslint/no-unused-vars
+  15:11  warning  'router' is assigned a value but never used. Allowed unused vars must match /^_/u                        @typescript-eslint/no-unused-vars
+  26:34  warning  React Hook useEffect has a missing dependency: 'load'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\customers\components\CustomersClientPage.tsx
+   3:10  warning  'useState' is defined but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+   8:10  warning  'useRouter' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+   8:21  warning  'useSearchParams' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+   9:10  warning  'useEffect' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+  20:71  warning  'settings' is defined but never used. Allowed unused args must match /^_/u         @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\customers\components\CustomersTab.tsx
+   4:107  warning  'CheckSquare' is defined but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+  27:12   warning  'isPending' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\finance\components\AccountsTab.tsx
+   4:10  warning  'getDb' is defined but never used. Allowed unused vars must match /^_/u                                  @typescript-eslint/no-unused-vars
+  38:12  warning  'sym' is assigned a value but never used. Allowed unused vars must match /^_/u                           @typescript-eslint/no-unused-vars
+  40:34  warning  React Hook useEffect has a missing dependency: 'load'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\finance\components\ChequesTab.tsx
+   7:71  warning  'TrendingUp' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            @typescript-eslint/no-unused-vars
+  36:35  warning  Error: Cannot access variable before it is declared
+
+`loadData` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\finance\components\ChequesTab.tsx:36:35
+  34 |     const { confirm } = useConfirm();
+  35 |
+> 36 |     useEffect(() => { setPage(1); loadData(1); }, [filter, searchTerm, startDate, endDate, isOnline]);
+     |                                   ^^^^^^^^ `loadData` accessed before it is declared
+  37 |     useEffect(() => { if (page !== 1) loadData(page); }, [page]);
+  38 |
+  39 |     async function loadData(targetPage: number = page) {
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\finance\components\ChequesTab.tsx:39:5
+  37 |     useEffect(() => { if (page !== 1) loadData(page); }, [page]);
+  38 |
+> 39 |     async function loadData(targetPage: number = page) {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 40 |         setLoading(true);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 41 |         if (isOnline) {
+     GǪ
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 59 |         setLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 60 |     }
+     | ^^^^^^ `loadData` is declared here
+  61 |
+  62 |     const cheques = result?.data || [];
+  63 |  react-hooks/immutability
+  36:51  warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             react-hooks/exhaustive-deps
+  37:58  warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             react-hooks/exhaustive-deps
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\finance\components\CreditNotesTab.tsx
+   6:20  warning  'Eye' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+   8:8   warning  'Link' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+  22:9   warning  Error: Cannot access variable before it is declared
+
+`loadData` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\finance\components\CreditNotesTab.tsx:22:9
+  20 |
+  21 |     useEffect(() => {
+> 22 |         loadData();
+     |         ^^^^^^^^ `loadData` accessed before it is declared
+  23 |     }, [type, page]);
+  24 |
+  25 |     async function loadData() {
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\finance\components\CreditNotesTab.tsx:25:5
+  23 |     }, [type, page]);
+  24 |
+> 25 |     async function loadData() {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 26 |         setLoading(true);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 27 |         const typeFilter = type as 'sales_return' | 'purchase_return' | undefined;
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 28 |         const notesData = await getCreditNotes(typeFilter, page, pageSize);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 29 |         setResult(notesData);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 30 |         setLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 31 |     }
+     | ^^^^^^ `loadData` is declared here
+  32 |
+  33 |     const getTypeColor = (noteType: string) => {
+  34 |         return noteType === 'sales_return' ? 'var(--destructive)' : 'var(--primary)';  react-hooks/immutability
+  23:8   warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 react-hooks/exhaustive-deps
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\finance\components\DaybookPrintButton.tsx
+  9:10  warning  'formatDate' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\finance\components\DaybookTab.tsx
+  8:10  warning  'Book' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\finance\components\FinancialReportPrintButton.tsx
+  3:35  warning  'PieChart' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\finance\components\LedgerTab.tsx
+   4:40  warning  'initializeChartOfAccounts' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+   7:10  warning  'BookOpen' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+  22:9   warning  Error: Cannot access variable before it is declared
+
+`loadData` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\finance\components\LedgerTab.tsx:22:9
+  20 |
+  21 |     useEffect(() => {
+> 22 |         loadData();
+     |         ^^^^^^^^ `loadData` accessed before it is declared
+  23 |     }, [page]);
+  24 |
+  25 |     async function loadData() {
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\finance\components\LedgerTab.tsx:25:5
+  23 |     }, [page]);
+  24 |
+> 25 |     async function loadData() {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 26 |         setLoading(true);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 27 |         const [accountsResult, tbData] = await Promise.all([
+     GǪ
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 34 |         setLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 35 |     }
+     | ^^^^^^ `loadData` is declared here
+  36 |
+  37 |     const accounts = result?.data || [];
+  38 |  react-hooks/immutability
+  23:8   warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    react-hooks/exhaustive-deps
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\finance\components\ReportsTab.tsx
+   9:26  warning  'formatDate' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+  10:20  warning  'PieChart' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+  21:9   warning  Error: Cannot access variable before it is declared
+
+`loadData` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\finance\components\ReportsTab.tsx:21:9
+  19 |
+  20 |     useEffect(() => {
+> 21 |         loadData();
+     |         ^^^^^^^^ `loadData` accessed before it is declared
+  22 |     }, []);
+  23 |
+  24 |     async function loadData() {
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\finance\components\ReportsTab.tsx:24:5
+  22 |     }, []);
+  23 |
+> 24 |     async function loadData() {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 25 |         setLoading(true);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 26 |         const [chequesData, statsData, customersData, dashboardData, creditNotesData, inventoryData] = await Promise.all([
+     GǪ
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 48 |         setLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 49 |     }
+     | ^^^^^^ `loadData` is declared here
+  50 |
+  51 |     const [businessStats, setBusinessStats] = useState<any>(null);
+  52 |  react-hooks/immutability
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\finance\components\SupplierPaymentsTab.tsx
+    6:26   warning  'formatDate' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+   30:23   warning  Error: Cannot access variable before it is declared
+
+`load` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\finance\components\SupplierPaymentsTab.tsx:30:23
+  28 |     const { confirm } = useConfirm();
+  29 |
+> 30 |     useEffect(() => { load(); }, []);
+     |                       ^^^^ `load` accessed before it is declared
+  31 |
+  32 |     async function load() {
+  33 |         setLoading(true);
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\finance\components\SupplierPaymentsTab.tsx:32:5
+  30 |     useEffect(() => { load(); }, []);
+  31 |
+> 32 |     async function load() {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^
+> 33 |         setLoading(true);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 34 |         try {
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 35 |             const res = await getSuppliers('', 1, 500);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 36 |             // Only show suppliers with outstanding balance
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 37 |             setSuppliers(res.data.filter(s => (s.balance || 0) > 0));
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 38 |         } catch { toast.error('Failed to load suppliers'); }
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 39 |         setLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 40 |     }
+     | ^^^^^^ `load` is declared here
+  41 |
+  42 |     const filtered = suppliers.filter(s =>
+  43 |         s.name.toLowerCase().includes(search.toLowerCase()) ||  react-hooks/immutability
+  210:94   warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           react/no-unescaped-entities
+  210:102  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           react/no-unescaped-entities
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\finance\page.tsx
+  21:13  warning  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\finance\page.tsx:21:13
+  19 |         const tab = searchParams.get('tab');
+  20 |         if (tab && ['daybook', 'accounts', 'ledger', 'cheques', 'credit-notes', 'reports'].includes(tab)) {
+> 21 |             setActiveTab(tab as any);
+     |             ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  22 |         }
+  23 |     }, [searchParams]);
+  24 |  react-hooks/set-state-in-effect
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\gem-calculator\page.tsx
+   4:27  warning  'DollarSign' is defined but never used. Allowed unused vars must match /^_/u            @typescript-eslint/no-unused-vars
+   4:39  warning  'TrendingUp' is defined but never used. Allowed unused vars must match /^_/u            @typescript-eslint/no-unused-vars
+  53:10  warning  'currency' is assigned a value but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+  53:20  warning  'setCurrency' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\inventory-management\components\BrokersTab.tsx
+  3:10  warning  'useEffect' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  4:10  warning  'useRouter' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\inventory-management\components\CategoriesTab.tsx
+  27:13  warning  Error: Cannot access variable before it is declared
+
+`loadData` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\inventory-management\components\CategoriesTab.tsx:27:13
+  25 |         const timer = setTimeout(() => {
+  26 |             setPage(1);
+> 27 |             loadData(1);
+     |             ^^^^^^^^ `loadData` accessed before it is declared
+  28 |         }, 300);
+  29 |         return () => clearTimeout(timer);
+  30 |     }, [searchQuery]);
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\inventory-management\components\CategoriesTab.tsx:36:5
+  34 |     }, [page]);
+  35 |
+> 36 |     async function loadData(targetPage: number = page) {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 37 |         setLoadingData(true);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 38 |         const res = await getCategories(searchQuery, targetPage, pageSize);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 39 |         setResult(res);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 40 |         setLoadingData(false);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 41 |     }
+     | ^^^^^^ `loadData` is declared here
+  42 |
+  43 |     async function handleSubmit(e: React.FormEvent) {
+  44 |         e.preventDefault();  react-hooks/immutability
+  30:8   warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        react-hooks/exhaustive-deps
+  34:8   warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        react-hooks/exhaustive-deps
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\inventory-management\components\ConsignmentTab.tsx
+   25:11  warning  'router' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+   26:23  warning  'startTransition' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+   37:9   warning  Error: Cannot access variable before it is declared
+
+`load` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\inventory-management\components\ConsignmentTab.tsx:37:9
+  35 |
+  36 |     useEffect(() => {
+> 37 |         load();
+     |         ^^^^ `load` accessed before it is declared
+  38 |     }, [debouncedSearch, statusFilter, page]);
+  39 |
+  40 |     useEffect(() => {
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\inventory-management\components\ConsignmentTab.tsx:44:5
+  42 |     }, [debouncedSearch, statusFilter]);
+  43 |
+> 44 |     async function load() {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^
+> 45 |         setLoading(true);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 46 |         const res = await getMemos(debouncedSearch, statusFilter, page, 10);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 47 |         setMemosResult(res);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 48 |         setLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 49 |     }
+     | ^^^^^^ `load` is declared here
+  50 |
+  51 |     return (
+  52 |         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', opacity: isPending ? 0.7 : 1 }}>  react-hooks/immutability
+   38:8   warning  React Hook useEffect has a missing dependency: 'load'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                react-hooks/exhaustive-deps
+  100:34  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        react/no-unescaped-entities
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\inventory-management\components\InventoryTab.tsx
+  19:9  warning  Error: Cannot access variable before it is declared
+
+`loadData` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\inventory-management\components\InventoryTab.tsx:19:9
+  17 |
+  18 |     useEffect(() => {
+> 19 |         loadData();
+     |         ^^^^^^^^ `loadData` accessed before it is declared
+  20 |     }, [page]);
+  21 |
+  22 |     async function loadData() {
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\inventory-management\components\InventoryTab.tsx:22:5
+  20 |     }, [page]);
+  21 |
+> 22 |     async function loadData() {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 23 |         setLoading(true);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 24 |         const data = await getAdjustments(page, pageSize);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 25 |         setResult(data);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 26 |         setLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 27 |     }
+     | ^^^^^^ `loadData` is declared here
+  28 |
+  29 |     if (loading) {
+  30 |         return <div style={{ padding: '2rem' }}>Loading...</div>;  react-hooks/immutability
+  20:8  warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        react-hooks/exhaustive-deps
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\inventory-management\components\LotManagementTab.tsx
+  35:12  warning  'editModal' is assigned a value but never used. Allowed unused vars must match /^_/u                     @typescript-eslint/no-unused-vars
+  35:23  warning  'setEditModal' is assigned a value but never used. Allowed unused vars must match /^_/u                  @typescript-eslint/no-unused-vars
+  41:34  warning  React Hook useEffect has a missing dependency: 'load'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\inventory-management\components\ProductsTab.tsx
+    5:82  warning  'CheckSquare' is defined but never used. Allowed unused vars must match /^_/u                                @typescript-eslint/no-unused-vars
+    5:95  warning  'Square' is defined but never used. Allowed unused vars must match /^_/u                                     @typescript-eslint/no-unused-vars
+   10:48  warning  'buildCompanyInfo' is defined but never used. Allowed unused vars must match /^_/u                           @typescript-eslint/no-unused-vars
+   42:8   warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+   86:18  warning  'error' is defined but never used. Allowed unused caught errors must match /^_/u                             @typescript-eslint/no-unused-vars
+  102:18  warning  'error' is defined but never used. Allowed unused caught errors must match /^_/u                             @typescript-eslint/no-unused-vars
+  118:18  warning  'error' is defined but never used. Allowed unused caught errors must match /^_/u                             @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\inventory-management\components\PurchaseOrdersTab.tsx
+  38:23  warning  Error: Cannot access variable before it is declared
+
+`loadData` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\inventory-management\components\PurchaseOrdersTab.tsx:38:23
+  36 |
+  37 |     useEffect(() => { setPage(1); }, [statusFilter]);
+> 38 |     useEffect(() => { loadData(); }, [statusFilter, page, isOnline]);
+     |                       ^^^^^^^^ `loadData` accessed before it is declared
+  39 |
+  40 |     async function loadData() {
+  41 |         setLoading(true);
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\inventory-management\components\PurchaseOrdersTab.tsx:40:5
+  38 |     useEffect(() => { loadData(); }, [statusFilter, page, isOnline]);
+  39 |
+> 40 |     async function loadData() {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 41 |         setLoading(true);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 42 |         if (isOnline) {
+     GǪ
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 56 |         setLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 57 |     }
+     | ^^^^^^ `loadData` is declared here
+  58 |
+  59 |     async function loadFromCache() {
+  60 |         try {  react-hooks/immutability
+  38:38  warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    react-hooks/exhaustive-deps
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\inventory-management\components\StockTakeTab.tsx
+  3:20  warning  'useEffect' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+  4:22  warning  'RotateCcw' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+  4:64  warning  'CheckCircle' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\inventory-management\components\SuppliersTab.tsx
+  40:8   warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array               react-hooks/exhaustive-deps
+  42:58  warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array               react-hooks/exhaustive-deps
+  43:42  warning  React Hook useEffect has missing dependencies: 'loadData' and 'page'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  82:18  warning  'error' is defined but never used. Allowed unused caught errors must match /^_/u                                          @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\inventory-management\page.tsx
+  25:7  warning  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\inventory-management\page.tsx:25:7
+  23 |     const tabFromUrl = searchParams.get('tab') as TabId;
+  24 |     if (tabFromUrl && VALID_TABS.includes(tabFromUrl)) {
+> 25 |       setActiveTab(tabFromUrl);
+     |       ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  26 |     }
+  27 |   }, [searchParams]);
+  28 |  react-hooks/set-state-in-effect
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\login\page.tsx
+  271:33  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\memos\[id]\MemoDetailsClient.tsx
+  5:85  warning  'Clock' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\memos\new\NewMemoForm.tsx
+  17:23  warning  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\memos\new\NewMemoForm.tsx:17:23
+  15 |     const [loading, setLoading] = useState(false);
+  16 |     const [mounted, setMounted] = useState(false);
+> 17 |     useEffect(() => { setMounted(true); }, []);
+     |                       ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  18 |
+  19 |     // Customer Selection
+  20 |     const [customerQuery, setCustomerQuery] = useState('');  react-hooks/set-state-in-effect
+  30:12  warning  'showProductResults' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+  46:8   warning  React Hook useEffect has a missing dependency: 'selectedCustomer'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           react-hooks/exhaustive-deps
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\memos\page.tsx
+  21:12  warning  'startTransition' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+  29:21  warning  Error: Cannot access variable before it is declared
+
+`load` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\memos\page.tsx:29:21
+  27 |   const [statusFilter, setStatusFilter] = useState('');
+  28 |
+> 29 |   useEffect(() => { load(); }, [debouncedSearch, statusFilter, page]);
+     |                     ^^^^ `load` accessed before it is declared
+  30 |   useEffect(() => { setPage(1); }, [debouncedSearch, statusFilter]);
+  31 |
+  32 |   async function load() {
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\memos\page.tsx:32:3
+  30 |   useEffect(() => { setPage(1); }, [debouncedSearch, statusFilter]);
+  31 |
+> 32 |   async function load() {
+     |   ^^^^^^^^^^^^^^^^^^^^^^^
+> 33 |     setLoading(true);
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 34 |     const res = await getMemos(debouncedSearch, statusFilter, page, 15);
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 35 |     setMemosResult(res);
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 36 |     setLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^
+> 37 |   }
+     | ^^^^ `load` is declared here
+  38 |
+  39 |   const statusColors: Record<string, string> = {
+  40 |     pending: 'warning', partial: 'info', returned: 'muted', sold: 'success',  react-hooks/immutability
+  29:32  warning  React Hook useEffect has a missing dependency: 'load'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             react-hooks/exhaustive-deps
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\page.tsx
+  6:18  warning  'CheckCircle2' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\pos\PosTerminal.tsx
+     9:10   warning  'sendEmail' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+    13:5    warning  'Trash2' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+    25:5    warning  'Package' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                @typescript-eslint/no-unused-vars
+    29:5    warning  'PlayCircle' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+    31:5    warning  'LogOut' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+    43:59   warning  'deleteHeldOrder' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+    73:33   warning  'setOverrideDescription' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+   101:12   warning  'emailSending' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+   140:12   warning  'isEmailModalOpen' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+   140:30   warning  'setIsEmailModalOpen' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                           @typescript-eslint/no-unused-vars
+   148:13   warning  'isCollapsed' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                   @typescript-eslint/no-unused-vars
+   155:11   warning  'router' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+   255:41   warning  'pendingSales' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                  @typescript-eslint/no-unused-vars
+   517:8    warning  React Hook useEffect has missing dependencies: 'confirm', 'handleBarcodeScan', 'handleCheckout', 'handleHoldOrder', 'isHeldOrdersModalOpen', 'isOverrideModalOpen', and 'isProductModalOpen'. Either include them or remove the dependency array                                         react-hooks/exhaustive-deps
+   544:18   warning  'error' is defined but never used. Allowed unused caught errors must match /^_/u                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   559:18   warning  'error' is defined but never used. Allowed unused caught errors must match /^_/u                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   568:18   warning  'error' is defined but never used. Allowed unused caught errors must match /^_/u                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   859:20   warning  'handleRetrieveOrder' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+   883:14   warning  'addSplitPayment' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+   895:14   warning  'removeSplitPayment' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+  1326:41   warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  1893:101  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                          react/no-unescaped-entities
+  1961:103  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                          react/no-unescaped-entities
+  2265:10   warning  'ShoppingBagIcon' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\products\[id]\edit\ClientEditForm.tsx
+   43:17  warning  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\products\[id]\edit\ClientEditForm.tsx:43:17
+  41 |             const weight = parseFloat(product.gem_details.carat_weight);
+  42 |             if (weight > 0) {
+> 43 |                 setGemData(prev => ({ ...prev, price_per_carat: (product.selling_price / weight).toFixed(2) }));
+     |                 ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  44 |             }
+  45 |         }
+  46 |     }, []);  react-hooks/set-state-in-effect
+   46:8   warning  React Hook useEffect has missing dependencies: 'pricingMethod', 'product.gem_details.carat_weight', and 'product.selling_price'. Either include them or remove the dependency array. If 'setGemData' needs the current value of 'product.selling_price', you can also switch to useReducer instead of useState and read 'product.selling_price' in the reducer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      react-hooks/exhaustive-deps
+   73:17  warning  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\products\[id]\edit\ClientEditForm.tsx:73:17
+  71 |             const perCarat = parseFloat(String(gemData.price_per_carat)) || 0;
+  72 |             if (weight > 0 && perCarat > 0) {
+> 73 |                 setSellingPrice((weight * perCarat).toFixed(2));
+     |                 ^^^^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  74 |             }
+  75 |         }
+  76 |     }, [pricingMethod]);          react-hooks/set-state-in-effect
+   76:8   warning  React Hook useEffect has missing dependencies: 'gemData.gem_carat_weight' and 'gemData.price_per_carat'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         react-hooks/exhaustive-deps
+  303:49  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @next/next/no-img-element
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\products\[id]\edit\page.tsx
+  4:21  warning  'Save' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\products\new\page.tsx
+   89:17  warning  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\products\new\page.tsx:89:17
+  87 |             const perCarat = parseFloat(gemData.price_per_carat) || 0;
+  88 |             if (weight > 0 && perCarat > 0) {
+> 89 |                 setFormData(prev => ({ ...prev, selling_price: (weight * perCarat).toFixed(2) }));
+     |                 ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  90 |             }
+  91 |         }
+  92 |     }, [formData.pricing_method, gemData.gem_carat_weight, gemData.price_per_carat]);  react-hooks/set-state-in-effect
+  386:45  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        @next/next/no-img-element
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\products\page.tsx
+  328:15  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\purchase-orders\[id]\page.tsx
+  3:23  warning  'Printer' is defined but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+  3:32  warning  'ShoppingBag' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\reports\components\AIInsightsDashboard.tsx
+  16:12  warning  'report' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\reports\components\GemStockReportView.tsx
+  4:26  warning  'formatDate' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\reports\components\InventoryAnalyticsTab.tsx
+   5:10  warning  'getCategories' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-unused-vars
+   8:5   warning  'PieChart' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     @typescript-eslint/no-unused-vars
+   8:15  warning  'Pie' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+   8:20  warning  'Cell' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+   9:58  warning  'Legend' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+  12:27  warning  'PieIcon' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      @typescript-eslint/no-unused-vars
+  12:75  warning  'ShoppingCart' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+  15:7   warning  'COLORS' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+  23:9   warning  Error: Cannot access variable before it is declared
+
+`loadData` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\reports\components\InventoryAnalyticsTab.tsx:23:9
+  21 |
+  22 |     useEffect(() => {
+> 23 |         loadData();
+     |         ^^^^^^^^ `loadData` accessed before it is declared
+  24 |     }, []);
+  25 |
+  26 |     async function loadData() {
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\reports\components\InventoryAnalyticsTab.tsx:26:5
+  24 |     }, []);
+  25 |
+> 26 |     async function loadData() {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 27 |         setLoading(true);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 28 |         const [val, top] = await Promise.all([
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 29 |             getInventoryValuation(),
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 30 |             getTopSellingItems()
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 31 |         ]);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 32 |         setValuation(val || { totalItems: 0, totalStock: 0, costValue: 0, retailValue: 0, potentialProfit: 0 });
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 33 |         setTopItems(top || []);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 34 |         setLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 35 |     }
+     | ^^^^^^ `loadData` is declared here
+  36 |
+  37 |     if (loading) return <div>Loading inventory analytics...</div>;
+  38 |  react-hooks/immutability
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\reports\components\ReportLayout.tsx
+  45:7  warning  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\reports\components\ReportLayout.tsx:45:7
+  43 |     const sub = searchParams.get('sub');
+  44 |     if (tab) {
+> 45 |       setActiveTab(tab);
+     |       ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  46 |       if (sub) {
+  47 |         setActiveSubTab(sub);
+  48 |       } else {  react-hooks/set-state-in-effect
+  64:6  warning  React Hook useEffect has missing dependencies: 'activeSubTab', 'activeTab', 'router', and 'searchParams'. Either include them or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                react-hooks/exhaustive-deps
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\reports\components\SalesTrendsTab.tsx
+   4:33  warning  'DateRange' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        @typescript-eslint/no-unused-vars
+  11:34  warning  'DollarSign' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+  22:9   warning  Error: Cannot access variable before it is declared
+
+`loadData` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\reports\components\SalesTrendsTab.tsx:22:9
+  20 |
+  21 |     useEffect(() => {
+> 22 |         loadData();
+     |         ^^^^^^^^ `loadData` accessed before it is declared
+  23 |     }, []);
+  24 |
+  25 |     async function loadData() {
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\reports\components\SalesTrendsTab.tsx:25:5
+  23 |     }, []);
+  24 |
+> 25 |     async function loadData() {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 26 |         setLoading(true);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 27 |         // Get last 30 days of transactions
+     GǪ
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 55 |         setLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 56 |     }
+     | ^^^^^^ `loadData` is declared here
+  57 |
+  58 |     if (loading) return <div>Loading sales trends...</div>;
+  59 |  react-hooks/immutability
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\reports\components\StaffPerformanceDashboard.tsx
+  14:9  warning  Error: Cannot access variable before it is declared
+
+`loadData` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\reports\components\StaffPerformanceDashboard.tsx:14:9
+  12 |
+  13 |     useEffect(() => {
+> 14 |         loadData();
+     |         ^^^^^^^^ `loadData` accessed before it is declared
+  15 |     }, []);
+  16 |
+  17 |     async function loadData() {
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\reports\components\StaffPerformanceDashboard.tsx:17:5
+  15 |     }, []);
+  16 |
+> 17 |     async function loadData() {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 18 |         setLoading(true);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 19 |         const data = await getStaffSalesReport();
+     GǪ
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 27 |         setLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 28 |     }
+     | ^^^^^^ `loadData` is declared here
+  29 |
+  30 |     if (loading) return <div>Loading staff performance...</div>;
+  31 |  react-hooks/immutability
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\reports\components\StaffPerformanceTab.tsx
+  5:63  warning  'Legend' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+  7:10  warning  'Calendar' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  7:20  warning  'User' is defined but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\reports\components\StaffProductivityTab.tsx
+   6:33  warning  'TrendingUp' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+  13:9   warning  Error: Cannot access variable before it is declared
+
+`loadData` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\reports\components\StaffProductivityTab.tsx:13:9
+  11 |
+  12 |     useEffect(() => {
+> 13 |         loadData();
+     |         ^^^^^^^^ `loadData` accessed before it is declared
+  14 |     }, []);
+  15 |
+  16 |     async function loadData() {
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\reports\components\StaffProductivityTab.tsx:16:5
+  14 |     }, []);
+  15 |
+> 16 |     async function loadData() {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 17 |         setLoading(true);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 18 |         const data = await getStaffSalesReport();
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 19 |         setStats(data.filter((s: any) =>
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 20 |             s.role !== 'super_admin' &&
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 21 |             !s.username.startsWith('[')
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 22 |         ));
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 23 |         setLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 24 |     }
+     | ^^^^^^ `loadData` is declared here
+  25 |
+  26 |     if (loading) return <div>Loading staff sales metrics...</div>;
+  27 |  react-hooks/immutability
+  80:48  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           react/no-unescaped-entities
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\reports\page.tsx
+    6:10  warning  'useSearchParams' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+    6:27  warning  'useRouter' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+   15:10  warning  'useReport' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+  184:9   warning  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\reports\page.tsx:184:9
+  182 |
+  183 |     useEffect(() => {
+> 184 |         setPage(1);
+      |         ^^^^^^^ Avoid calling setState() directly within an effect
+  185 |     }, [activeTab, activeSubTab, dateRange?.start, dateRange?.end, debouncedSearch]);
+  186 |
+  187 |     useEffect(() => {  react-hooks/set-state-in-effect
+  270:8   warning  React Hook useEffect has a missing dependency: 'dateRange'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         react-hooks/exhaustive-deps
+  673:8   warning  React Hook useEffect has a missing dependency: 'fetchFn'. Either include it or remove the dependency array. If 'fetchFn' changes too often, find the parent component that defines it and wrap that definition in useCallback                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        react-hooks/exhaustive-deps
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\sales\page.tsx
+  47:23  warning  Error: Cannot access variable before it is declared
+
+`load` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\sales\page.tsx:47:23
+  45 |     const [customEnd, setCustomEnd] = useState('');
+  46 |
+> 47 |     useEffect(() => { load(); }, [debouncedSearch, dateRange, customStart, customEnd, page, isOnline]);
+     |                       ^^^^ `load` accessed before it is declared
+  48 |     useEffect(() => { setPage(1); }, [debouncedSearch, dateRange, customStart, customEnd]);
+  49 |
+  50 |     async function load() {
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\sales\page.tsx:50:5
+   48 |     useEffect(() => { setPage(1); }, [debouncedSearch, dateRange, customStart, customEnd]);
+   49 |
+>  50 |     async function load() {
+      |     ^^^^^^^^^^^^^^^^^^^^^^^
+>  51 |         setLoading(true);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^
+>  52 |         let start: string | undefined;
+      GǪ
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 100 |         setLoading(false);
+      | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 101 |     }
+      | ^^^^^^ `load` is declared here
+  102 |
+  103 |     async function loadFromCache(start?: string, end?: string) {
+  104 |         try {  react-hooks/immutability
+  47:34  warning  React Hook useEffect has a missing dependency: 'load'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 react-hooks/exhaustive-deps
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\settings\components\ActivityLogSettings.tsx
+   8:10  warning  'History' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       @typescript-eslint/no-unused-vars
+   9:8   warning  'Link' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+  31:12  warning  'session' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+  35:9   warning  Error: Cannot access variable before it is declared
+
+`loadData` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\settings\components\ActivityLogSettings.tsx:35:9
+  33 |     useEffect(() => {
+  34 |         setPage(1); // Reset to first page on filter change
+> 35 |         loadData(1);
+     |         ^^^^^^^^ `loadData` accessed before it is declared
+  36 |     }, [filters]);
+  37 |
+  38 |     useEffect(() => {
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\settings\components\ActivityLogSettings.tsx:42:5
+  40 |     }, [page]);
+  41 |
+> 42 |     async function loadData(targetPage: number = page) {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 43 |         setLoading(true);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 44 |         try {
+     GǪ
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 70 |         setLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 71 |     }
+     | ^^^^^^ `loadData` is declared here
+  72 |
+  73 |     const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
+  74 |         const { name, value } = e.target;  react-hooks/immutability
+  36:8   warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     react-hooks/exhaustive-deps
+  40:8   warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     react-hooks/exhaustive-deps
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\settings\components\BarcodesSettings.tsx
+   6:10  warning  'Barcode' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             @typescript-eslint/no-unused-vars
+  39:9   warning  Error: Cannot access variable before it is declared
+
+`loadInitialData` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\settings\components\BarcodesSettings.tsx:39:9
+  37 |
+  38 |     useEffect(() => {
+> 39 |         loadInitialData();
+     |         ^^^^^^^^^^^^^^^ `loadInitialData` accessed before it is declared
+  40 |     }, []);
+  41 |
+  42 |     useEffect(() => {
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\settings\components\BarcodesSettings.tsx:50:5
+  48 |     }, [withPage, searchTerm]);
+  49 |
+> 50 |     async function loadInitialData() {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 51 |         setLoading(true);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 52 |         const settingsData = await getSettings();
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 53 |         if (settingsData.currency_symbol) setCurrencySymbol(settingsData.currency_symbol);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 54 |         await Promise.all([loadWithout(1), loadWith(1, '')]);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 55 |         setLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 56 |     }
+     | ^^^^^^ `loadInitialData` is declared here
+  57 |
+  58 |     async function loadWithout(page: number) {
+  59 |         const result = await getProductsWithoutBarcodes('', page, 10);  react-hooks/immutability
+  40:8   warning  React Hook useEffect has a missing dependency: 'loadInitialData'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    react-hooks/exhaustive-deps
+  43:9   warning  Error: Cannot access variable before it is declared
+
+`loadWithout` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\settings\components\BarcodesSettings.tsx:43:9
+  41 |
+  42 |     useEffect(() => {
+> 43 |         loadWithout(withoutPage);
+     |         ^^^^^^^^^^^ `loadWithout` accessed before it is declared
+  44 |     }, [withoutPage]);
+  45 |
+  46 |     useEffect(() => {
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\settings\components\BarcodesSettings.tsx:58:5
+  56 |     }
+  57 |
+> 58 |     async function loadWithout(page: number) {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 59 |         const result = await getProductsWithoutBarcodes('', page, 10);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 60 |         setProductsWithoutResult(result);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 61 |     }
+     | ^^^^^^ `loadWithout` is declared here
+  62 |
+  63 |     async function loadWith(page: number, search: string) {
+  64 |         const result = await getProductsWithBarcodes(search, page, 12);                                                                                                                                                                         react-hooks/immutability
+  47:9   warning  Error: Cannot access variable before it is declared
+
+`loadWith` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\settings\components\BarcodesSettings.tsx:47:9
+  45 |
+  46 |     useEffect(() => {
+> 47 |         loadWith(withPage, searchTerm);
+     |         ^^^^^^^^ `loadWith` accessed before it is declared
+  48 |     }, [withPage, searchTerm]);
+  49 |
+  50 |     async function loadInitialData() {
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\settings\components\BarcodesSettings.tsx:63:5
+  61 |     }
+  62 |
+> 63 |     async function loadWith(page: number, search: string) {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 64 |         const result = await getProductsWithBarcodes(search, page, 12);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 65 |         setProductsWithResult(result);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 66 |     }
+     | ^^^^^^ `loadWith` is declared here
+  67 |
+  68 |     async function handleGenerateSingle(productId: number) {
+  69 |         const result = await generateBarcode(productId);                                                                                                                                         react-hooks/immutability
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\settings\components\CompanySettings.tsx
+    3:20  warning  'useEffect' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                              @typescript-eslint/no-unused-vars
+  109:29  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+  147:65  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                          react/no-unescaped-entities
+  147:67  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                          react/no-unescaped-entities
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\settings\components\DataManagementSettings.tsx
+  10:11  warning  'router' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\settings\components\EmailSettings.tsx
+  3:20  warning  'useEffect' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\settings\components\HardwareSettings.tsx
+    4:63  warning  'XCircle' is defined but never used. Allowed unused vars must match /^_/u        @typescript-eslint/no-unused-vars
+    6:10  warning  'updateSetting' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  285:82  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                  react/no-unescaped-entities
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\settings\components\POSSettings.tsx
+   5:10  warning  'updateSetting' is defined but never used. Allowed unused vars must match /^_/u     @typescript-eslint/no-unused-vars
+  12:12  warning  'loading' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\settings\components\PWASettings.tsx
+  217:151  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  217:170  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  217:174  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  217:186  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`  react/no-unescaped-entities
+  252:101  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`  react/no-unescaped-entities
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\settings\components\ReceiptPreview.tsx
+   3:10  warning  'formatCurrency' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+  30:11  warning  'scale' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                         @typescript-eslint/no-unused-vars
+  55:29  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\settings\components\SystemSettings.tsx
+  35:12  warning  'message' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\settings\components\UsersSettings.tsx
+   6:41  warning  'ShieldAlert' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               @typescript-eslint/no-unused-vars
+   6:63  warning  'UsersIcon' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+  20:12  warning  'session' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          @typescript-eslint/no-unused-vars
+  27:42  warning  Error: Cannot access variable before it is declared
+
+`loadUsers` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\settings\components\UsersSettings.tsx:27:42
+  25 |
+  26 |     useEffect(() => {
+> 27 |         const timer = setTimeout(() => { loadUsers(usersPage); }, 300);
+     |                                          ^^^^^^^^^ `loadUsers` accessed before it is declared
+  28 |         return () => clearTimeout(timer);
+  29 |     }, [usersPage, searchQuery, roleFilter]);
+  30 |
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\settings\components\UsersSettings.tsx:38:5
+  36 |     }
+  37 |
+> 38 |     async function loadUsers(page: number = usersPage) {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 39 |         const res = await getUsers(page, pageSize, searchQuery, roleFilter);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 40 |         setUsersResult(res);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 41 |     }
+     | ^^^^^^ `loadUsers` is declared here
+  42 |
+  43 |     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  44 |         e.preventDefault();  react-hooks/immutability
+  29:8   warning  React Hook useEffect has a missing dependency: 'loadUsers'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                react-hooks/exhaustive-deps
+  31:23  warning  Error: Cannot access variable before it is declared
+
+`loadData` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\settings\components\UsersSettings.tsx:31:23
+  29 |     }, [usersPage, searchQuery, roleFilter]);
+  30 |
+> 31 |     useEffect(() => { loadData(); }, []);
+     |                       ^^^^^^^^ `loadData` accessed before it is declared
+  32 |
+  33 |     async function loadData() {
+  34 |         const sessionData = await getSession();
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\settings\components\UsersSettings.tsx:33:5
+  31 |     useEffect(() => { loadData(); }, []);
+  32 |
+> 33 |     async function loadData() {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 34 |         const sessionData = await getSession();
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 35 |         setSession(sessionData);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 36 |     }
+     | ^^^^^^ `loadData` is declared here
+  37 |
+  38 |     async function loadUsers(page: number = usersPage) {
+  39 |         const res = await getUsers(page, pageSize, searchQuery, roleFilter);                                                                                                     react-hooks/immutability
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\settings\users\page.tsx
+  18:9  warning  Error: Cannot access variable before it is declared
+
+`loadUsers` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\settings\users\page.tsx:18:9
+  16 |
+  17 |     useEffect(() => {
+> 18 |         loadUsers();
+     |         ^^^^^^^^^ `loadUsers` accessed before it is declared
+  19 |     }, []);
+  20 |
+  21 |     async function loadUsers() {
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\settings\users\page.tsx:21:5
+  19 |     }, []);
+  20 |
+> 21 |     async function loadUsers() {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 22 |         const data = await getUsers();
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 23 |         setUsers(data.data);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 24 |     }
+     | ^^^^^^ `loadUsers` is declared here
+  25 |
+  26 |     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  27 |         e.preventDefault();  react-hooks/immutability
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\super-admin\page.tsx
+    7:23   warning  'RefreshCw' is defined but never used. Allowed unused vars must match /^_/u                                          @typescript-eslint/no-unused-vars
+    7:103  warning  'Check' is defined but never used. Allowed unused vars must match /^_/u                                              @typescript-eslint/no-unused-vars
+   25:8    warning  React Hook useEffect has a missing dependency: 'checkAuthAndLoad'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  322:10   warning  'ClockIcon' is defined but never used. Allowed unused vars must match /^_/u                                          @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\app\suppliers\[id]\edit\page.tsx
+  1:23  warning  'updateSupplier' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  3:21  warning  'Save' is defined but never used. Allowed unused vars must match /^_/u            @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\components\AppShell.tsx
+   9:10  warning  'logout' is defined but never used. Allowed unused vars must match /^_/u           @typescript-eslint/no-unused-vars
+  21:11  warning  'router' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\components\ChequeAlertsWidget.tsx
+  5:26  warning  'formatDate' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\components\ChequeDetailModal.tsx
+   19:9   warning  Error: Cannot access variable before it is declared
+
+`loadData` is accessed before it is declared, which prevents the earlier access from updating when this value changes over time.
+
+C:\xampp\htdocs\zgp\zationgempos\src\components\ChequeDetailModal.tsx:19:9
+  17 |
+  18 |     useEffect(() => {
+> 19 |         loadData();
+     |         ^^^^^^^^ `loadData` accessed before it is declared
+  20 |     }, [chequeId]);
+  21 |
+  22 |     async function loadData() {
+
+C:\xampp\htdocs\zgp\zationgempos\src\components\ChequeDetailModal.tsx:22:5
+  20 |     }, [chequeId]);
+  21 |
+> 22 |     async function loadData() {
+     |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+> 23 |         setLoading(true);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 24 |         const [chequeData, historyData] = await Promise.all([
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 25 |             getCheque(chequeId),
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 26 |             getChequeHistory(chequeId)
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 27 |         ]);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 28 |         setCheque(chequeData);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 29 |         setHistory(historyData);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 30 |         setLoading(false);
+     | ^^^^^^^^^^^^^^^^^^^^^^^^^
+> 31 |     }
+     | ^^^^^^ `loadData` is declared here
+  32 |
+  33 |     const getStatusColor = (status: string) => {
+  34 |         switch (status) {  react-hooks/immutability
+   20:8   warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            react-hooks/exhaustive-deps
+  261:54  warning  'index' is defined but never used. Allowed unused args must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\components\CommandPalette.tsx
+    7:38  warning  'X' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+   46:13  warning  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\xampp\htdocs\zgp\zationgempos\src\components\CommandPalette.tsx:46:13
+  44 |     useEffect(() => {
+  45 |         if (isOpen) {
+> 46 |             setSearch('');
+     |             ^^^^^^^^^ Avoid calling setState() directly within an effect
+  47 |             setSelectedIndex(0);
+  48 |             setTimeout(() => inputRef.current?.focus(), 100);
+  49 |         }  react-hooks/set-state-in-effect
+  106:50  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        react/no-unescaped-entities
+  106:59  warning  `"` can be escaped with `&quot;`, `&ldquo;`, `&#34;`, `&rdquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        react/no-unescaped-entities
+
+C:\xampp\htdocs\zgp\zationgempos\src\components\ConfirmDialog.tsx
+  29:9  warning  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\xampp\htdocs\zgp\zationgempos\src\components\ConfirmDialog.tsx:29:9
+  27 |
+  28 |     useEffect(() => {
+> 29 |         setMounted(true);
+     |         ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  30 |     }, []);
+  31 |
+  32 |     const confirm = (opts: string | ConfirmOptions) => {  react-hooks/set-state-in-effect
+
+C:\xampp\htdocs\zgp\zationgempos\src\components\CustomerStatementModal.tsx
+   6:10  warning  'X' is defined but never used. Allowed unused vars must match /^_/u                                          @typescript-eslint/no-unused-vars
+   6:23  warning  'ShoppingBag' is defined but never used. Allowed unused vars must match /^_/u                                @typescript-eslint/no-unused-vars
+  28:8   warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\xampp\htdocs\zgp\zationgempos\src\components\EndOfMonthBackupAlert.tsx
+  21:13   warning  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\xampp\htdocs\zgp\zationgempos\src\components\EndOfMonthBackupAlert.tsx:21:13
+  19 |         
+  20 |         if (isEndOfMonth && !dismissed) {
+> 21 |             setIsVisible(true);
+     |             ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  22 |         }
+  23 |     }, []);
+  24 |  react-hooks/set-state-in-effect
+  65:104  warning  `'` can be escaped with `&apos;`, `&lsquo;`, `&#39;`, `&rsquo;`                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           react/no-unescaped-entities
+
+C:\xampp\htdocs\zgp\zationgempos\src\components\OfflineBanner.tsx
+  212:18  warning  Error: Cannot access refs during render
+
+React refs are values that are not needed for rendering. Refs should only be accessed outside of render, such as in event handlers or effects. Accessing a ref value (the `current` property) during render can cause your component not to update as expected (https://react.dev/reference/react/useRef).
+
+C:\xampp\htdocs\zgp\zationgempos\src\components\OfflineBanner.tsx:212:18
+  210 | function usePrevious<T>(value: T): T | undefined {
+  211 |     const ref = useRef<T | undefined>(undefined);
+> 212 |     const prev = ref.current;
+      |                  ^^^^^^^^^^^ Cannot access ref value during render
+  213 |     useEffect(() => { ref.current = value; });
+  214 |     return prev;
+  215 | }  react-hooks/refs
+
+C:\xampp\htdocs\zgp\zationgempos\src\components\ProductDetailsModal.tsx
+    4:62  warning  'History' is defined but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                                @typescript-eslint/no-unused-vars
+   32:12  warning  'docLoading' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                    @typescript-eslint/no-unused-vars
+   32:24  warning  'setDocLoading' is assigned a value but never used. Allowed unused vars must match /^_/u                                                                                                                                                                                                 @typescript-eslint/no-unused-vars
+  211:41  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\xampp\htdocs\zgp\zationgempos\src\components\ProductEntryModal.tsx
+  33:23  warning  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\xampp\htdocs\zgp\zationgempos\src\components\ProductEntryModal.tsx:33:23
+  31 |     const discountInputRef = useRef<HTMLInputElement>(null);
+  32 |
+> 33 |     useEffect(() => { setMounted(true); }, []);
+     |                       ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  34 |
+  35 |     useEffect(() => {
+  36 |         if (isOpen) {                                                                                                                                                               react-hooks/set-state-in-effect
+  37:13  warning  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\xampp\htdocs\zgp\zationgempos\src\components\ProductEntryModal.tsx:37:13
+  35 |     useEffect(() => {
+  36 |         if (isOpen) {
+> 37 |             setQuantity(initialQuantity.toString());
+     |             ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  38 |             setDiscount(initialDiscount.toString());
+  39 |             // For per-carat products, default price = selling_price (already per-carat rate)
+  40 |             // The quantity field represents carats for per-carat products  react-hooks/set-state-in-effect
+  48:8   warning  React Hook useEffect has missing dependencies: 'initialDiscount' and 'initialQuantity'. Either include them or remove the dependency array. If 'setQuantity' needs the current value of 'initialQuantity', you can also switch to useReducer instead of useState and read 'initialQuantity' in the reducer                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 react-hooks/exhaustive-deps
+
+C:\xampp\htdocs\zgp\zationgempos\src\components\ReceiptPreviewModal.tsx
+  21:13  warning  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\xampp\htdocs\zgp\zationgempos\src\components\ReceiptPreviewModal.tsx:21:13
+  19 |     useEffect(() => {
+  20 |         if (!isOpen) {
+> 21 |             setPdfUrl(null);
+     |             ^^^^^^^^^ Avoid calling setState() directly within an effect
+  22 |             return;
+  23 |         }
+  24 |         const doc = buildSalesInvoicePDFFromSaleRecord(sale, items, settings);  react-hooks/set-state-in-effect
+
+C:\xampp\htdocs\zgp\zationgempos\src\components\SalesTable.tsx
+   7:10  warning  'processRefund' is defined but never used. Allowed unused vars must match /^_/u    @typescript-eslint/no-unused-vars
+   9:10  warning  'getWhatsAppLink' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  53:11  warning  'router' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\components\Sidebar.tsx
+  133:11  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\xampp\htdocs\zgp\zationgempos\src\components\SidebarProvider.tsx
+  32:9  warning  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\xampp\htdocs\zgp\zationgempos\src\components\SidebarProvider.tsx:32:9
+  30 |
+  31 |     useEffect(() => {
+> 32 |         setMounted(true);
+     |         ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  33 |
+  34 |         const checkMobile = () => {
+  35 |             const width = window.innerWidth;  react-hooks/set-state-in-effect
+
+C:\xampp\htdocs\zgp\zationgempos\src\components\SupplierStatementModal.tsx
+   6:13  warning  'FileText' is defined but never used. Allowed unused vars must match /^_/u                                   @typescript-eslint/no-unused-vars
+   6:36  warning  'CreditCard' is defined but never used. Allowed unused vars must match /^_/u                                 @typescript-eslint/no-unused-vars
+   6:48  warning  'DollarSign' is defined but never used. Allowed unused vars must match /^_/u                                 @typescript-eslint/no-unused-vars
+  27:8   warning  React Hook useEffect has a missing dependency: 'loadData'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\xampp\htdocs\zgp\zationgempos\src\components\inventory\CreateSetModal.tsx
+  34:8  warning  React Hook useEffect has a missing dependency: 'loadCandidates'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\xampp\htdocs\zgp\zationgempos\src\components\inventory\MergeLotModal.tsx
+   7:13  warning  'Check' is defined but never used. Allowed unused vars must match /^_/u                                            @typescript-eslint/no-unused-vars
+   7:28  warning  'Filter' is defined but never used. Allowed unused vars must match /^_/u                                           @typescript-eslint/no-unused-vars
+  29:8   warning  React Hook useEffect has a missing dependency: 'loadCandidates'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\xampp\htdocs\zgp\zationgempos\src\components\inventory\SplitLotModal.tsx
+  7:27  warning  'Split' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\components\ui\LoadingScreen.tsx
+  40:9  warning  Using `<img>` could result in slower LCP and higher bandwidth. Consider using `<Image />` from `next/image` or a custom image loader to automatically optimize images. This may incur additional usage or cost from your provider. See: https://nextjs.org/docs/messages/no-img-element  @next/next/no-img-element
+
+C:\xampp\htdocs\zgp\zationgempos\src\hooks\useOfflineData.ts
+   98:26  warning  'networkErr' is defined but never used. Allowed unused caught errors must match /^_/u                    @typescript-eslint/no-unused-vars
+  120:8   warning  React Hook useEffect has a missing dependency: 'load'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+  127:8   warning  React Hook useEffect has a missing dependency: 'load'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\xampp\htdocs\zgp\zationgempos\src\hooks\useOnlineStatus.ts
+  10:9  warning  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+C:\xampp\htdocs\zgp\zationgempos\src\hooks\useOnlineStatus.ts:10:9
+   8 |     useEffect(() => {
+   9 |         // Set initial state (navigator.onLine is only available in browser)
+> 10 |         setIsOnline(navigator.onLine);
+     |         ^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  11 |
+  12 |         const handleOnline = () => setIsOnline(true);
+  13 |         const handleOffline = () => setIsOnline(false);  react-hooks/set-state-in-effect
+
+C:\xampp\htdocs\zgp\zationgempos\src\lib\mysql-init.ts
+  2:19  warning  'convertSql' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\lib\pdf-generator.ts
+   35:7   warning  'PAGE_W' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  485:10  warning  'addTable' is defined but never used. Allowed unused vars must match /^_/u         @typescript-eslint/no-unused-vars
+  562:9   warning  'pw' is assigned a value but never used. Allowed unused vars must match /^_/u      @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\lib\server-utils.ts
+  12:15  warning  'currencySymbol' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+C:\xampp\htdocs\zgp\zationgempos\src\scripts\verify-gem-report.ts
+  48:11  warning  'p1' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  49:11  warning  'p2' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+  50:11  warning  'p3' is assigned a value but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+G�� 295 problems (0 errors, 295 warnings)
+  0 errors and 1 warning potentially fixable with the `--fix` option.
+
