@@ -5,7 +5,7 @@
  *   node scripts/init-mysql.mjs
  *   npm run db:init
  *
- * Env (optional): MYSQL_HOST, MYSQL_PORT, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE
+ * Env (optional): MYSQL_HOST, MYSQL_PORT, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE, DATABASE_URL
  */
 import fs from 'fs';
 import path from 'path';
@@ -38,6 +38,21 @@ function loadEnvFile(filePath) {
 loadEnvFile(path.join(ROOT, '.env'));
 loadEnvFile(path.join(ROOT, '.env.local'));
 
+if (process.env.DATABASE_URL?.startsWith('mysql://')) {
+  try {
+    const parsed = new URL(process.env.DATABASE_URL.trim());
+    if (!process.env.MYSQL_HOST) process.env.MYSQL_HOST = parsed.hostname;
+    if (!process.env.MYSQL_PORT) process.env.MYSQL_PORT = parsed.port || '3306';
+    if (!process.env.MYSQL_USER && parsed.username) process.env.MYSQL_USER = decodeURIComponent(parsed.username);
+    if (!process.env.MYSQL_PASSWORD && parsed.password) process.env.MYSQL_PASSWORD = decodeURIComponent(parsed.password);
+    if (!process.env.MYSQL_DATABASE && parsed.pathname) {
+      process.env.MYSQL_DATABASE = parsed.pathname.replace(/^\//, '');
+    }
+  } catch {}
+}
+
+const database = process.env.MYSQL_DATABASE || 'zationgemerp';
+
 const config = {
   host: process.env.MYSQL_HOST || 'localhost',
   port: Number(process.env.MYSQL_PORT || 3306),
@@ -45,8 +60,6 @@ const config = {
   password: process.env.MYSQL_PASSWORD || '',
   multipleStatements: true,
 };
-
-const database = process.env.MYSQL_DATABASE || 'zationgemerp';
 
 function stripLeadingComments(sql) {
   return sql
@@ -69,7 +82,9 @@ async function runSqlFile(connection, fileName) {
     throw new Error(`Missing SQL file: ${filePath}`);
   }
 
-  const sql = fs.readFileSync(filePath, 'utf8');
+  let sql = fs.readFileSync(filePath, 'utf8');
+  // Dynamically replace hardcoded `zationgemerp` with the target database name
+  sql = sql.replace(/`zationgemerp`/g, `\`${database}\``);
   const statements = splitStatements(sql);
   console.log(`\n>> ${fileName} (${statements.length} statements)`);
 
@@ -78,6 +93,11 @@ async function runSqlFile(connection, fileName) {
       await connection.query(stmt);
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
+      // If the database already exists or the user has no global CREATE DATABASE privilege, ignore and continue
+      if (fileName === '01_create_database.sql' && /Access denied.*CREATE DATABASE/i.test(message)) {
+        console.log(`  [Notice] Database '${database}' already created. Continuing...`);
+        continue;
+      }
       if (fileName === '03_indexes.sql' && /Duplicate key name/i.test(message)) {
         continue;
       }
@@ -88,6 +108,7 @@ async function runSqlFile(connection, fileName) {
 
 async function main() {
   console.log(`Connecting to MySQL at ${config.host}:${config.port} as ${config.user}...`);
+  console.log(`Target Database: ${database}`);
   const connection = await mysql.createConnection(config);
 
   try {
