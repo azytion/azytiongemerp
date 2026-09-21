@@ -49,10 +49,14 @@ export async function getSettings(category?: string): Promise<Record<string, str
 
         const settings = await db.prepare(query).all(...params) as { key: string; value: string }[];
 
+        const session = await getSession();
         const result: Record<string, string> = {};
         settings.forEach(setting => {
             try {
-                const value = SENSITIVE_KEYS.has(setting.key) ? decryptSecret(setting.value) : setting.value;
+                let value = SENSITIVE_KEYS.has(setting.key) ? decryptSecret(setting.value) : setting.value;
+                if (!session && SENSITIVE_KEYS.has(setting.key)) {
+                    value = '********';
+                }
                 result[setting.key] = setting.key === 'company_name' ? normalizeAppName(value) : value;
             } catch {
                 result[setting.key] = setting.key === 'company_name' ? normalizeAppName(setting.value) : setting.value;
@@ -73,8 +77,24 @@ export async function getAllSettings(): Promise<Setting[]> {
     return settings;
 }
 
+export async function saveInitialTimezone(timezone: string) {
+    try {
+        const session = await getSession();
+        if (!session?.sub) {
+            return { success: false, reason: 'unauthenticated' };
+        }
+        return await updateSetting('timezone', timezone, 'system');
+    } catch {
+        return { success: false };
+    }
+}
+
 export async function updateSetting(key: string, value: string, category: string, userId: number = 1) {
-    await requireSession();
+    try {
+        await requireSession();
+    } catch {
+        return { success: false, error: 'Unauthorized' };
+    }
     const db = await getDb();
 
     try {
@@ -89,7 +109,7 @@ export async function updateSetting(key: string, value: string, category: string
         const isSuperAdmin = session?.role === 'super_admin';
 
         // Security: Restrict sensitive categories to Super Admin only
-        const sensitiveCategories = ['subscription', 'features']; // Removed 'system' from strict lockdown to allow basic regional settings
+        const sensitiveCategories = ['subscription', 'features', 'app']; // 'app' is super_admin-only SaaS branding
         if (sensitiveCategories.includes(category) && !isSuperAdmin) {
             return { success: false, error: 'Unauthorized: Only Super Admins can modify these settings.' };
         }
@@ -116,7 +136,11 @@ export async function updateSetting(key: string, value: string, category: string
 }
 
 export async function updateSettings(settings: Record<string, string>, userId: number = 1) {
-    await requireSession();
+    try {
+        await requireSession();
+    } catch {
+        return { success: false, error: 'Unauthorized' };
+    }
     const db = await getDb();
 
     try {
@@ -130,10 +154,13 @@ export async function updateSettings(settings: Record<string, string>, userId: n
                 const category = current?.category || 'system';
 
                 // Security: Restrict sensitive categories
-                const sensitiveCategories = ['subscription', 'features'];
+                const sensitiveCategories = ['subscription', 'features', 'app'];
                 if (sensitiveCategories.includes(category) && !isSuperAdmin) {
                     throw new Error('UNAUTHORIZED_SETTINGS_UPDATE');
                 }
+
+                // For app_* keys that may not yet exist in DB, use 'app' category
+                const resolvedCategory = !current && key.startsWith('app_') ? 'app' : category;
 
                 await db.prepare(`
                     INSERT INTO settings (\`key\`, value, updated_at, updated_by, category)
@@ -142,7 +169,7 @@ export async function updateSettings(settings: Record<string, string>, userId: n
                         value = VALUES(value),
                         updated_at = CURRENT_TIMESTAMP,
                         updated_by = VALUES(updated_by)
-                `).run(key, SENSITIVE_KEYS.has(key) ? encryptSecret(value) : value, userId, category);
+                `).run(key, SENSITIVE_KEYS.has(key) ? encryptSecret(value) : value, userId, resolvedCategory);
             }
         });
 
@@ -165,11 +192,11 @@ export async function resetSettings(category?: string) {
     const db = await getDb();
 
     const defaultSettings: Record<string, string> = {
-        company_name: 'ZATION',
+        company_name: 'Azytion GemERP',
         company_address: '',
         company_phone: '+94752723544',
-        company_email: 'zationlk@gmail.com',
-        company_website: 'www.zation.lk',
+        company_email: 'azytionlk@gmail.com',
+        company_website: 'www.azytion.com',
         company_tax_id: '',
         company_logo: '',
         tax_enabled: 'false',
@@ -178,7 +205,7 @@ export async function resetSettings(category?: string) {
         tax_inclusive: 'false',
         receipt_header: '',
         receipt_footer: 'Thank you for your business!',
-        receipt_promotional_footer: 'Powered By ZATION | +94752723544',
+        receipt_promotional_footer: 'Powered By Azytion | +94752723544',
         receipt_show_logo: 'true',
         receipt_show_barcode: 'true',
         receipt_paper_size: 'a4',

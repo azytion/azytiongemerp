@@ -66,7 +66,7 @@ export default function SalesInvoicePrintButton({ sale, items }: SalesInvoicePri
                 `Sales Invoice - ${sale.invoice_number}`,
                 `Please find attached Invoice ${sale.invoice_number}.`,
                 `Invoice-${sale.invoice_number}.pdf`,
-                settings.company_name || 'ZATION GemERP'
+                settings.company_name || 'Azytion GemERP'
             );
         } catch (error) {
             console.error('Email error:', error);

@@ -32,8 +32,8 @@ export default function AppShell({ session, children }: AppShellProps) {
     useEffect(() => {
         if (!session || isAuthPage) return;
 
-        const inSession = sessionStorage.getItem('zation_pos_session_active');
-        const inPersist = localStorage.getItem('zation_pos_session_active');
+        const inSession = sessionStorage.getItem('azytion_pos_session_active');
+        const inPersist = localStorage.getItem('azytion_pos_session_active');
 
         if (!inSession && !inPersist) {
             // Neither flag exists → browser was closed without Remember Me

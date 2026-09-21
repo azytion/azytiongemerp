@@ -371,7 +371,7 @@ export default function ClientEditForm({ product, categories }: { product: any, 
                                                 style={{ flex: 1, gap: '0.5rem', borderStyle: 'dashed', borderColor: 'var(--primary)', color: 'var(--primary)' }}
                                             >
                                                 <Sparkles size={18} />
-                                                {generatingImage ? 'Generating...' : 'ZATION GemERP'}
+                                                {generatingImage ? 'Generating...' : 'Azytion GemERP'}
                                             </button>
                                         </div>
                                     </div>

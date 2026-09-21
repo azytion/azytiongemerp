@@ -1070,7 +1070,7 @@ async function sendBackupEmailInternal(
         const { sendEmail } = await import('./email');
         const { getSettings } = await import('./settings');
         const settings = await getSettings();
-        const companyName = settings.company_name || 'ZATION GemERP';
+        const companyName = settings.company_name || 'Azytion GemERP';
         const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
         const isScheduled = updateLastRun;
 
@@ -1087,7 +1087,7 @@ async function sendBackupEmailInternal(
                     <p style="color:#6B7280;font-size:13px">Store this backup in a safe location. To restore, use the Import Data feature in Settings → Data Management.</p>
                 </div>
                 <div style="background:#F9FAFB;padding:16px;text-align:center;border-top:1px solid #E5E7EB">
-                    <p style="color:#9CA3AF;font-size:12px;margin:0">Powered By ZATION GemERP</p>
+                    <p style="color:#9CA3AF;font-size:12px;margin:0">Powered By Azytion GemERP</p>
                 </div>
             </div>
         `;
@@ -1098,7 +1098,8 @@ async function sendBackupEmailInternal(
             recipientEmail,
             `${companyName} — ${isScheduled ? 'Scheduled' : 'Manual'} Backup ${dateStr}`,
             html,
-            [{ filename, content: exportResult.data, encoding: 'base64' }]
+            [{ filename, content: exportResult.data, encoding: 'base64' }],
+            true
         );
 
         if (result.success) {

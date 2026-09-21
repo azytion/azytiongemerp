@@ -1,15 +1,15 @@
--- ZATION GemERP — default application settings
+-- Azytion GemERP — default application settings
 -- Safe to re-run (INSERT IGNORE).
 
-USE `zation_gempos`;
+USE `zationgemerp`;
 
 INSERT IGNORE INTO settings (`key`, value, category, data_type) VALUES
-  ('company_name', 'ZATION GemERP', 'company', 'string'),
+  ('company_name', 'Azytion GemERP', 'company', 'string'),
   ('company_address', '', 'company', 'string'),
   ('company_phone', '+94752723544', 'company', 'string'),
-  ('company_phone_2', '', 'company', 'string'),
-  ('company_email', 'zationlk@gmail.com', 'company', 'string'),
-  ('company_website', 'www.zation.lk', 'company', 'string'),
+  ('company_phone_2', '+94755331445', 'company', 'string'),
+  ('company_email', 'azytionlk@gmail.com', 'company', 'string'),
+  ('company_website', 'www.azytion.com', 'company', 'string'),
   ('company_tax_id', '', 'company', 'string'),
   ('company_logo', '', 'company', 'string'),
   ('tax_enabled', 'false', 'tax', 'boolean'),
@@ -18,7 +18,7 @@ INSERT IGNORE INTO settings (`key`, value, category, data_type) VALUES
   ('tax_inclusive', 'false', 'tax', 'boolean'),
   ('receipt_header', '', 'receipt', 'string'),
   ('receipt_footer', 'Thank you for your business!', 'receipt', 'string'),
-  ('receipt_promotional_footer', 'Powered By ZATION | +94752723544', 'receipt', 'string'),
+  ('receipt_promotional_footer', 'Powered By Azytion | +94752723544', 'receipt', 'string'),
   ('receipt_show_logo', 'true', 'receipt', 'boolean'),
   ('receipt_show_barcode', 'true', 'receipt', 'boolean'),
   ('receipt_paper_size', 'a4', 'receipt', 'string'),
@@ -38,7 +38,7 @@ INSERT IGNORE INTO settings (`key`, value, category, data_type) VALUES
   ('smtp_user', '', 'notification', 'string'),
   ('smtp_pass', '', 'notification', 'string'),
   ('smtp_secure', 'false', 'notification', 'boolean'),
-  ('email_from', '"ZATION GemERP" <noreply@zationapp.com>', 'notification', 'string'),
+  ('email_from', '"Azytion GemERP" <noreply@azytionapp.com>', 'notification', 'string'),
   ('pos_auto_discount_enabled', 'false', 'pos', 'boolean'),
   ('pos_auto_print_enabled', 'true', 'pos', 'boolean'),
   ('pos_auto_print_format', 'a4', 'pos', 'string'),

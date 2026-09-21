@@ -70,7 +70,7 @@ export async function login(formData: FormData) {
 
     // ── Per-account rate limiting ─────────────────────────────────────────────
     // Each username has its own counter — failures for one account never affect another.
-    const isSuperAdminAttempt = username === 'zationlk';
+    const isSuperAdminAttempt = username.toLowerCase() === 'zationlk' || username.toLowerCase() === 'azytionlk';
     const rateLimitConfig = isSuperAdminAttempt ? SUPER_ADMIN_RATE_LIMIT : LOGIN_RATE_LIMIT;
     const maxAttempts     = isSuperAdminAttempt ? 5 : 10;
 
@@ -88,11 +88,11 @@ export async function login(formData: FormData) {
     try {
         const db = await getDb();
 
-        // Dev-mode self-heal: ensure zationlk stays super_admin
+        // Dev-mode self-heal: ensure zationlk/azytionlk stays super_admin
         if (process.env.NODE_ENV !== 'production' && isSuperAdminAttempt) {
             try {
                 await db.prepare(
-                    "UPDATE users SET role = 'super_admin', is_active = 1 WHERE username = 'zationlk'"
+                    "UPDATE users SET role = 'super_admin', is_active = 1 WHERE username IN ('zationlk', 'azytionlk')"
                 ).run();
             } catch (e) {
                 console.error('Super admin self-heal check failed:', e);
@@ -254,6 +254,10 @@ export async function login(formData: FormData) {
         return { success: true, role: user.role, rememberMe };
     } catch (err: any) {
         console.error('--- Server Action: Login Error ---', err);
+        const code = err?.code || (err?.errors && err.errors[0]?.code);
+        if (code === 'ECONNREFUSED' || err?.message?.includes('ECONNREFUSED')) {
+            return { success: false, error: 'Database service is unavailable. Please check that MySQL is running in XAMPP.' };
+        }
         return { success: false, error: 'An unexpected error occurred. Please try again.' };
     }
 }

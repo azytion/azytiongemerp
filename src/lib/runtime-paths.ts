@@ -13,6 +13,14 @@ export function getProductUploadDir() {
   return path.join(getUploadRoot(), 'products');
 }
 
+export function getAppUploadDir() {
+  return path.join(getUploadRoot(), 'app');
+}
+
+export function getCompanyUploadDir() {
+  return path.join(getUploadRoot(), 'company');
+}
+
 export function getJwtSecret() {
   const secret = process.env.JWT_SECRET;
   if (process.env.NODE_ENV === 'production' && (!secret || secret === 'zation-pos-secret-key-change-this')) {

@@ -66,7 +66,7 @@ export default function AIInsightsDashboard() {
                         <Brain size={32} />
                     </div>
                     <div>
-                        <h2 style={{ margin: 0, color: '#fff' }}>ZATION GemERP Business Intelligence</h2>
+                        <h2 style={{ margin: 0, color: '#fff' }}>Azytion GemERP Business Intelligence</h2>
                         <p style={{ opacity: 0.9 }}>Neural analysis of your sales, trends, and inventory.</p>
                     </div>
                 </div>

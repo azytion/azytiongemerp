@@ -45,7 +45,7 @@ export async function GET() {
         );
 
         const lines: string[] = [
-            '-- ZATION GemERP MySQL backup',
+            '-- Azytion GemERP MySQL backup',
             `-- Generated: ${new Date().toISOString()}`,
             'SET FOREIGN_KEY_CHECKS=0;',
             '',

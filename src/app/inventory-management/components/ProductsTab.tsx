@@ -163,7 +163,7 @@ export default function ProductsTab() {
             }
 
             const doc = generateOfferLetterPDF(selectedProducts, {
-                name: settings.company_name || 'ZATION GemERP',
+                name: settings.company_name || 'Azytion GemERP',
                 address: settings.company_address,
                 phone: settings.company_phone,
                 email: settings.company_email,

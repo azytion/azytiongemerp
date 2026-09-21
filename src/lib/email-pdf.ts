@@ -28,7 +28,7 @@ export async function sendPDFEmail(
                 <p>${message}</p>
                 <hr />
                 <p style="font-size: 12px; color: #666;">
-                    Sent from <strong>${companyName || 'ZATION GemERP'}</strong>
+                    Sent from <strong>${companyName || 'Azytion GemERP'}</strong>
                 </p>
             </div>
             `,

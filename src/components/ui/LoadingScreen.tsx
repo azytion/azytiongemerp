@@ -1,5 +1,21 @@
 /* eslint-disable @next/next/no-img-element */
+'use client';
+
+import { useState, useEffect } from 'react';
+
 export default function LoadingScreen() {
+  const [appName, setAppName] = useState('Azytion GemERP');
+  const logoSrc = '/azytion-brand-logo-512.png';
+
+  useEffect(() => {
+    fetch('/api/settings/app')
+      .then(r => r.ok ? r.json() : null)
+      .then(d => {
+        if (d?.app_name) setAppName(d.app_name);
+      })
+      .catch(() => {});
+  }, []);
+
   return (
     <div style={{
       height: '100vh',
@@ -39,8 +55,8 @@ export default function LoadingScreen() {
         zIndex: 1,
       }}>
         <img
-          src="/logo-sidebar.png"
-          alt="ZATION GemERP"
+          src={logoSrc}
+          alt={appName}
           style={{ width: 60, height: 60, objectFit: 'contain', filter: 'drop-shadow(0 0 12px rgba(212,175,55,0.4))' }}
         />
       </div>
@@ -57,7 +73,7 @@ export default function LoadingScreen() {
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
         }}>
-          ZATION GemERP
+          {appName}
         </h1>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', color: 'var(--muted-foreground)', fontSize: '0.875rem' }}>
           <div style={{ display: 'flex', gap: '0.375rem' }}>

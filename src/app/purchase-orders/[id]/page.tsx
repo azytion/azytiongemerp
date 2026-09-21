@@ -18,7 +18,7 @@ export default async function PurchaseOrderViewPage({ params }: { params: Promis
 
     // Company info from settings
     const companyInfo = {
-        name: settings.company_name || 'ZATION',
+        name: settings.company_name || 'Azytion',
         address: settings.company_address,
         phone: settings.company_phone,
         phone2: settings.company_phone_2,

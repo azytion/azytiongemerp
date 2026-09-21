@@ -4,8 +4,8 @@ import os from 'node:os';
 function getKey(): Buffer {
     // In a web app, we should use an environment variable for the secret key.
     // Falling back to hostname or a default for now, but recommend setting PROCESS.ENV.SECRET_KEY
-    const id = process.env.SECRET_KEY || os.hostname() || 'zation-pos-host';
-    return scryptSync(id, 'zation-pos-key', 32);
+    const id = process.env.SECRET_KEY || os.hostname() || 'azytion-pos-host';
+    return scryptSync(id, 'azytion-pos-key', 32);
 }
 
 export function encryptSecret(plain: string): string {

@@ -5,17 +5,68 @@ import { login } from '@/app/actions/auth';
 import { useState, useEffect } from 'react';
 import { Phone, Globe, Mail, ShieldCheck, Gem, FileCheck, Loader2, Zap, Award, BarChart3, Eye, EyeOff } from 'lucide-react';
 
+interface AppBranding {
+    app_name: string;
+    app_tagline: string;
+    app_description: string;
+    app_icon: string;
+    app_logo_login: string;
+    app_owner_phone: string;
+    app_owner_phone_2: string;
+    app_owner_email: string;
+    app_owner_website: string;
+    app_copyright: string;
+}
+
+const DEFAULT_BRANDING: AppBranding = {
+    app_name:          'Azytion GemERP',
+    app_tagline:       'GEMSTONE INDUSTRY ERP',
+    app_description:   'The definitive platform for managing high-value gemstone inventory, consignment memos, and lab certificates with uncompromising precision.',
+    app_icon:          '',
+    app_logo_login:    '',
+    app_owner_phone:   '+94 75 272 3544',
+    app_owner_phone_2: '+94 75 533 1445',
+    app_owner_email:   'azytionlk@gmail.com',
+    app_owner_website: 'www.azytion.com',
+    app_copyright:     '© 2026 Azytion GemERP. All rights reserved.',
+};
+
 export default function LoginPage() {
     const [loading, setLoading] = useState(false);
     const [checking, setChecking] = useState(true);
     const [error, setError] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
+    const [branding, setBranding] = useState<AppBranding>(DEFAULT_BRANDING);
 
     useEffect(() => {
         // Restore remember-me preference from localStorage
-        const saved = localStorage.getItem('zation_remember_me');
+        const saved = localStorage.getItem('azytion_remember_me');
         if (saved === 'true') setRememberMe(true);
+    }, []);
+
+    // Fetch app branding settings
+    useEffect(() => {
+        fetch('/api/settings/app')
+            .then(r => r.ok ? r.json() : null)
+            .then(d => {
+                if (d) {
+                    setBranding(prev => ({
+                        ...prev,
+                        ...(d.app_name          && { app_name:          d.app_name }),
+                        ...(d.app_tagline       && { app_tagline:       d.app_tagline }),
+                        ...(d.app_description   && { app_description:   d.app_description }),
+                        ...(d.app_icon          !== undefined && { app_icon:       d.app_icon }),
+                        ...(d.app_logo_login    !== undefined && { app_logo_login: d.app_logo_login }),
+                        ...(d.app_owner_phone   && { app_owner_phone:   d.app_owner_phone }),
+                        ...(d.app_owner_phone_2 !== undefined && { app_owner_phone_2: d.app_owner_phone_2 }),
+                        ...(d.app_owner_email   && { app_owner_email:   d.app_owner_email }),
+                        ...(d.app_owner_website && { app_owner_website: d.app_owner_website }),
+                        ...(d.app_copyright     && { app_copyright:     d.app_copyright }),
+                    }));
+                }
+            })
+            .catch(() => {});
     }, []);
 
     useEffect(() => {
@@ -48,18 +99,18 @@ export default function LoginPage() {
         setError('');
         try {
             // Persist remember-me preference
-            localStorage.setItem('zation_remember_me', rememberMe ? 'true' : 'false');
+            localStorage.setItem('azytion_remember_me', rememberMe ? 'true' : 'false');
             formData.append('rememberMe', rememberMe ? 'true' : 'false');
 
             const result = await login(formData);
             if (result.success) {
                 if (rememberMe) {
                     // Persistent session — store flag in localStorage so it survives browser close
-                    localStorage.setItem('zation_pos_session_active', 'true');
+                    localStorage.setItem('azytion_pos_session_active', 'true');
                 } else {
                     // Session-only — use sessionStorage so it clears when browser/tab closes
-                    sessionStorage.setItem('zation_pos_session_active', 'true');
-                    localStorage.removeItem('zation_pos_session_active');
+                    sessionStorage.setItem('azytion_pos_session_active', 'true');
+                    localStorage.removeItem('azytion_pos_session_active');
                 }
                 const dest = result.role === 'super_admin' ? '/super-admin' : '/';
                 window.location.href = dest;
@@ -283,8 +334,8 @@ export default function LoginPage() {
                                 border: '1px solid rgba(255,255,255,0.1)',
                             }}>
                                 <img
-                                    src="/logo-sidebar.png"
-                                    alt="ZATION GemERP"
+                                    src="/azytion-brand-logo-512.png"
+                                    alt={branding.app_name}
                                     style={{ width: 'clamp(36px,5.5vh,52px)', height: 'clamp(36px,5.5vh,52px)', objectFit: 'contain' }}
                                 />
                             </div>
@@ -296,14 +347,14 @@ export default function LoginPage() {
                                     lineHeight: 1.1,
                                     margin: 0,
                                 }}>
-                                    ZATION GemERP
+                                    {branding.app_name}
                                 </h1>
                                 <div style={{
                                     fontSize: '0.6875rem', color: 'var(--primary)',
                                     fontWeight: 700, letterSpacing: '0.1em',
                                     textTransform: 'uppercase', marginTop: '0.2rem',
                                 }}>
-                                    Pro Edition
+                                    {branding.app_tagline}
                                 </div>
                             </div>
                         </div>
@@ -311,19 +362,6 @@ export default function LoginPage() {
 
                     {/* Hero */}
                     <div style={{ position: 'relative', zIndex: 2, maxWidth: 520 }}>
-                        <div style={{
-                            display: 'inline-flex', alignItems: 'center', gap: '0.5rem',
-                            padding: '0.375rem 0.875rem',
-                            background: 'rgba(212,175,55,0.1)',
-                            border: '1px solid rgba(212,175,55,0.22)',
-                            borderRadius: 99,
-                            fontSize: '0.6875rem', fontWeight: 700,
-                            color: 'var(--primary)', letterSpacing: '0.07em',
-                            marginBottom: '1.375rem',
-                        }}>
-                            <Gem size={11} /> GEMSTONE INDUSTRY ERP
-                        </div>
-
                         <h2 style={{
                             fontSize: 'clamp(1.75rem,5.5vh,3.25rem)',
                             fontWeight: 900, lineHeight: 1.1,
@@ -348,7 +386,7 @@ export default function LoginPage() {
                             lineHeight: 1.7,
                             marginBottom: 'clamp(1.5rem,4vh,2.5rem)',
                         }}>
-                            The definitive platform for managing high-value gemstone inventory, consignment memos, and lab certificates with uncompromising precision.
+                            {branding.app_description}
                         </p>
 
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
@@ -368,19 +406,28 @@ export default function LoginPage() {
 
                     {/* Footer */}
                     <div style={{ position: 'relative', zIndex: 2, borderTop: '1px solid rgba(255,255,255,0.08)', paddingTop: 'clamp(1rem,2.5vh,1.75rem)' }}>
-                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'clamp(1rem,3vw,2.5rem)', marginBottom: '0.75rem' }}>
+                        {/* Line 1: phone 1, website, email */}
+                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'clamp(1rem,3vw,2.5rem)', marginBottom: '0.35rem' }}>
                             {[
-                                { icon: <Phone size={13} />, text: '+94 75 272 3544' },
-                                { icon: <Globe size={13} />, text: 'www.zation.lk' },
-                                { icon: <Mail size={13} />,  text: 'zationlk@gmail.com' },
-                            ].map((c, i) => (
+                                { icon: <Phone size={13} />, text: branding.app_owner_phone },
+                                { icon: <Globe size={13} />, text: branding.app_owner_website },
+                                { icon: <Mail size={13} />,  text: branding.app_owner_email },
+                            ].filter(c => c.text).map((c, i) => (
                                 <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'rgba(255,255,255,0.45)', fontSize: '0.8125rem', fontWeight: 500 }}>
                                     {c.icon} {c.text}
                                 </div>
                             ))}
                         </div>
+                        {/* Line 2: phone 2, aligned under phone 1 */}
+                        {branding.app_owner_phone_2 && (
+                            <div style={{ display: 'flex', marginBottom: '0.75rem' }}>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: 'rgba(255,255,255,0.45)', fontSize: '0.8125rem', fontWeight: 500 }}>
+                                    <Phone size={13} /> {branding.app_owner_phone_2}
+                                </div>
+                            </div>
+                        )}
                         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.6875rem', color: 'rgba(255,255,255,0.25)' }}>
-                            <span>© 2026 ZATION GemERP. All rights reserved.</span>
+                            <span>{branding.app_copyright}</span>
                             <span>v4.0.0-PRO</span>
                         </div>
                     </div>
@@ -667,7 +714,7 @@ export default function LoginPage() {
                             {[
                                 { icon: <ShieldCheck size={12} />, text: 'Encrypted' },
                                 { icon: <Award size={12} />,       text: 'Certified' },
-                                { icon: <Gem size={12} />,         text: 'ZATION GemERP Pro' },
+                                { icon: <Gem size={12} />,         text: 'Azytion GemERP Pro' },
                             ].map((b, i) => (
                                 <div key={i} style={{
                                     display: 'flex', alignItems: 'center', gap: '0.35rem',

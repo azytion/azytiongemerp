@@ -1,8 +1,8 @@
--- ZATION GemERP — create database
+-- Azytion GemERP — create database
 -- Run first. Safe to re-run (IF NOT EXISTS).
 
-CREATE DATABASE IF NOT EXISTS `zation_gempos`
+CREATE DATABASE IF NOT EXISTS `zationgemerp`
   CHARACTER SET utf8mb4
   COLLATE utf8mb4_unicode_ci;
 
-USE `zation_gempos`;
+USE `zationgemerp`;

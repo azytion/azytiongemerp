@@ -56,7 +56,7 @@ export default function InstallPWA() {
     return (
         <div
             role="dialog"
-            aria-label="Install ZATION GemERP"
+            aria-label="Install Azytion GemERP"
             style={{
                 position: 'fixed',
                 bottom: '4.5rem',
@@ -89,7 +89,7 @@ export default function InstallPWA() {
 
             <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--foreground)', marginBottom: '0.125rem' }}>
-                    Install ZATION GemERP
+                    Install Azytion GemERP
                 </div>
                 <div style={{ fontSize: '0.75rem', color: 'var(--muted-foreground)', lineHeight: 1.4 }}>
                     Add to home screen for faster access and offline use

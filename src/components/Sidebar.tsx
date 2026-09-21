@@ -24,13 +24,19 @@ type NavSection = { label: string; items: NavItem[] };
 export default function Sidebar({ session, settings: initialSettings }: SidebarProps) {
   const pathname = usePathname();
   const { isCollapsed, isMobile, isMobileOpen, toggleSidebar, closeMobileSidebar } = useSidebar();
-  const [companyName, setCompanyName] = useState('ZATION GemERP');
+  const [companyName, setCompanyName] = useState('Azytion GemERP');
   const [featureSettings, setFeatureSettings] = useState<Record<string, string>>(initialSettings || {});
 
   useEffect(() => {
     fetch('/api/settings/company_name')
       .then(r => r.json())
       .then(d => { if (d.value) setCompanyName(d.value); })
+      .catch(() => {});
+    fetch('/api/settings/app')
+      .then(r => r.json())
+      .then(d => {
+        if (d.app_name) setCompanyName(d.app_name);
+      })
       .catch(() => {});
     fetch('/api/settings/features')
       .then(r => r.json())
@@ -132,7 +138,7 @@ export default function Sidebar({ session, settings: initialSettings }: SidebarP
         {/* Logo / Header */}
         <div className="logo-container">
           <img
-            src="/logo-sidebar.png"
+            src="/azytion-brand-logo-512.png"
             alt="Logo"
             style={{ width: 28, height: 28, objectFit: 'contain', flexShrink: 0 }}
           />

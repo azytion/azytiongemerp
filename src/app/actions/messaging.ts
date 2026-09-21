@@ -121,7 +121,7 @@ async function constructReceiptMessage(saleId: number) {
     const fmt = (amount: number) => `${sym} ${Number(amount || 0).toFixed(2)}`;
     const timezone = settings.timezone || 'UTC';
 
-    const companyName = settings.company_name || 'ZATION GemERP';
+    const companyName = settings.company_name || 'Azytion GemERP';
     const companyAddress = settings.company_address || '';
     const companyPhone = settings.company_phone || '';
     const companyPhone2 = settings.company_phone_2 || '';
@@ -214,7 +214,7 @@ async function constructReceiptMessage(saleId: number) {
 
     const footer = settings.receipt_footer || 'Thank you for your business!';
     message += `\n${footer}\n`;
-    message += `Powered By ZATION`;
+    message += `Powered By Azytion`;
     if (companyPhone) message += ` | ${companyPhone}`;
     message += `\n`;
 

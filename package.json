@@ -1,10 +1,10 @@
 {
-  "name": "zation-gemerp",
-  "productName": "ZATION GemERP",
+  "name": "azytion-gemerp",
+  "productName": "Azytion GemERP",
   "version": "1.0.0",
   "description": "GEMSTONE INDUSTRY ERP",
   "private": true,
-  "author": "ZATION",
+  "author": "Azytion",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -14,8 +14,6 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
-    "@simplewebauthn/browser": "^13.2.2",
-    "@simplewebauthn/server": "^13.2.2",
     "@tanstack/react-query": "^5.90.12",
     "@tanstack/react-query-devtools": "^5.91.1",
     "@types/papaparse": "^5.5.2",

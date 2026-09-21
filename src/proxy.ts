@@ -6,11 +6,11 @@ async function getSecretKey() {
     const secret = process.env.JWT_SECRET;
     if (
         process.env.NODE_ENV === 'production' &&
-        (!secret || secret === 'zation-pos-secret-key-change-this')
+        (!secret || secret === 'azytion-pos-secret-key-change-this')
     ) {
         throw new Error('JWT_SECRET must be set to a strong random value in production');
     }
-    return new TextEncoder().encode(secret || 'zation-pos-secret-key-change-this');
+    return new TextEncoder().encode(secret || 'azytion-pos-secret-key-change-this');
 }
 
 // ── Role-based access control ─────────────────────────────────────────────────
@@ -129,11 +129,6 @@ export default async function middleware(request: NextRequest) {
             } catch {
                 // If subscription cookies not set, allow through
             }
-        }
-
-        // Super admin visiting / → send to super-admin dashboard
-        if (role === 'super_admin' && pathname === '/') {
-            return NextResponse.redirect(new URL('/super-admin', request.url));
         }
 
         // Deprecated route

@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import { Bot, Send, Sparkles, Loader2, User, Brain, Terminal, ShieldCheck, Zap, Gem } from 'lucide-react';
-import { askZationAI } from '@/app/actions/ai';
+import { askAzytionAI } from '@/app/actions/ai';
 import ReactMarkdown from 'react-markdown';
 
 interface Message {
@@ -22,7 +22,7 @@ export default function AIPage() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'model',
-      text: `Hello! I'm **ZATION GemERP**, your intelligent gemstone business assistant powered by Gemini.\n\nI can help you:\n- **Analyze sales trends** and revenue patterns\n- **Identify top-selling** gemstones and categories\n- **Monitor inventory** levels and reorder needs\n- **Review customer** payment status and loyalty\n- **Generate insights** from your business data\n\nWhat would you like to explore today?`
+      text: `Hello! I'm **Azytion GemERP**, your intelligent gemstone business assistant powered by Gemini.\n\nI can help you:\n- **Analyze sales trends** and revenue patterns\n- **Identify top-selling** gemstones and categories\n- **Monitor inventory** levels and reorder needs\n- **Review customer** payment status and loyalty\n- **Generate insights** from your business data\n\nWhat would you like to explore today?`
     }
   ]);
   const [input, setInput] = useState('');
@@ -48,7 +48,7 @@ export default function AIPage() {
       parts: [{ text: m.text }]
     }));
 
-    const result = await askZationAI(msg, history);
+    const result = await askAzytionAI(msg, history);
 
     setMessages(prev => [...prev, {
       role: 'model',
@@ -89,7 +89,7 @@ export default function AIPage() {
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
-              <h1 style={{ fontSize: '1.25rem', margin: 0, fontWeight: 800, letterSpacing: '-0.02em' }}>ZATION GemERP</h1>
+              <h1 style={{ fontSize: '1.25rem', margin: 0, fontWeight: 800, letterSpacing: '-0.02em' }}>Azytion GemERP</h1>
               <span style={{
                 fontSize: '0.625rem', fontWeight: 800,
                 background: 'var(--primary-subtle)',

@@ -102,7 +102,7 @@ export default function LedgerPrintButton({
                 `General Ledger - ${accountName}`,
                 `Please find attached the Ledger for ${accountName} (${startDate} to ${endDate}).`,
                 `Ledger-${accountName}-${startDate}-${endDate}.pdf`,
-                settings.company_name || 'ZATION GemERP'
+                settings.company_name || 'Azytion GemERP'
             );
         } catch (error) {
             console.error('Email error:', error);

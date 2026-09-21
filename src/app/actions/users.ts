@@ -194,8 +194,8 @@ export async function updateUser(formData: FormData) {
             return { success: false, error: 'User not found.' };
         }
 
-        // The master super_admin account is always locked to 'zationlk' + 'super_admin'
-        if (targetUser.username === 'zationlk') {
+        // The master super_admin account is always locked to 'azytionlk' + 'super_admin'
+        if (targetUser.username === 'azytionlk') {
             if (password && password.trim() !== '') {
                 const passwordHash = await hashPassword(password);
                 const pinHash      = rawPin ? await hashPin(rawPin) : null;
@@ -265,7 +265,7 @@ export async function deleteUser(id: number) {
     if (targetUser?.role === 'super_admin') {
         return { success: false, error: 'Super Admin accounts cannot be deleted.' };
     }
-    if (targetUser?.username === 'zationlk') {
+    if (targetUser?.username === 'azytionlk') {
         return { success: false, error: 'The master Super Admin account cannot be deleted.' };
     }
 

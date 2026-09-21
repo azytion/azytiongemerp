@@ -13,7 +13,7 @@ export default function EmailSettings({ settings, isSuperAdmin = false }: { sett
         smtp_user: settings.smtp_user || '',
         smtp_pass: settings.smtp_pass || '',
         smtp_secure: settings.smtp_secure === 'true',
-        email_from: settings.email_from || '"POS SYSTEM" <noreply@zationapp.com>'
+        email_from: settings.email_from || '"Azytion GemERP" <noreply@azytionapp.com>'
     });
 
     const [loading, setLoading] = useState(false);
@@ -220,7 +220,7 @@ export default function EmailSettings({ settings, isSuperAdmin = false }: { sett
                                     setTesting(true);
                                     try {
                                         const { sendEmail } = await import('@/app/actions/email');
-                                        const companyName = settings.company_name || 'ZATION GemERP';
+                                        const companyName = settings.company_name || 'Azytion GemERP';
                                         const companyLogo = settings.company_logo || '';
                                         const brandedHtml = `
                                         <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;background:#fff;border:1px solid #e5e7eb;border-radius:8px;overflow:hidden">
@@ -234,7 +234,7 @@ export default function EmailSettings({ settings, isSuperAdmin = false }: { sett
                                             <p style="color:#374151">If you received this email, your SMTP settings are configured properly.</p>
                                           </div>
                                           <div style="background:#f9fafb;padding:16px;text-align:center;border-top:1px solid #e5e7eb">
-                                            <p style="color:#9ca3af;font-size:12px;margin:0">Powered By ZATION</p>
+                                            <p style="color:#9ca3af;font-size:12px;margin:0">Powered By Azytion</p>
                                           </div>
                                         </div>`;
                                         const res = await sendEmail(

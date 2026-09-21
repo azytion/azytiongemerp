@@ -1,7 +1,7 @@
--- ZATION GemERP — table schema (30 tables)
+-- Azytion GemERP — table schema (30 tables)
 -- Source of truth: src/lib/mysql-init.ts
 
-USE `zation_gempos`;
+USE `zationgemerp`;
 
 SET FOREIGN_KEY_CHECKS = 0;
 

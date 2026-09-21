@@ -162,7 +162,7 @@ export default function ReceiptPreview({ settings }: ReceiptPreviewProps) {
                 {/* Navy footer band */}
                 <div style={{ background: '#0B132B', padding: '5px 14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ color: 'rgba(200,210,230,0.7)', fontSize: 7 }}>{companyName}</div>
-                    <div style={{ color: '#D4AF37', fontSize: 7, fontStyle: 'italic' }}>Powered By ZATION | +94752723544</div>
+                    <div style={{ color: '#D4AF37', fontSize: 7, fontStyle: 'italic' }}>Powered By Azytion | +94752723544</div>
                     <div style={{ color: 'rgba(200,210,230,0.7)', fontSize: 7 }}>Page 1 / 1</div>
                 </div>
             </div>

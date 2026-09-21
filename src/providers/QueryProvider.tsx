@@ -41,14 +41,13 @@ export function QueryProvider({ children }: { children: ReactNode }) {
 
                 if (!settings.timezone && browserTimezone && !timezoneSaved) {
                     timezoneSaved = true;
-                    // Defer this write — it requires an active session, so we give the auth
-                    // cookie time to be read before we attempt the server action.
+                    // Defer this write — only persists if user is authenticated
                     setTimeout(async () => {
                         try {
-                            const { updateSetting } = await import('@/app/actions/settings');
-                            await updateSetting('timezone', browserTimezone, 'system');
+                            const { saveInitialTimezone } = await import('@/app/actions/settings');
+                            await saveInitialTimezone(browserTimezone);
                         } catch {
-                            // Non-critical — silently ignore if user is not logged in yet
+                            // Non-critical — silently ignore
                             timezoneSaved = false; // Allow retry on next full page load
                         }
                     }, 3000);

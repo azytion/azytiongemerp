@@ -1,5 +1,5 @@
 /**
- * Server-side datetime utilities for ZATION GemERP.
+ * Server-side datetime utilities for Azytion GemERP.
  */
 
 let _cachedTimezone: string | null = null;

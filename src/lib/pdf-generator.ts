@@ -5,7 +5,7 @@ import { formatDate } from '@/lib/utils';
 import { ExchangeRateSnapshot, formatExchangeFromSnapshot, formatExchangeRateLine, getExchangeSnapshot } from '@/lib/exchange-rates';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// ZATION GemERP — Unified PDF Template System
+// Azytion GemERP — Unified PDF Template System
 // Single source of truth for all PDF generation across the app.
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -214,7 +214,7 @@ export function buildCompanyInfo(settings: Record<string, string>): CompanyInfo 
     settings.receipt_show_logo === 'true' ||
     settings.receipt_logo_enabled === 'true';
   return {
-    name:       settings.company_name     || 'ZATION GemERP',
+    name:       settings.company_name     || 'Azytion GemERP',
     address:    settings.company_address,
     phone:      settings.company_phone,
     phone2:     settings.company_phone_2  || settings.company_phone2,
@@ -316,9 +316,9 @@ function addHeader(doc: jsPDF, company: CompanyInfo, title: string, subtitle?: s
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// CORE: Footer — company left, "Powered by ZATION" centre, page right
+// CORE: Footer — company left, "Powered by Azytion" centre, page right
 // ─────────────────────────────────────────────────────────────────────────────
-const POWERED_BY = 'Powered By ZATION  |  +94752723544';
+const POWERED_BY = 'Powered By Azytion  |  +94752723544';
 
 function addFooter(doc: jsPDF, company: CompanyInfo, customText?: string) {
   const pw = doc.internal.pageSize.getWidth();

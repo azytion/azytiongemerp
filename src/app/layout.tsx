@@ -9,6 +9,7 @@ import CommandPalette from '@/components/CommandPalette';
 import AppShell from '@/components/AppShell';
 import OfflineBanner from '@/components/OfflineBanner';
 import InstallPWA from '@/components/InstallPWA';
+import BrandingHead from '@/components/BrandingHead';
 import './globals.css';
 
 import type { Viewport } from 'next';
@@ -16,11 +17,34 @@ import type { Viewport } from 'next';
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata(): Promise<Metadata> {
+  let appName = APP_NAME;
+  let appDescription = APP_TAGLINE;
+  // Keep the application icon as a bundled asset.  It must be available before
+  // the database/API is ready, including on the login screen and during PWA boot.
+  const appIcon = '/azytion-app-icon-512.png';
+
+  try {
+    const { getDb } = await import('@/lib/db');
+    const db = await getDb();
+    const rows = await db.prepare(
+      'SELECT `key`, value FROM settings WHERE `key` IN (?, ?)'
+    ).all('app_name', 'app_tagline') as { key: string; value: string }[];
+    const settings = Object.fromEntries(rows.map(row => [row.key, row.value]));
+    appName = settings.app_name || appName;
+    appDescription = settings.app_tagline || appDescription;
+  } catch {
+  }
+
   return {
-    title: APP_NAME,
-    applicationName: APP_NAME,
-    description: APP_TAGLINE,
-    manifest: '/manifest.json?v=7',
+    title: appName,
+    applicationName: appName,
+    description: appDescription,
+    manifest: '/manifest.json?v=8',
+    icons: {
+      icon: appIcon,
+      shortcut: appIcon,
+      apple: appIcon,
+    },
   };
 }
 
@@ -55,17 +79,18 @@ export default async function RootLayout({
         <CommandPalette />
         <OfflineBanner />
         <InstallPWA />
+        <BrandingHead />
         <script dangerouslySetInnerHTML={{
           __html: `
             if ('serviceWorker' in navigator) {
               window.addEventListener('load', function() {
                 var isLocalHost = ['localhost', '127.0.0.1', '::1'].includes(window.location.hostname);
                 var isDevelopment = ${process.env.NODE_ENV !== 'production'};
-                var clearZationCaches = function() {
+                var clearAzytionCaches = function() {
                   if (!('caches' in window)) return Promise.resolve();
                   return caches.keys().then(function(keys) {
                     return Promise.all(keys.filter(function(key) {
-                      return key.indexOf('zation-') === 0;
+                      return key.indexOf('azytion-') === 0;
                     }).map(function(key) {
                       return caches.delete(key);
                     }));
@@ -79,10 +104,10 @@ export default async function RootLayout({
                         return reg.unregister();
                       }));
                     }),
-                    clearZationCaches()
+                    clearAzytionCaches()
                   ]).then(function() {
-                    if (navigator.serviceWorker.controller && !sessionStorage.getItem('zation_sw_refresh_done')) {
-                      sessionStorage.setItem('zation_sw_refresh_done', 'true');
+                    if (navigator.serviceWorker.controller && !sessionStorage.getItem('azytion_sw_refresh_done')) {
+                      sessionStorage.setItem('azytion_sw_refresh_done', 'true');
                       window.location.reload();
                     }
                   }).catch(function(err) {
@@ -91,7 +116,7 @@ export default async function RootLayout({
                   return;
                 }
 
-                navigator.serviceWorker.register('/sw.js?v=7').then(function(reg) {
+                navigator.serviceWorker.register('/sw.js?v=8').then(function(reg) {
                   // When a new SW is waiting, prompt it to activate immediately
                   reg.addEventListener('updatefound', function() {
                     var newWorker = reg.installing;

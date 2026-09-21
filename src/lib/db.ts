@@ -27,10 +27,10 @@ export function getDbPath(): string {
   if (url?.startsWith('mysql://')) {
     try {
       const parsed = new URL(url);
-      return parsed.pathname.replace(/^\//, '') || 'zation_gempos';
+      return parsed.pathname.replace(/^\//, '') || 'zationgemerp';
     } catch {
-      return 'zation_gempos';
+      return 'zationgemerp';
     }
   }
-  return process.env.MYSQL_DATABASE || 'zation_gempos';
+  return process.env.MYSQL_DATABASE || 'zationgemerp';
 }

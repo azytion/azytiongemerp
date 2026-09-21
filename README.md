@@ -1,4 +1,4 @@
-# ZATION GemERP
+# Azytion GemERP
 
 Web-based gemstone POS and inventory management (Next.js 16 + MySQL).
 
@@ -17,7 +17,7 @@ Or use an existing MySQL 8+ server.
 Copy `.env.example` to `.env.local` and set MySQL credentials:
 
 ```bash
-DATABASE_URL=mysql://root:password@localhost:3306/zation_gempos
+DATABASE_URL=mysql://root:password@localhost:3306/zationgemerp
 JWT_SECRET=your-strong-random-secret
 SECRET_KEY=your-strong-random-secret
 UPLOAD_DIR=./public/uploads
@@ -55,7 +55,7 @@ Required variables:
 ```bash
 JWT_SECRET=...
 SECRET_KEY=...
-DATABASE_URL=mysql://user:pass@host:3306/zation_gempos
+DATABASE_URL=mysql://user:pass@host:3306/zationgemerp
 UPLOAD_DIR=/var/data/uploads
 CRON_SECRET=...
 NEXT_PUBLIC_BASE_URL=https://your-domain.example

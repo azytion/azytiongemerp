@@ -214,7 +214,7 @@ export default function SalesTable({
                 `Invoice - ${viewingSale.sale.invoice_number}`,
                 `Please find attached Invoice ${viewingSale.sale.invoice_number}.`,
                 `Invoice-${viewingSale.sale.invoice_number}.pdf`,
-                settings.company_name || 'ZATION GemERP'
+                settings.company_name || 'Azytion GemERP'
             );
             toast.success('Invoice emailed successfully');
             setIsEmailModalOpen(false);

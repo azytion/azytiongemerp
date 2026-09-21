@@ -1,18 +1,16 @@
-// ZATION GemERP - Service Worker v7
+// Azytion GemERP - Service Worker v8
 // Production only. Localhost/dev is always network-only so UI changes are never
 // hidden by stale PWA caches during development.
 
-const CACHE_VERSION = 'zation-v7';
+const CACHE_VERSION = 'azytion-v8';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const PAGE_CACHE = `${CACHE_VERSION}-pages`;
 const IS_LOCAL_DEV = ['localhost', '127.0.0.1', '::1'].includes(self.location.hostname);
 
 const PRECACHE_ASSETS = [
-    '/logo.png',
-    '/logo-sidebar.png',
-    '/logo-login.png',
-    '/logo-light.png',
-    '/favicon.ico',
+    '/azytion-brand-logo-512.png',
+    '/azytion-app-icon-192.png',
+    '/azytion-app-icon-512.png',
     '/offline.html',
 ];
 
@@ -45,7 +43,7 @@ self.addEventListener('activate', (event) => {
         caches.keys().then((keys) =>
             Promise.all(
                 keys
-                    .filter((key) => key.startsWith('zation-') && (IS_LOCAL_DEV || (key !== STATIC_CACHE && key !== PAGE_CACHE)))
+                    .filter((key) => key.startsWith('azytion-') && (IS_LOCAL_DEV || (key !== STATIC_CACHE && key !== PAGE_CACHE)))
                     .map((key) => caches.delete(key))
             )
         ).then(() => self.clients.claim())

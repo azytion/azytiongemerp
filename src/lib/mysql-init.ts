@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
-import { getPool } from './mysql-client';
+import mysql from 'mysql2/promise';
+import { getPool, getDbName, getMysqlConfig } from './mysql-client';
 
 const SCHEMA_STATEMENTS: string[] = [
   `CREATE TABLE IF NOT EXISTS users (
@@ -445,12 +446,12 @@ const INDEX_STATEMENTS: string[] = [
 ];
 
 const DEFAULT_SETTINGS = [
-  { key: 'company_name', value: 'ZATION GemERP', category: 'company' },
+  { key: 'company_name', value: 'Azytion GemERP', category: 'company' },
   { key: 'company_address', value: '', category: 'company' },
   { key: 'company_phone', value: '+94752723544', category: 'company' },
-  { key: 'company_phone_2', value: '', category: 'company' },
-  { key: 'company_email', value: 'zationlk@gmail.com', category: 'company' },
-  { key: 'company_website', value: 'www.zation.lk', category: 'company' },
+  { key: 'company_phone_2', value: '+94755331445', category: 'company' },
+  { key: 'company_email', value: 'azytionlk@gmail.com', category: 'company' },
+  { key: 'company_website', value: 'www.azytion.com', category: 'company' },
   { key: 'company_tax_id', value: '', category: 'company' },
   { key: 'company_logo', value: '', category: 'company' },
   { key: 'tax_enabled', value: 'false', category: 'tax', data_type: 'boolean' },
@@ -459,7 +460,7 @@ const DEFAULT_SETTINGS = [
   { key: 'tax_inclusive', value: 'false', category: 'tax', data_type: 'boolean' },
   { key: 'receipt_header', value: '', category: 'receipt' },
   { key: 'receipt_footer', value: 'Thank you for your business!', category: 'receipt' },
-  { key: 'receipt_promotional_footer', value: 'Powered By ZATION | +94752723544', category: 'receipt' },
+  { key: 'receipt_promotional_footer', value: 'Powered By Azytion | +94752723544', category: 'receipt' },
   { key: 'receipt_show_logo', value: 'true', category: 'receipt', data_type: 'boolean' },
   { key: 'receipt_show_barcode', value: 'true', category: 'receipt', data_type: 'boolean' },
   { key: 'receipt_paper_size', value: 'a4', category: 'receipt' },
@@ -479,7 +480,7 @@ const DEFAULT_SETTINGS = [
   { key: 'smtp_user', value: '', category: 'notification' },
   { key: 'smtp_pass', value: '', category: 'notification' },
   { key: 'smtp_secure', value: 'false', category: 'notification', data_type: 'boolean' },
-  { key: 'email_from', value: '"ZATION GemERP" <noreply@zationapp.com>', category: 'notification' },
+  { key: 'email_from', value: '"Azytion GemERP" <noreply@azytionapp.com>', category: 'notification' },
   { key: 'pos_auto_discount_enabled', value: 'false', category: 'pos', data_type: 'boolean' },
   { key: 'pos_auto_print_enabled', value: 'true', category: 'pos', data_type: 'boolean' },
   { key: 'pos_auto_print_format', value: 'a4', category: 'pos' },
@@ -489,6 +490,19 @@ const DEFAULT_SETTINGS = [
   { key: 'subscription_status', value: 'active', category: 'subscription' },
   { key: 'subscription_expiry', value: '', category: 'subscription' },
   { key: 'client_name', value: 'Valued Client', category: 'subscription' },
+  // SaaS app branding (super_admin only)
+  { key: 'app_name', value: 'Azytion GemERP', category: 'app' },
+  { key: 'app_tagline', value: 'GEMSTONE INDUSTRY ERP', category: 'app' },
+  { key: 'app_description', value: 'The definitive platform for managing high-value gemstone inventory, consignment memos, and lab certificates with uncompromising precision.', category: 'app' },
+  { key: 'app_icon', value: '', category: 'app' },
+  { key: 'app_logo_sidebar', value: '', category: 'app' },
+  { key: 'app_logo_login', value: '', category: 'app' },
+  { key: 'app_logo_light', value: '', category: 'app' },
+  { key: 'app_owner_phone', value: '+94 75 272 3544', category: 'app' },
+  { key: 'app_owner_phone_2', value: '+94 75 533 1445', category: 'app' },
+  { key: 'app_owner_email', value: 'azytionlk@gmail.com', category: 'app' },
+  { key: 'app_owner_website', value: 'www.azytion.com', category: 'app' },
+  { key: 'app_copyright', value: '© 2026 Azytion GemERP. All rights reserved.', category: 'app' },
 ];
 
 async function ensureColumn(table: string, column: string, definition: string) {
@@ -505,10 +519,41 @@ async function ensureColumn(table: string, column: string, definition: string) {
 
 export async function runSchemaInit(): Promise<void> {
   const pool = getPool();
-  const dbName = process.env.MYSQL_DATABASE || 'zation_gempos';
+  const dbName = getDbName();
 
-  await pool.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
-  await pool.query(`USE \`${dbName}\``);
+  // Bootstrap: create the database using a one-shot connection that has NO
+  // default database. This avoids the ER_BAD_DB_ERROR the main pool throws
+  // when the database doesn't exist yet.
+  const baseConfig = getMysqlConfig();
+  let bootstrapConfig: any;
+  if (typeof baseConfig === 'string') {
+    bootstrapConfig = baseConfig.replace(/\/[^/?]*(\?|$)/, '/$1');
+  } else {
+    const { waitForConnections, connectionLimit, queueLimit, ...rest } = baseConfig;
+    bootstrapConfig = {
+      ...rest,
+      host: rest.host === 'localhost' ? '127.0.0.1' : rest.host,
+      database: undefined,
+    };
+  }
+
+  try {
+    const bootstrapConn = await mysql.createConnection(
+      bootstrapConfig as Parameters<typeof mysql.createConnection>[0]
+    );
+    try {
+      await bootstrapConn.query(
+        `CREATE DATABASE IF NOT EXISTS \`${dbName}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`
+      );
+    } finally {
+      await bootstrapConn.end().catch(() => {});
+    }
+  } catch (bootstrapErr: any) {
+    // If the bootstrap connection fails (e.g. host binding or user lacks CREATE DATABASE privilege)
+    // but the database already exists, proceed and let the main pool connect.
+    console.warn('[Bootstrap] Database check notice:', bootstrapErr?.message || bootstrapErr);
+  }
+
   await pool.query('SET FOREIGN_KEY_CHECKS = 0');
 
   for (const stmt of SCHEMA_STATEMENTS) {
@@ -566,11 +611,11 @@ async function seedDefaults(): Promise<void> {
     // INSERT IGNORE only — never overwrite a password that was changed via the UI
     await pool.execute(
       'INSERT IGNORE INTO users (username, password_hash, role, is_active) VALUES (?, ?, ?, 1)',
-      ['zationlk', hash, 'super_admin']
+      ['azytionlk', hash, 'super_admin']
     );
     // Only ensure role and is_active are correct; do NOT overwrite password_hash
     await pool.execute(
-      "UPDATE users SET role = 'super_admin', is_active = 1 WHERE username = 'zationlk' AND password_hash != ?",
+      "UPDATE users SET role = 'super_admin', is_active = 1 WHERE username = 'azytionlk' AND password_hash != ?",
       [hash]
     );
   }

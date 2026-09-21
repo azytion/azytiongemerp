@@ -90,7 +90,7 @@ export default function DaybookPrintButton({ date, entries, stats }: DaybookPrin
                 `Daybook Report - ${date}`,
                 `Please find attached the Daybook report for ${date}.`,
                 `Daybook-${date}.pdf`,
-                settings.company_name || 'ZATION GemERP'
+                settings.company_name || 'Azytion GemERP'
             );
         } catch (error) {
             console.error('Email error:', error);

@@ -17,6 +17,19 @@ function mysqlGlobals(): MysqlGlobals {
   return g.__zationMysql;
 }
 
+export function getDbName(): string {
+  const url = process.env.DATABASE_URL?.trim();
+  if (url?.startsWith('mysql://')) {
+    try {
+      const parsed = new URL(url);
+      return parsed.pathname.replace(/^\//, '') || 'zationgemerp';
+    } catch {
+      return process.env.MYSQL_DATABASE || 'zationgemerp';
+    }
+  }
+  return process.env.MYSQL_DATABASE || 'zationgemerp';
+}
+
 export function getMysqlConfig() {
   const url = process.env.DATABASE_URL?.trim();
   if (url?.startsWith('mysql://')) {
@@ -24,12 +37,14 @@ export function getMysqlConfig() {
     // that aren't expressible in a URL string (multipleStatements, timezone, dateStrings)
     try {
       const parsed = new URL(url);
+      const rawHost = parsed.hostname;
+      const host = rawHost === 'localhost' ? '127.0.0.1' : rawHost;
       return {
-        host: parsed.hostname,
+        host,
         port: Number(parsed.port || 3306),
         user: parsed.username ? decodeURIComponent(parsed.username) : 'root',
         password: parsed.password ? decodeURIComponent(parsed.password) : '',
-        database: parsed.pathname.replace(/^\//, '') || 'zation_gempos',
+        database: parsed.pathname.replace(/^\//, '') || 'zationgemerp',
         waitForConnections: true,
         connectionLimit: Number(process.env.MYSQL_POOL_SIZE || 20),
         queueLimit: 0,
@@ -42,12 +57,13 @@ export function getMysqlConfig() {
       return url;
     }
   }
+  const rawHost = process.env.MYSQL_HOST || '127.0.0.1';
   return {
-    host: process.env.MYSQL_HOST || 'localhost',
+    host: rawHost === 'localhost' ? '127.0.0.1' : rawHost,
     port: Number(process.env.MYSQL_PORT || 3306),
     user: process.env.MYSQL_USER || 'root',
     password: process.env.MYSQL_PASSWORD || '',
-    database: process.env.MYSQL_DATABASE || 'zation_gempos',
+    database: process.env.MYSQL_DATABASE || 'zationgemerp',
     waitForConnections: true,
     connectionLimit: Number(process.env.MYSQL_POOL_SIZE || 20),
     queueLimit: 0,
@@ -280,7 +296,11 @@ export class Database {
 export async function getDb(): Promise<Database> {
   const state = mysqlGlobals();
   if (!state.initPromise) {
-    state.initPromise = initializeDatabase();
+    state.initPromise = initializeDatabase().catch((err) => {
+      state.initPromise = undefined;
+      state.schemaInitialized = false;
+      throw err;
+    });
   }
   await state.initPromise;
   if (!state.dbSingleton) {
@@ -324,7 +344,13 @@ export async function closeDb(): Promise<void> {
 async function initializeDatabase(): Promise<void> {
   const state = mysqlGlobals();
   if (state.schemaInitialized) return;
-  const { runSchemaInit } = await import('./mysql-init');
-  await runSchemaInit();
-  state.schemaInitialized = true;
+  try {
+    const { runSchemaInit } = await import('./mysql-init');
+    await runSchemaInit();
+    state.schemaInitialized = true;
+  } catch (err) {
+    state.schemaInitialized = false;
+    state.initPromise = undefined;
+    throw err;
+  }
 }

@@ -3,6 +3,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { useState } from 'react';
 import { updateSettings } from '@/app/actions/settings';
+import { uploadCompanyLogo } from '@/app/actions/upload';
 import { Building2 } from 'lucide-react';
 import ReceiptPreview from './ReceiptPreview';
 import { useSidebar } from '@/components/SidebarProvider';
@@ -23,16 +24,29 @@ export default function CompanySettings({ settings, isSuperAdmin }: { settings: 
     });
 
     const [saving, setSaving] = useState(false);
+    const [uploadingLogo, setUploadingLogo] = useState(false);
     const [message, setMessage] = useState('');
 
     async function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setFormData({ ...formData, company_logo: reader.result as string });
-            };
-            reader.readAsDataURL(file);
+        if (!file) return;
+
+        setUploadingLogo(true);
+        setMessage('');
+        try {
+            const uploadData = new FormData();
+            uploadData.append('file', file);
+            const result = await uploadCompanyLogo(uploadData);
+            if (!result.success || !result.imageUrl) {
+                setMessage(`Error: ${result.error || 'Failed to upload company logo'}`);
+                return;
+            }
+            setFormData(current => ({ ...current, company_logo: result.imageUrl }));
+        } catch {
+            setMessage('Error: Failed to upload company logo');
+        } finally {
+            setUploadingLogo(false);
+            e.target.value = '';
         }
     }
 
@@ -86,7 +100,7 @@ export default function CompanySettings({ settings, isSuperAdmin }: { settings: 
                         className="input"
                         value={formData.company_name}
                         onChange={(e) => setFormData({ ...formData, company_name: e.target.value })}
-                        placeholder="ZATION GemERP"
+                        placeholder="Azytion GemERP"
                     />
                 </div>
 
@@ -142,6 +156,7 @@ export default function CompanySettings({ settings, isSuperAdmin }: { settings: 
                             accept="image/*"
                             className="input"
                             onChange={handleLogoUpload}
+                            disabled={uploadingLogo}
                             style={{ padding: '0.5rem', width: '100%' }}
                         />
                         <p style={{ fontSize: '0.75rem', color: 'var(--muted)', marginTop: '0.25rem' }}>
@@ -241,7 +256,7 @@ export default function CompanySettings({ settings, isSuperAdmin }: { settings: 
                                 className="input"
                                 value={formData.receipt_promotional_footer}
                                 onChange={(e) => setFormData({ ...formData, receipt_promotional_footer: e.target.value })}
-                                placeholder="POS powered by ZATION"
+                                placeholder="POS powered by Azytion"
                             />
                             <p style={{ fontSize: '0.75rem', color: 'var(--muted)', marginTop: '0.25rem' }}>
                                 Displayed below the thank you message on receipts
@@ -268,7 +283,7 @@ export default function CompanySettings({ settings, isSuperAdmin }: { settings: 
                         onClick={handleSave}
                         className="btn btn-primary"
                         style={{ width: isMobile ? '100%' : 'auto' }}
-                        disabled={saving}
+                        disabled={saving || uploadingLogo}
                     >
                         {saving ? 'Saving...' : 'Save Changes'}
                     </button>

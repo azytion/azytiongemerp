@@ -11,8 +11,10 @@ export interface EmailAttachment {
     encoding: 'base64';
 }
 
-export async function sendEmail(to: string, subject: string, html: string, attachments: EmailAttachment[] = []) {
-    await requireSession();
+export async function sendEmail(to: string, subject: string, html: string, attachments: EmailAttachment[] = [], isInternal = false) {
+    if (!isInternal) {
+        await requireSession();
+    }
     const settings = await getSettings();
 
     if (settings.email_notifications !== 'true') {
@@ -47,7 +49,7 @@ export async function sendEmail(to: string, subject: string, html: string, attac
         // await transporter.verify(); 
 
         const info = await transporter.sendMail({
-            from: settings.email_from || '"POS SYSTEM" <noreply@zationapp.com>',
+            from: settings.email_from || '"Azytion GemERP" <noreply@azytionapp.com>',
             to,
             subject,
             html,

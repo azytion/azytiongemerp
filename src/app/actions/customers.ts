@@ -362,7 +362,7 @@ export async function sendDunningEmails() {
     const { sendEmail } = await import('./email');
     const { getSettings } = await import('./settings');
     const settings = await getSettings();
-    const companyName = settings.company_name || 'ZATION GemERP';
+    const companyName = settings.company_name || 'Azytion GemERP';
 
     const customers = await db.prepare(`
         SELECT id, name, email, phone, balance
@@ -388,7 +388,7 @@ export async function sendDunningEmails() {
             <p style="color:#374151">Thank you for your continued business.</p>
           </div>
           <div style="background:#f9fafb;padding:16px;text-align:center;border-top:1px solid #e5e7eb">
-            <p style="color:#9ca3af;font-size:12px;margin:0">Powered By ZATION</p>
+            <p style="color:#9ca3af;font-size:12px;margin:0">Powered By Azytion</p>
           </div>
         </div>`;
 

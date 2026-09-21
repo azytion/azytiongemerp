@@ -1,7 +1,7 @@
--- ZATION GemERP — performance indexes
+-- Azytion GemERP — performance indexes
 -- Duplicate index errors are ignored when re-running.
 
-USE `zation_gempos`;
+USE `zationgemerp`;
 
 CREATE INDEX idx_sales_date ON sales(date);
 CREATE INDEX idx_sales_customer_id ON sales(customer_id);

@@ -77,7 +77,7 @@ export default function UsersSettings() {
     }
 
     const users = usersResult?.data || [];
-    const selectableIds = users.filter(user => user.id !== 1 && user.username !== 'zationlk' && user.role !== 'super_admin').map(user => user.id);
+    const selectableIds = users.filter(user => user.id !== 1 && user.username !== 'azytionlk' && user.role !== 'super_admin').map(user => user.id);
     const allSelected = selectableIds.length > 0 && selectableIds.every(id => selectedIds.includes(id));
 
     function toggleSelectAll() {
@@ -193,7 +193,7 @@ export default function UsersSettings() {
                             <tr><td colSpan={6} style={{ textAlign: 'center', padding: '2rem', color: 'var(--muted-foreground)' }}>No users found</td></tr>
                         ) : usersResult.data.map(user => {
                             const rc = roleColors[user.role] || roleColors.staff;
-                            const canSelect = user.id !== 1 && user.username !== 'zationlk' && user.role !== 'super_admin';
+                            const canSelect = user.id !== 1 && user.username !== 'azytionlk' && user.role !== 'super_admin';
                             return (
                                 <tr key={user.id} style={{ background: selectedIds.includes(user.id) ? 'rgba(212,175,55,0.04)' : undefined }}>
                                     <td style={{ width: 40 }}>
@@ -259,7 +259,7 @@ export default function UsersSettings() {
                         <label>{editingUser ? 'New Password (leave blank to keep)' : 'Password'}</label>
                         <input name="password" type="password" className="input" required={!editingUser} />
                     </div>
-                    {editingUser?.username === 'zationlk' ? (
+                    {editingUser?.username === 'azytionlk' ? (
                         <div className="form-group">
                             <label>Role</label>
                             <div style={{ padding: '0.625rem 1rem', background: 'rgba(212,175,55,0.1)', border: '1px solid rgba(212,175,55,0.3)', borderRadius: 'var(--radius)', color: 'var(--primary)', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>

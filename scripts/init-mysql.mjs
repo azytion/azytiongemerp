@@ -1,5 +1,5 @@
 /**
- * Initialize ZATION GemERP MySQL database from database/*.sql files.
+ * Initialize Azytion GemERP MySQL database from database/*.sql files.
  *
  * Usage:
  *   node scripts/init-mysql.mjs
@@ -46,7 +46,7 @@ const config = {
   multipleStatements: true,
 };
 
-const database = process.env.MYSQL_DATABASE || 'zation_gempos';
+const database = process.env.MYSQL_DATABASE || 'zationgemerp';
 
 function stripLeadingComments(sql) {
   return sql

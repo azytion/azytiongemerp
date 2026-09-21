@@ -15,6 +15,7 @@ import HardwareSettings from './components/HardwareSettings';
 import POSSettings from './components/POSSettings';
 import ActivityLogSettings from './components/ActivityLogSettings';
 import FeatureSettings from './components/FeatureSettings';
+import AppSettings from './components/AppSettings';
 import dynamic from 'next/dynamic';
 
 const DataManagementTab = dynamic(() => import('./components/DataManagementTab'), {
@@ -36,14 +37,14 @@ const PWASettings = dynamic(() => import('./components/PWASettings'), {
 });
 import {
   Building2, Receipt, Settings as SettingsIcon, Mail, Users, Barcode,
-  Database, FileText, Monitor, ShieldAlert, Loader2, Smartphone
+  Database, FileText, Monitor, ShieldAlert, Loader2, Smartphone, AppWindow
 } from 'lucide-react';
 
 export default function SettingsPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  type SettingsTab = 'company' | 'tax' | 'system' | 'notification' | 'users' | 'barcodes' | 'hardware' | 'data' | 'logs' | 'pos' | 'features' | 'pwa';
-  const SETTINGS_TABS: SettingsTab[] = ['company', 'tax', 'system', 'notification', 'users', 'barcodes', 'hardware', 'data', 'logs', 'pos', 'features', 'pwa'];
+  type SettingsTab = 'company' | 'tax' | 'system' | 'notification' | 'users' | 'barcodes' | 'hardware' | 'data' | 'logs' | 'pos' | 'features' | 'pwa' | 'app';
+  const SETTINGS_TABS: SettingsTab[] = ['company', 'tax', 'system', 'notification', 'users', 'barcodes', 'hardware', 'data', 'logs', 'pos', 'features', 'pwa', 'app'];
   const tabParam = searchParams.get('tab');
   const activeTab: SettingsTab = tabParam && SETTINGS_TABS.includes(tabParam as SettingsTab)
     ? (tabParam as SettingsTab)
@@ -89,7 +90,8 @@ export default function SettingsPage() {
   const isSuperAdmin = session?.role === 'super_admin';
 
   const allTabs = [
-    { id: 'features' as const, label: 'Features', icon: ShieldAlert, roles: ['super_admin'] },
+    { id: 'app'      as const, label: 'App Settings', icon: AppWindow,    roles: ['super_admin'] },
+    { id: 'features' as const, label: 'Features',     icon: ShieldAlert,  roles: ['super_admin'] },
     { id: 'company' as const, label: 'Company', icon: Building2 },
     { id: 'pos' as const, label: 'POS', icon: Monitor },
     { id: 'tax' as const, label: 'Tax', icon: Receipt },
@@ -154,6 +156,7 @@ export default function SettingsPage() {
 
       {/* Content */}
       <div className="card" style={{ padding: '1.5rem' }}>
+        {activeTab === 'app'      && <AppSettings settings={settings} />}
         {activeTab === 'features' && <FeatureSettings settings={settings} />}
         {activeTab === 'company' && <CompanySettings settings={settings} isSuperAdmin={isSuperAdmin} />}
         {activeTab === 'pos' && <POSSettings settings={settings} />}

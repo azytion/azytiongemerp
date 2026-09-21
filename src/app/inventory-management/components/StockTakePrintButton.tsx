@@ -89,7 +89,7 @@ export default function StockTakePrintButton({ items, date }: StockTakePrintButt
                 `Stock Take Report - ${date}`,
                 `Please find attached the Stock Take report for ${date}.`,
                 `StockTake-${date}.pdf`,
-                settings.company_name || 'ZATION GemERP'
+                settings.company_name || 'Azytion GemERP'
             );
         } catch (error) {
             console.error('Email error:', error);

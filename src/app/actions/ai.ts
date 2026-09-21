@@ -7,7 +7,7 @@ import { geminiModel } from '@/lib/gemini';
 import { startOfDay, endOfDay, format } from 'date-fns';
 import { saveAIImageLocally } from './upload';
 
-export async function askZationAI(message: string, history: { role: 'user' | 'model', parts: { text: string }[] }[] = []) {
+export async function askAzytionAI(message: string, history: { role: 'user' | 'model', parts: { text: string }[] }[] = []) {
     await requireSession();
     const db = await getDb();
     const now = new Date();
@@ -65,7 +65,7 @@ export async function askZationAI(message: string, history: { role: 'user' | 'mo
 
     // --- AI PROCESSING ---
     try {
-        const sysInstructions = `You are ZATION GemERP, the integrated smart assistant for ZATION GemERP. 
+        const sysInstructions = `You are Azytion GemERP, the integrated smart assistant for Azytion GemERP. 
             You have access to the store's database via natural language queries. 
             Use the provided context to answer specifically. Be professional and concise.`;
 
@@ -88,7 +88,7 @@ export async function askZationAI(message: string, history: { role: 'user' | 'mo
 
         return { success: true, text: text };
     } catch (error: any) {
-        console.error('ZATION AI Error:', error);
+        console.error('Azytion AI Error:', error);
         // Never expose API keys or internal details in error responses
         return {
             success: false,
@@ -205,7 +205,7 @@ export async function getForecastingInsights(userInput: string) {
     const report = await getDetailedBusinessReport();
 
     const prompt = `
-        You are ZATION GemERP Analyst. Analyze the following 90-day business data and answer the user's specific forecasting or reordering question.
+        You are Azytion GemERP Analyst. Analyze the following 90-day business data and answer the user's specific forecasting or reordering question.
         
         DATA:
         - Weekly Sales (Last 90 days): ${JSON.stringify(report.salesHistory)}

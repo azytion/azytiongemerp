@@ -84,7 +84,7 @@ export default function PWASettings() {
         if (outcome === 'accepted') {
             setIsInstalled(true);
             setInstallPrompt(null);
-            toast.success('ZATION GemERP installed successfully!');
+            toast.success('Azytion GemERP installed successfully!');
         }
         setInstalling(false);
     }
@@ -176,7 +176,7 @@ export default function PWASettings() {
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.875rem 1.25rem', background: 'rgba(59,130,246,0.06)', border: '1px solid rgba(59,130,246,0.25)', borderRadius: 'var(--radius-lg)', gap: '1rem', flexWrap: 'wrap' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem', fontSize: '0.875rem', fontWeight: 600, color: 'var(--info)' }}>
                         <RefreshCw size={15} />
-                        A new version of ZATION GemERP is available
+                        A new version of Azytion GemERP is available
                     </div>
                     <button onClick={handleApplyUpdate} className="btn btn-sm" style={{ background: 'rgba(59,130,246,0.12)', border: '1px solid rgba(59,130,246,0.3)', color: 'var(--info)' }}>
                         Update Now
@@ -195,7 +195,7 @@ export default function PWASettings() {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '1rem', background: 'rgba(16,185,129,0.06)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: 'var(--radius)' }}>
                         <CheckCircle2 size={20} color="var(--success)" />
                         <div>
-                            <div style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--success)' }}>ZATION GemERP is installed</div>
+                            <div style={{ fontWeight: 700, fontSize: '0.875rem', color: 'var(--success)' }}>Azytion GemERP is installed</div>
                             <div style={{ fontSize: '0.75rem', color: 'var(--muted-foreground)', marginTop: '0.125rem' }}>Running as a standalone app on this device</div>
                         </div>
                     </div>
@@ -249,7 +249,7 @@ export default function PWASettings() {
                 </div>
 
                 <p style={{ fontSize: '0.8125rem', color: 'var(--muted-foreground)', marginBottom: '1.25rem', lineHeight: 1.6 }}>
-                    ZATION GemERP caches your data locally so pages load instantly and work when you&apos;re offline.
+                    Azytion GemERP caches your data locally so pages load instantly and work when you&apos;re offline.
                     The cache is automatically refreshed every 5 minutes when online.
                 </p>
 
