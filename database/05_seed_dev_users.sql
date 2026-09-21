@@ -1,9 +1,4 @@
--- Azytion GemERP — development users (local/dev only)
--- Passwords: admin/admin, manager/manager, cashier/cashier
--- PINs: 1234, 4321, 0000
--- Safe to re-run (INSERT IGNORE).
-
-USE `zationgemerp`;
+-- Database is selected by active connection
 
 INSERT IGNORE INTO users (username, password_hash, role, pin) VALUES
   ('admin', '$2b$10$WUddbUAF1a36sLILVhKQz.pjJY1Yl.Vdz3JB8gddRcQ1mZwjciYKG', 'admin', '1234'),

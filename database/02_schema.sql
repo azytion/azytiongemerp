@@ -1,7 +1,4 @@
--- Azytion GemERP — table schema (30 tables)
--- Source of truth: src/lib/mysql-init.ts
-
-USE `zationgemerp`;
+-- Database is selected by active connection
 
 SET FOREIGN_KEY_CHECKS = 0;
 

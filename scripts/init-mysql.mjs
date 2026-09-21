@@ -15,7 +15,6 @@ const ROOT = process.cwd();
 const SQL_DIR = path.join(ROOT, 'database');
 
 const SQL_FILES = [
-  '01_create_database.sql',
   '02_schema.sql',
   '03_indexes.sql',
   '04_seed_settings.sql',
@@ -58,6 +57,7 @@ const config = {
   port: Number(process.env.MYSQL_PORT || 3306),
   user: process.env.MYSQL_USER || 'root',
   password: process.env.MYSQL_PASSWORD || '',
+  database: database,
   multipleStatements: true,
 };
 

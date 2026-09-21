@@ -1,7 +1,4 @@
--- Azytion GemERP — default application settings
--- Safe to re-run (INSERT IGNORE).
-
-USE `zationgemerp`;
+-- Database is selected by active connection
 
 INSERT IGNORE INTO settings (`key`, value, category, data_type) VALUES
   ('company_name', 'Azytion GemERP', 'company', 'string'),
