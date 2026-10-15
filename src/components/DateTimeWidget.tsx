@@ -20,7 +20,7 @@ export default function DateTimeWidget() {
   });
 
   return (
-    <div style={{
+    <div className="datetime-widget" style={{
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'flex-end',
@@ -29,7 +29,6 @@ export default function DateTimeWidget() {
       background: 'var(--surface)',
       border: '1px solid var(--border)',
       borderRadius: 'var(--radius-lg)',
-      minWidth: 200,
       boxShadow: 'var(--shadow-sm)',
     }}>
       <div style={{

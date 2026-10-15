@@ -221,8 +221,21 @@ export default function DataManagementTab() {
             formData.append('file', file);
             const result = await importAllData(null, formData);
             if (result.success) {
+                try {
+                    const { localDB } = await import('@/lib/db/LocalDB');
+                    await Promise.all([
+                        localDB.products.clear(),
+                        localDB.categories.clear(),
+                        localDB.customers.clear(),
+                        localDB.suppliers.clear(),
+                        localDB.brokers.clear(),
+                        localDB.sales.clear(),
+                        localDB.purchaseOrders.clear(),
+                        localDB.dashboardStats.clear(),
+                    ]);
+                } catch { /* ignore cache clear error */ }
                 toast.success('Data imported successfully!', { id: 'import-toast' });
-                setTimeout(() => window.location.reload(), 2000);
+                setTimeout(() => window.location.reload(), 1500);
             } else {
                 toast.error('Import failed: ' + result.error, { id: 'import-toast' });
             }

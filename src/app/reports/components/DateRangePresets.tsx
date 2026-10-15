@@ -74,7 +74,7 @@ export default function DateRangePresets({ onSelect, onFilterTypeChange }: DateR
     }
 
     return (
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+        <div className="date-range-presets" style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
             <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
                 <Calendar size={14} style={{ position: 'absolute', left: '0.625rem', color: 'var(--muted-foreground)', pointerEvents: 'none' }} />
                 <select
@@ -102,19 +102,19 @@ export default function DateRangePresets({ onSelect, onFilterTypeChange }: DateR
             </div>
 
             {selected === 'custom' && (
-                <div style={{ display: 'flex', gap: '0.375rem', alignItems: 'center' }}>
+                <div className="date-range-presets__custom" style={{ display: 'flex', gap: '0.375rem', alignItems: 'center', flexWrap: 'wrap' }}>
                     <input
                         type="date"
                         value={customStart}
                         onChange={e => { setCustomStart(e.target.value); handleCustomDate(e.target.value, customEnd); }}
-                        style={{ height: '2.25rem', borderRadius: 'var(--radius)', border: '1px solid var(--border-strong)', background: 'var(--surface-2)', color: 'var(--foreground)', padding: '0 0.5rem', fontSize: '0.8125rem', width: 140 }}
+                        style={{ height: '2.25rem', borderRadius: 'var(--radius)', border: '1px solid var(--border-strong)', background: 'var(--surface-2)', color: 'var(--foreground)', padding: '0 0.5rem', fontSize: '0.8125rem', minWidth: 120 }}
                     />
                     <span style={{ color: 'var(--muted-foreground)', fontSize: '0.8125rem' }}>→</span>
                     <input
                         type="date"
                         value={customEnd}
                         onChange={e => { setCustomEnd(e.target.value); handleCustomDate(customStart, e.target.value); }}
-                        style={{ height: '2.25rem', borderRadius: 'var(--radius)', border: '1px solid var(--border-strong)', background: 'var(--surface-2)', color: 'var(--foreground)', padding: '0 0.5rem', fontSize: '0.8125rem', width: 140 }}
+                        style={{ height: '2.25rem', borderRadius: 'var(--radius)', border: '1px solid var(--border-strong)', background: 'var(--surface-2)', color: 'var(--foreground)', padding: '0 0.5rem', fontSize: '0.8125rem', minWidth: 120 }}
                     />
                 </div>
             )}

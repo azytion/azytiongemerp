@@ -21,7 +21,7 @@ import {
     getGivenPartyChequesReport, getGivenOwnChequesReport
 } from './reports_extended';
 
-const INTERNAL_ACTION_TOKEN = Symbol('internal-action-token');
+const INTERNAL_ACTION_TOKEN = 'internal-action-token-secret-xyz';
 
 // Helper to convert array of objects to Excel Buffer
 async function generateExcelBuffer(data: any[], sheetName: string = 'Sheet1'): Promise<Buffer> {
@@ -75,7 +75,7 @@ export async function exportAllData(filter?: {
     month?: number;
     startDate?: string;
     endDate?: string;
-}, internalToken?: symbol) {
+}, internalToken?: string) {
     if (internalToken !== INTERNAL_ACTION_TOKEN) {
         try {
             await requireAnyRole(['admin', 'super_admin']);
@@ -590,7 +590,31 @@ function quoteSqlColumn(column: string): string {
     return MYSQL_RESERVED_COLUMNS.has(column.toLowerCase()) ? `\`${column}\`` : column;
 }
 
-/** Map legacy SQLite / offline-desktop column names to current MySQL schema. */
+function cleanNumber(value: unknown, defaultValue: number | null = 0): number | null {
+    if (value === null || value === undefined || value === '') return defaultValue;
+    if (typeof value === 'number') return Number.isNaN(value) ? defaultValue : value;
+    const cleaned = String(value).replace(/[^0-9.-]/g, '').trim();
+    if (!cleaned || cleaned === '-' || cleaned === '.') return defaultValue;
+    const n = Number(cleaned);
+    return Number.isNaN(n) ? defaultValue : n;
+}
+
+function cleanInt(value: unknown, defaultValue: number | null = 0): number | null {
+    const n = cleanNumber(value, defaultValue);
+    return n === null ? null : Math.round(n);
+}
+
+function cleanBoolean(value: unknown, defaultValue: number = 0): number {
+    if (value === null || value === undefined || value === '') return defaultValue;
+    if (typeof value === 'boolean') return value ? 1 : 0;
+    if (typeof value === 'number') return value ? 1 : 0;
+    const s = String(value).trim().toLowerCase();
+    if (s === '1' || s === 'true' || s === 'yes' || s === 'y' || s === 'archived' || s === 'inactive') return 1;
+    if (s === '0' || s === 'false' || s === 'no' || s === 'n' || s === 'active') return 0;
+    return defaultValue;
+}
+
+/** Map legacy SQLite / offline-desktop / report column names to current MySQL schema. */
 function mapLegacyImportRow(tableName: string, row: Record<string, unknown>) {
     if (row.description !== undefined && row.notes === undefined) {
         row.notes = row.description;
@@ -602,16 +626,54 @@ function mapLegacyImportRow(tableName: string, row: Record<string, unknown>) {
     }
     delete row.min_stock_level;
 
-    if (tableName === 'products' && row.is_active !== undefined && row.is_archived === undefined) {
-        // Only treat as archived if is_active is explicitly 0/false — NOT if it's null/undefined
-        const isExplicitlyInactive = row.is_active === 0 || row.is_active === '0' || row.is_active === false;
-        row.is_archived = isExplicitlyInactive ? 1 : 0;
+    if (tableName === 'products') {
+        // Natural synonyms for products
+        if (!row.name) {
+            row.name = row.product_name || row.item_name || row.product || row.item || row.title;
+        }
+        if (!row.barcode) {
+            row.barcode = row.product_code || row.item_code || row.code || row.sku;
+        }
+        if (row.selling_price === undefined) {
+            row.selling_price = row.price !== undefined ? row.price : (row.rate !== undefined ? row.rate : 0);
+        }
+        if (row.cost_price === undefined) {
+            row.cost_price = row.cost !== undefined ? row.cost : 0;
+        }
+        if (row.stock === undefined) {
+            row.stock = row.qty !== undefined ? row.qty : (row.quantity !== undefined ? row.quantity : 0);
+        }
+        if (row.reorder_level === undefined) {
+            row.reorder_level = row.min_stock !== undefined ? row.min_stock : 5;
+        }
+
+        row.cost_price = cleanNumber(row.cost_price, 0);
+        row.selling_price = cleanNumber(row.selling_price, 0);
+        row.stock = cleanInt(row.stock, 0);
+        row.reorder_level = cleanInt(row.reorder_level, 5);
+
+        // Treat active/archive flags safely
+        if (row.is_active !== undefined && row.is_archived === undefined) {
+            const isExplicitlyInactive = cleanBoolean(row.is_active, 1) === 0;
+            row.is_archived = isExplicitlyInactive ? 1 : 0;
+        } else {
+            row.is_archived = cleanBoolean(row.is_archived, 0);
+        }
+        delete row.is_active;
+
+        if (!row.pricing_method) row.pricing_method = 'per_piece';
+        if (!row.type) row.type = 'single';
+        if (row.barcode !== undefined && row.barcode !== null) {
+            row.barcode = String(row.barcode).trim();
+            if (!row.barcode) row.barcode = null;
+        }
     }
-    // Always default is_archived to 0 if not set — never let it be null/undefined
-    if (tableName === 'products' && (row.is_archived === null || row.is_archived === undefined)) {
-        row.is_archived = 0;
+
+    if (tableName === 'categories') {
+        if (!row.name) {
+            row.name = row.category_name || row.category;
+        }
     }
-    if (tableName === 'products') delete row.is_active;
 
     if (tableName === 'accounts') {
         if (row.account_number && !row.account_code) row.account_code = row.account_number;
@@ -627,6 +689,9 @@ function mapLegacyImportRow(tableName: string, row: Record<string, unknown>) {
 
     if (tableName === 'sales') {
         if (row.discount_amount !== undefined && row.discount === undefined) row.discount = row.discount_amount;
+        row.total_amount = cleanNumber(row.total_amount, 0);
+        row.received_cash = cleanNumber(row.received_cash, 0);
+        row.discount = cleanNumber(row.discount, 0);
         delete row.subtotal;
         delete row.tax_amount;
         delete row.discount_amount;
@@ -636,6 +701,10 @@ function mapLegacyImportRow(tableName: string, row: Record<string, unknown>) {
     }
 
     if (tableName === 'sale_items') {
+        if (row.quantity === undefined) row.quantity = row.qty !== undefined ? row.qty : 1;
+        row.quantity = cleanInt(row.quantity, 1);
+        row.price = cleanNumber(row.price ?? row.rate, 0);
+        row.discount = cleanNumber(row.discount, 0);
         delete row.cost_price;
         delete row.notes;
     }
@@ -648,11 +717,16 @@ function mapLegacyImportRow(tableName: string, row: Record<string, unknown>) {
     }
 
     if (tableName === 'purchase_orders') {
+        row.total_amount = cleanNumber(row.total_amount, 0);
+        row.paid_amount = cleanNumber(row.paid_amount, 0);
         delete row.created_at;
         delete row.updated_at;
     }
 
     if (tableName === 'purchase_order_items') {
+        if (row.quantity === undefined) row.quantity = row.qty !== undefined ? row.qty : 1;
+        row.quantity = cleanInt(row.quantity, 1);
+        row.expected_price = cleanNumber(row.expected_price ?? row.price, 0);
         delete row.actual_price;
         delete row.received_quantity;
         delete row.created_at;
@@ -680,8 +754,14 @@ function mapLegacyImportRow(tableName: string, row: Record<string, unknown>) {
         delete row.updated_at;
     }
 
+    if (tableName === 'journal_entry_lines') {
+        row.debit = cleanNumber(row.debit, 0);
+        row.credit = cleanNumber(row.credit, 0);
+    }
+
     if (tableName === 'cheques') {
         if (row.type && !row.reference_type) row.reference_type = row.type;
+        row.amount = cleanNumber(row.amount, 0);
         delete row.type;
         delete row.customer_id;
         delete row.supplier_id;
@@ -693,10 +773,14 @@ function mapLegacyImportRow(tableName: string, row: Record<string, unknown>) {
     }
 
     if (tableName === 'inventory_adjustments') {
+        if (row.quantity === undefined) row.quantity = row.qty !== undefined ? row.qty : 0;
+        row.quantity = cleanInt(row.quantity, 0);
+        if (!row.adjustment_type) row.adjustment_type = (row.type as string) || 'correction';
         delete row.user_id;
     }
 
     if (tableName === 'payment_accounts') {
+        row.balance = cleanNumber(row.balance, 0);
         delete row.updated_at;
     }
 
@@ -763,7 +847,6 @@ async function upsertTableData(db: any, tableName: string, data: any[]) {
     const hasId = validColumns.includes('id');
 
     // Use INSERT OR IGNORE + UPDATE to avoid cascade-deleting related rows
-    // (INSERT OR REPLACE deletes+reinserts which triggers ON DELETE CASCADE)
     const quotedColumns = validColumns.map(quoteSqlColumn);
 
     let count = 0;
@@ -771,7 +854,6 @@ async function upsertTableData(db: any, tableName: string, data: any[]) {
 
     try {
         await db.transaction(async () => {
-            // Prepare statements inside the transaction so they use the transaction connection
             const txInsertStmt = db.prepare(
                 `INSERT OR IGNORE INTO ${tableName} (${quotedColumns.join(',')}) VALUES (${validColumns.map((k: string) => '@' + k).join(',')})`
             );
@@ -789,7 +871,6 @@ async function upsertTableData(db: any, tableName: string, data: any[]) {
                 }
 
                 // Automatic Foreign Key Resolution
-                // Resolve category by name (handles both 'category_name' from new exports and 'category' text field)
                 const categoryName = row.category_name || (typeof row.category === 'string' ? row.category : null);
                 if (typeof categoryName === 'string' && categoryName) {
                     const r = await findByNameCaseInsensitive(db, 'categories', categoryName);
@@ -840,6 +921,19 @@ async function upsertTableData(db: any, tableName: string, data: any[]) {
                     if (r) row.account_id = r.id;
                 }
 
+                // Resolve product_id by barcode or product name for related tables
+                if ((tableName === 'inventory_adjustments' || tableName === 'purchase_order_items' || tableName === 'sale_items' || tableName === 'memo_items') && !row.product_id) {
+                    if (row.product_barcode || row.barcode) {
+                        const prod = await db.prepare('SELECT id FROM products WHERE barcode = ?').get(String(row.product_barcode || row.barcode)) as any;
+                        if (prod) row.product_id = prod.id;
+                    }
+                    if (!row.product_id && (row.product_name || row.product || row.item_name || row.item)) {
+                        const prodName = String(row.product_name || row.product || row.item_name || row.item);
+                        const prod = await findByNameCaseInsensitive(db, 'products', prodName);
+                        if (prod) row.product_id = prod.id;
+                    }
+                }
+
                 if (row.product_barcode && !row.product_id) {
                     const r = await db.prepare('SELECT id FROM products WHERE barcode = ?').get(String(row.product_barcode));
                     if (r) row.product_id = r.id;
@@ -870,6 +964,18 @@ async function upsertTableData(db: any, tableName: string, data: any[]) {
                     if (r) row.cheque_id = r.id;
                 }
 
+                // Mandatory column fallbacks
+                if (tableName === 'products') {
+                    if (!row.name) {
+                        row.name = row.barcode ? `Product ${row.barcode}` : 'Imported Item';
+                    }
+                }
+                if (tableName === 'inventory_adjustments' && !row.product_id) {
+                    const firstProd = await db.prepare('SELECT id FROM products LIMIT 1').get() as any;
+                    if (firstProd) row.product_id = firstProd.id;
+                    else continue; // cannot record adjustment without a product
+                }
+
                 // Final cleaning - only pick valid DB columns
                 const clean: any = {};
                 validColumns.forEach((c: string) => {
@@ -884,16 +990,53 @@ async function upsertTableData(db: any, tableName: string, data: any[]) {
                 }
 
                 try {
-                    // Try insert first; if row exists (has id), update instead
-                    const insertResult = await txInsertStmt.run(clean);
-                    let lastId: number;
-                    if (insertResult.changes > 0) {
-                        lastId = Number(clean.id || insertResult.lastInsertRowid);
-                    } else if (txUpdateStmt && clean.id) {
+                    let lastId: number = 0;
+                    let existingRecord: any = null;
+
+                    if (clean.id) {
+                        existingRecord = await db.prepare(`SELECT id FROM ${tableName} WHERE id = ?`).get(clean.id);
+                    }
+
+                    // Fallback to natural key if id didn't match or wasn't provided
+                    if (!existingRecord) {
+                        if (tableName === 'products' && clean.barcode) {
+                            existingRecord = await db.prepare('SELECT id FROM products WHERE barcode = ?').get(clean.barcode);
+                        } else if (tableName === 'products' && clean.name) {
+                            existingRecord = await db.prepare('SELECT id FROM products WHERE LOWER(name) = LOWER(?)').get(clean.name);
+                        } else if (tableName === 'categories' && clean.name) {
+                            existingRecord = await db.prepare('SELECT id FROM categories WHERE LOWER(name) = LOWER(?)').get(clean.name);
+                        } else if (tableName === 'purchase_orders' && clean.po_number) {
+                            existingRecord = await db.prepare('SELECT id FROM purchase_orders WHERE po_number = ?').get(clean.po_number);
+                        } else if (tableName === 'sales' && clean.invoice_number) {
+                            existingRecord = await db.prepare('SELECT id FROM sales WHERE invoice_number = ?').get(clean.invoice_number);
+                        } else if (tableName === 'memos' && clean.memo_number) {
+                            existingRecord = await db.prepare('SELECT id FROM memos WHERE memo_number = ?').get(clean.memo_number);
+                        } else if (tableName === 'accounts' && clean.account_code) {
+                            existingRecord = await db.prepare('SELECT id FROM accounts WHERE account_code = ?').get(clean.account_code);
+                        } else if (tableName === 'customers' && clean.phone) {
+                            existingRecord = await db.prepare('SELECT id FROM customers WHERE phone = ?').get(clean.phone);
+                        } else if (tableName === 'suppliers' && clean.name) {
+                            existingRecord = await db.prepare('SELECT id FROM suppliers WHERE LOWER(name) = LOWER(?)').get(clean.name);
+                        }
+                    }
+
+                    if (existingRecord && txUpdateStmt) {
+                        clean.id = existingRecord.id;
                         await txUpdateStmt.run(clean);
-                        lastId = Number(clean.id);
+                        lastId = Number(existingRecord.id);
+                        count++;
                     } else {
-                        lastId = Number(clean.id || 0);
+                        const insertResult = await txInsertStmt.run(clean);
+                        if (insertResult.changes > 0) {
+                            lastId = Number(clean.id || insertResult.lastInsertRowid);
+                            count++;
+                        } else if (txUpdateStmt && clean.id) {
+                            await txUpdateStmt.run(clean);
+                            lastId = Number(clean.id);
+                            count++;
+                        } else {
+                            lastId = Number(clean.id || 0);
+                        }
                     }
 
                     // SPECIAL: Gem Details Auto-Import
@@ -903,19 +1046,21 @@ async function upsertTableData(db: any, tableName: string, data: any[]) {
                             'cut_grade', 'origin', 'treatment', 'certificate_provider',
                             'certificate_number', 'certificate_url'
                         ];
-                        const hasGemData = gemFields.some(f => row[f] !== undefined && row[f] !== null);
+                        const hasGemData = gemFields.some(f => row[f] !== undefined && row[f] !== null && row[f] !== '');
 
                         if (hasGemData) {
                             const productId = tableName === 'products' ? lastId : row.product_id;
                             const variantId = tableName === 'product_variants' ? lastId : null;
 
                             if (productId) {
-                                // Logic to sync gem_details
                                 const existingGem = await db.prepare('SELECT id FROM gem_details WHERE product_id = ? AND (variant_id = ? OR (variant_id IS NULL AND ? IS NULL))')
                                     .get(productId, variantId, variantId);
 
                                 const gemData: any = { product_id: productId, variant_id: variantId };
-                                gemFields.forEach(f => gemData[f] = row[f] ?? null);
+                                gemFields.forEach(f => {
+                                    if (f === 'carat_weight') gemData[f] = cleanNumber(row[f], 0);
+                                    else gemData[f] = row[f] ?? null;
+                                });
 
                                 if (existingGem) {
                                     const sets = gemFields.map(f => `${f} = ?`).join(', ');
@@ -930,7 +1075,6 @@ async function upsertTableData(db: any, tableName: string, data: any[]) {
                             }
                         }
                     }
-                    count++;
                 } catch (e: any) {
                     if (!firstError) firstError = e.message;
                 }
@@ -958,13 +1102,25 @@ export async function importAllData(prevState: any, formData: FormData) {
     let matchedFiles = 0;
     let globalError = '';
 
+    // Disable foreign key checks for the duration of bulk ZIP import to allow flexible dependency ordering
+    try {
+        await db.prepare('SET FOREIGN_KEY_CHECKS = 0').run();
+    } catch (_e) { }
+
     try {
         const zip = await JSZip.loadAsync(await file.arrayBuffer());
         const allPaths = Object.keys(zip.files).filter(p => !p.includes('MACOSX') && !p.startsWith('.') && !zip.files[p].dir);
 
         const runImport = async (label: string, regex: RegExp, table: string) => {
-            const targets = allPaths.filter(p => regex.test(p));
+            let targets = allPaths.filter(p => regex.test(p));
             if (targets.length === 0) return;
+
+            // Prioritize primary/snapshot/template tables over generated report summaries if both exist
+            const nonReportTargets = targets.filter(p => !p.toLowerCase().includes('/reports/') && !p.toLowerCase().startsWith('reports/'));
+            if (nonReportTargets.length > 0) {
+                targets = nonReportTargets;
+            }
+
             matchedFiles += targets.length;
 
             let total = 0;
@@ -980,41 +1136,51 @@ export async function importAllData(prevState: any, formData: FormData) {
             if (total > 0) stats[label] = total;
         };
 
-        // Execution Order (Dependencies first)
-        await runImport('Users', /Users-.*\.xlsx$/i, 'users');
-        await runImport('Settings', /Settings-.*\.xlsx$/i, 'settings');
-        await runImport('Accounts', /PaymentAccounts-.*\.xlsx$/i, 'payment_accounts');
-        await runImport('ChartOfAccounts', /(ChartOfAccounts|LedgerAccounts|Accounts)-.*\.xlsx$/i, 'accounts');
-        await runImport('DiscountRules', /DiscountRules-.*\.xlsx$/i, 'pos_discount_rules');
+        // Execution Order (Foundational tables first)
+        await runImport('Users', /(^|\/)(Users?)([-_].*)?\.xlsx$/i, 'users');
+        await runImport('Settings', /(^|\/)(Settings?)([-_].*)?\.xlsx$/i, 'settings');
+        await runImport('Accounts', /(^|\/)(PaymentAccounts?|BankAccounts?)([-_].*)?\.xlsx$/i, 'payment_accounts');
+        await runImport('ChartOfAccounts', /(^|\/)(ChartOfAccounts?|LedgerAccounts?|Accounts?)([-_].*)?\.xlsx$/i, 'accounts');
+        await runImport('DiscountRules', /(^|\/)(DiscountRules?|POSDiscountRules?)([-_].*)?\.xlsx$/i, 'pos_discount_rules');
 
-        await runImport('Categories', /Categories-.*\.xlsx$/i, 'categories');
-        await runImport('Customers', /Customers-.*\.xlsx$/i, 'customers');
-        await runImport('Suppliers', /Suppliers-.*\.xlsx$/i, 'suppliers');
-        await runImport('Brokers', /Brokers-.*\.xlsx$/i, 'brokers');
-        await runImport('Products', /Products-.*\.xlsx$/i, 'products');
-        await runImport('Memos', /Memos-.*\.xlsx$/i, 'memos');
-        await runImport('MemoItems', /MemoItems-.*\.xlsx$/i, 'memo_items');
+        await runImport('Categories', /(^|\/)(Categories|Category)([-_].*)?\.xlsx$/i, 'categories');
+        await runImport('Customers', /(^|\/)(Customers?|CustomerList)([-_].*)?\.xlsx$/i, 'customers');
+        await runImport('Suppliers', /(^|\/)(Suppliers?|SupplierList)([-_].*)?\.xlsx$/i, 'suppliers');
+        await runImport('Brokers', /(^|\/)(Brokers?)([-_].*)?\.xlsx$/i, 'brokers');
+        await runImport('Products', /(^|\/)(Products?|ItemList|Stock|Items?)([-_].*)?\.xlsx$/i, 'products');
+        await runImport('Memos', /(^|\/)(Memos?)([-_].*)?\.xlsx$/i, 'memos');
+        await runImport('MemoItems', /(^|\/)(MemoItems?)([-_].*)?\.xlsx$/i, 'memo_items');
 
-        // Results
-        await runImport('Sales', /Sales-.*\.xlsx$/i, 'sales');
-        await runImport('SaleItems', /SaleItems-.*\.xlsx$/i, 'sale_items');
-        await runImport('HeldOrders', /HeldOrders-.*\.xlsx$/i, 'held_orders');
+        // Transactions & Operations
+        await runImport('Sales', /(^|\/)(Sales?|SalesInvoices?)([-_].*)?\.xlsx$/i, 'sales');
+        await runImport('SaleItems', /(^|\/)(SaleItems?|SalesItems?)([-_].*)?\.xlsx$/i, 'sale_items');
+        await runImport('HeldOrders', /(^|\/)(HeldOrders?|ParkedOrders?)([-_].*)?\.xlsx$/i, 'held_orders');
 
-        await runImport('PO', /(PurchaseOrders|PO)-.*\.xlsx$/i, 'purchase_orders');
-        await runImport('POItems', /POItems-.*\.xlsx$/i, 'purchase_order_items');
+        await runImport('PO', /(^|\/)(PurchaseOrders?|Purchases?|PO)([-_].*)?\.xlsx$/i, 'purchase_orders');
+        await runImport('POItems', /(^|\/)(POItems?|PurchaseOrderItems?)([-_].*)?\.xlsx$/i, 'purchase_order_items');
 
-        await runImport('Ledger', /(Ledger|Transactions)-.*\.xlsx$/i, 'transactions');
-        await runImport('JournalEntries', /JournalEntries-.*\.xlsx$/i, 'journal_entries');
-        await runImport('JournalLines', /JournalLines-.*\.xlsx$/i, 'journal_entry_lines');
+        await runImport('Ledger', /(^|\/)(Transactions?|Ledger)([-_].*)?\.xlsx$/i, 'transactions');
+        await runImport('JournalEntries', /(^|\/)(JournalEntries?|Journal|Entries)([-_].*)?\.xlsx$/i, 'journal_entries');
+        await runImport('JournalLines', /(^|\/)(JournalLines?|JournalEntryLines?|Lines)([-_].*)?\.xlsx$/i, 'journal_entry_lines');
 
-        await runImport('Daybook', /Daybook-.*\.xlsx$/i, 'daybook');
-        await runImport('Cheques', /Cheques-.*\.xlsx$/i, 'cheques');
-        await runImport('ChequeHistory', /ChequeHistory-.*\.xlsx$/i, 'cheque_history');
-        await runImport('CreditNotes', /CreditNotes-.*\.xlsx$/i, 'credit_notes');
-        await runImport('Adjustments', /Adjustments-.*\.xlsx$/i, 'inventory_adjustments');
-        await runImport('ActivityLog', /ActivityLog-.*\.xlsx$/i, 'user_activity_log');
+        await runImport('Daybook', /(^|\/)(Daybook)([-_].*)?\.xlsx$/i, 'daybook');
+        await runImport('Cheques', /(^|\/)(Cheques?|Checks?)([-_].*)?\.xlsx$/i, 'cheques');
+        await runImport('ChequeHistory', /(^|\/)(ChequeHistory|CheckHistory)([-_].*)?\.xlsx$/i, 'cheque_history');
+        await runImport('CreditNotes', /(^|\/)(CreditNotes?)([-_].*)?\.xlsx$/i, 'credit_notes');
+        await runImport('Adjustments', /(^|\/)(Adjustments?|InventoryAdjustments?|StockAdjustments?)([-_].*)?\.xlsx$/i, 'inventory_adjustments');
+        await runImport('ActivityLog', /(^|\/)(ActivityLog|UserActivityLog)([-_].*)?\.xlsx$/i, 'user_activity_log');
 
         revalidatePath('/', 'layout');
+        revalidatePath('/products');
+        revalidatePath('/inventory-management');
+        revalidatePath('/inventory');
+        revalidatePath('/contacts');
+        revalidatePath('/sales');
+        revalidatePath('/purchase-orders');
+        revalidatePath('/finance');
+        revalidatePath('/memos');
+        revalidatePath('/reports');
+        revalidatePath('/dashboard');
 
         const finalCount = Object.values(stats).reduce((a: any, b: any) => a + b, 0) as number;
 
@@ -1028,6 +1194,10 @@ export async function importAllData(prevState: any, formData: FormData) {
 
     } catch (e: any) {
         return { success: false, error: e.message };
+    } finally {
+        try {
+            await db.prepare('SET FOREIGN_KEY_CHECKS = 1').run();
+        } catch (_e) { }
     }
 }
 

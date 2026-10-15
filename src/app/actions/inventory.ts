@@ -33,7 +33,7 @@ export async function getAdjustments(
 
     const baseSql = `
         FROM inventory_adjustments ia
-        JOIN products p ON ia.product_id = p.id
+        LEFT JOIN products p ON ia.product_id = p.id
         LEFT JOIN product_variants v ON ia.variant_id = v.id
         WHERE 1=1
     `;
@@ -45,7 +45,7 @@ export async function getAdjustments(
 
     // Paginated items
     const sql = `
-        SELECT ia.*, p.name as product_name, v.name as variant_name
+        SELECT ia.*, COALESCE(p.name, ia.reason, 'Unknown Product') as product_name, v.name as variant_name
         ${baseSql}
         ORDER BY ia.date DESC
         LIMIT ? OFFSET ?
