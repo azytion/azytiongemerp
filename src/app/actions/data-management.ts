@@ -1,6 +1,7 @@
 'use server';
 
 import { getDb } from '@/lib/db';
+import { Buffer } from 'node:buffer';
 import JSZip from 'jszip';
 import { nowLocalISO } from '@/lib/datetime';
 import { revalidatePath } from 'next/cache';
