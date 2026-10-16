@@ -234,8 +234,9 @@ export default function DataManagementTab() {
                         localDB.dashboardStats.clear(),
                     ]);
                 } catch { /* ignore cache clear error */ }
-                toast.success('Data imported successfully!', { id: 'import-toast' });
-                setTimeout(() => window.location.reload(), 1500);
+                toast.success('Data imported successfully! Refreshing...', { id: 'import-toast' });
+                // Use hard navigation to bypass Next.js router cache so all pages re-fetch fresh data
+                setTimeout(() => { window.location.href = window.location.href; }, 1500);
             } else {
                 toast.error('Import failed: ' + result.error, { id: 'import-toast' });
             }

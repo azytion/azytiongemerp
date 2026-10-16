@@ -12,7 +12,29 @@ export default function Error({
 }) {
   useEffect(() => {
     console.error('Application error:', error);
+
+    // Chunk load failures (e.g., after a new deployment) → hard-reload once to fetch fresh chunks
+    const isChunkError =
+      error.message?.includes('Failed to load chunk') ||
+      error.message?.includes('Loading chunk') ||
+      error.message?.includes('ChunkLoadError') ||
+      error.name === 'ChunkLoadError';
+
+    if (isChunkError) {
+      // Avoid reload loops: only auto-reload once per session
+      const key = 'chunk_reload_attempted';
+      if (!sessionStorage.getItem(key)) {
+        sessionStorage.setItem(key, '1');
+        window.location.reload();
+      }
+    }
   }, [error]);
+
+  const isChunkError =
+    error.message?.includes('Failed to load chunk') ||
+    error.message?.includes('Loading chunk') ||
+    error.message?.includes('ChunkLoadError') ||
+    error.name === 'ChunkLoadError';
 
   return (
     <div
@@ -48,14 +70,27 @@ export default function Error({
           <AlertTriangle size={28} color="var(--destructive)" />
         </div>
         <h2 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-          Something went wrong
+          {isChunkError ? 'Page Reload Required' : 'Something went wrong'}
         </h2>
         <p style={{ color: 'var(--muted-foreground)', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
-          {error.message || 'An unexpected error occurred while loading this page.'}
+          {isChunkError
+            ? 'The app was updated. Please reload to get the latest version.'
+            : (error.message || 'An unexpected error occurred while loading this page.')}
         </p>
-        <button type="button" className="btn btn-primary" onClick={() => reset()}>
+        <button
+          type="button"
+          className="btn btn-primary"
+          onClick={() => {
+            if (isChunkError) {
+              sessionStorage.removeItem('chunk_reload_attempted');
+              window.location.reload();
+            } else {
+              reset();
+            }
+          }}
+        >
           <RefreshCw size={16} />
-          Try again
+          {isChunkError ? 'Reload Page' : 'Try again'}
         </button>
       </div>
     </div>

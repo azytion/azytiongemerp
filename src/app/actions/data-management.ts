@@ -22,7 +22,7 @@ import {
     getGivenPartyChequesReport, getGivenOwnChequesReport
 } from './reports_extended';
 
-const INTERNAL_ACTION_TOKEN = 'internal-action-token-secret-xyz';
+const INTERNAL_ACTION_TOKEN = process.env.CRON_SECRET || 'internal-action-token-secret-xyz';
 
 // Helper to convert array of objects to Excel Buffer
 async function generateExcelBuffer(data: any[], sheetName: string = 'Sheet1'): Promise<Buffer> {
@@ -85,7 +85,7 @@ export async function exportAllData(filter?: {
         }
     }
 
-    console.log('Starting All-in-One Export (Single-Store Mode)... Filter:', filter);
+    console.info('[Export] Starting export. Filter:', filter?.type || 'alltime');
     const db = await getDb();
     const zip = new JSZip();
 
@@ -115,7 +115,7 @@ export async function exportAllData(filter?: {
             minDateTs = filterStart.getTime();
             maxDateTs = filterEnd.getTime();
         } else {
-            console.log('Querying date ranges from all temporal tables...');
+            // Scan all temporal tables to find date range of existing data
             const dateQueries = [
                 'SELECT MIN(date) as d FROM sales',
                 'SELECT MAX(date) as d FROM sales',
@@ -401,7 +401,12 @@ export async function exportAllData(filter?: {
                        gd.certificate_number, gd.certificate_url 
                 FROM products p 
                 LEFT JOIN categories c ON p.category_id = c.id
-                LEFT JOIN gem_details gd ON p.id = gd.product_id
+                LEFT JOIN gem_details gd ON gd.id = (
+                    SELECT gd2.id FROM gem_details gd2
+                    WHERE gd2.product_id = p.id AND gd2.variant_id IS NULL
+                    ORDER BY gd2.id ASC
+                    LIMIT 1
+                )
             `).all();
             zip.file(`${masterPrefix}Inventory/Products-Snapshot-${snapshotDate}.xlsx`, await generateExcelBuffer(products, 'Products'));
         } catch (_e) { }
@@ -655,10 +660,12 @@ function mapLegacyImportRow(tableName: string, row: Record<string, unknown>) {
 
         // Treat active/archive flags safely
         if (row.is_active !== undefined && row.is_archived === undefined) {
-            const isExplicitlyInactive = cleanBoolean(row.is_active, 1) === 0;
-            row.is_archived = isExplicitlyInactive ? 1 : 0;
-        } else {
+            const activeFlag = cleanBoolean(row.is_active, 1);
+            row.is_archived = activeFlag === 0 ? 1 : 0;
+        } else if (row.is_archived !== undefined && row.is_archived !== null && row.is_archived !== '') {
             row.is_archived = cleanBoolean(row.is_archived, 0);
+        } else {
+            row.is_archived = 0;
         }
         delete row.is_active;
 
@@ -838,8 +845,24 @@ function normalizeDateValue(value: unknown) {
     return Number.isNaN(date.getTime()) ? value : date.toISOString();
 }
 
+// Whitelist of tables that can be written to via the import feature.
+// This prevents SQL injection via the tableName parameter.
+const IMPORTABLE_TABLES = new Set([
+    'users', 'settings', 'categories', 'products', 'product_variants', 'gem_details',
+    'customers', 'suppliers', 'brokers', 'sales', 'sale_items', 'held_orders',
+    'purchase_orders', 'purchase_order_items', 'memos', 'memo_items',
+    'transactions', 'daybook', 'accounts', 'journal_entries', 'journal_entry_lines',
+    'cheques', 'cheque_history', 'credit_notes', 'inventory_adjustments',
+    'payment_accounts', 'pos_discount_rules', 'user_activity_log',
+]);
+
 async function upsertTableData(db: any, tableName: string, data: any[]) {
     if (!data || data.length === 0) return { count: 0 };
+
+    // Guard against SQL injection via table name
+    if (!IMPORTABLE_TABLES.has(tableName)) {
+        return { count: 0, error: `Table "${tableName}" is not allowed for import.` };
+    }
 
     const columnRows = await db.prepare(
         `SELECT COLUMN_NAME AS name FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?`
@@ -1035,6 +1058,45 @@ async function upsertTableData(db: any, tableName: string, data: any[]) {
                             await txUpdateStmt.run(clean);
                             lastId = Number(clean.id);
                             count++;
+                        } else if (tableName === 'products' && txUpdateStmt) {
+                            let recovered: { id: number } | undefined;
+                            if (clean.barcode) {
+                                recovered = await db.prepare('SELECT id FROM products WHERE barcode = ?').get(clean.barcode) as { id: number } | undefined;
+                            }
+                            if (!recovered && clean.name) {
+                                recovered = await db.prepare('SELECT id FROM products WHERE LOWER(name) = LOWER(?)').get(clean.name) as { id: number } | undefined;
+                            }
+                            if (recovered) {
+                                clean.id = recovered.id;
+                                await txUpdateStmt.run(clean);
+                                lastId = Number(recovered.id);
+                                count++;
+                            } else {
+                                // INSERT IGNORE fired due to a constraint (e.g., duplicate id or barcode collision).
+                                // Assign a new auto-generated barcode and retry as a fresh insert.
+                                const origBarcode = clean.barcode;
+                                clean.barcode = `IMP-${Date.now()}-${Math.floor(Math.random() * 99999)}`;
+                                clean.id = null; // let DB assign a new id
+                                try {
+                                    const retryResult = await db.prepare(
+                                        `INSERT INTO products (${quotedColumns.join(',')}) VALUES (${validColumns.map((_k: string) => '?').join(',')})`
+                                    ).run(...validColumns.map((c: string) => clean[c]));
+                                    if (retryResult.changes > 0) {
+                                        lastId = Number(retryResult.lastInsertRowid);
+                                        count++;
+                                    } else {
+                                        lastId = 0;
+                                        if (!firstError) {
+                                            firstError = `Could not import product "${clean.name || origBarcode || 'unknown'}" (duplicate or constraint).`;
+                                        }
+                                    }
+                                } catch (_retryErr: any) {
+                                    lastId = 0;
+                                    if (!firstError) {
+                                        firstError = `Could not import product "${clean.name || origBarcode || 'unknown'}" (duplicate or constraint).`;
+                                    }
+                                }
+                            }
                         } else {
                             lastId = Number(clean.id || 0);
                         }
@@ -1182,6 +1244,7 @@ export async function importAllData(prevState: any, formData: FormData) {
         revalidatePath('/memos');
         revalidatePath('/reports');
         revalidatePath('/dashboard');
+        revalidatePath('/pos');
 
         const finalCount = Object.values(stats).reduce((a: any, b: any) => a + b, 0) as number;
 

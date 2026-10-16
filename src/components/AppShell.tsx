@@ -28,27 +28,45 @@ export default function AppShell({ session, children }: AppShellProps) {
     //
     // Problem: browsers with "restore tabs on restart" keep session cookies alive.
     // Solution: if sessionStorage has no flag AND localStorage has no flag,
-    // the browser was closed/reopened without Remember Me → force logout.
+    // verify the session server-side before forcing logout. This prevents false
+    // logouts on cloud-hosted apps where users arrive via bookmark/direct URL.
     useEffect(() => {
         if (!session || isAuthPage) return;
+
+        // PWA standalone: redirect away from /pos on launch
+        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+        if (isStandalone && window.location.pathname === '/pos' && window.location.search.length === 0) {
+            window.location.replace('/');
+            return;
+        }
 
         const inSession = sessionStorage.getItem('azytion_pos_session_active');
         const inPersist = localStorage.getItem('azytion_pos_session_active');
 
         if (!inSession && !inPersist) {
-            // Neither flag exists → browser was closed without Remember Me
-            // Clear the session and redirect to login
-            fetch('/api/auth/logout', { method: 'POST', cache: 'no-store' }).catch(() => {});
-            document.cookie = 'session=; Max-Age=0; path=/';
-            window.location.replace('/login');
-            return;
+            // Neither storage flag exists — could be:
+            //   (a) browser was closed/reopened without Remember Me → cookie expired/invalid
+            //   (b) user arrived via bookmark/direct URL on cloud deploy → cookie still valid
+            // Verify server-side before logging out to prevent false logouts.
+            fetch('/api/auth/check', { cache: 'no-store' })
+                .then(r => r.json())
+                .then(json => {
+                    if (!json.isValid) {
+                        // Genuine expired/invalid session → force logout
+                        fetch('/api/auth/logout', { method: 'POST', cache: 'no-store' }).catch(() => {});
+                        document.cookie = 'session=; Max-Age=0; path=/';
+                        window.location.replace('/login');
+                    } else {
+                        // Valid session, no flag — restore it so future checks pass
+                        sessionStorage.setItem('azytion_pos_session_active', 'true');
+                    }
+                })
+                .catch(() => {
+                    // Network error — assume valid, restore flag to avoid logout loop
+                    sessionStorage.setItem('azytion_pos_session_active', 'true');
+                });
         }
-
-        const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
-        if (isStandalone && window.location.pathname === '/pos' && window.location.search.length === 0) {
-            window.location.replace('/');
-        }
-    // Only run once on initial mount — not on every render
+    // Only run once on initial mount
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 

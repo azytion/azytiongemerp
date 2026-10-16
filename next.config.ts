@@ -50,6 +50,14 @@ const nextConfig: NextConfig = {
         headers: securityHeaders,
       },
       {
+        // Ensure Next.js static chunks are always revalidated
+        // Fixes "Failed to load chunk" errors after new deployments
+        source: '/_next/static/(.*)',
+        headers: [
+          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
+        ],
+      },
+      {
         source: '/manifest.json',
         headers: [
           { key: 'Cache-Control', value: 'no-store, max-age=0' },

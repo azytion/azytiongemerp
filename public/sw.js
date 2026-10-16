@@ -1,8 +1,8 @@
-// Azytion GemERP - Service Worker v8
+// Azytion GemERP - Service Worker v9
 // Production only. Localhost/dev is always network-only so UI changes are never
 // hidden by stale PWA caches during development.
 
-const CACHE_VERSION = 'azytion-v8';
+const CACHE_VERSION = 'azytion-v9';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const PAGE_CACHE = `${CACHE_VERSION}-pages`;
 const IS_LOCAL_DEV = ['localhost', '127.0.0.1', '::1'].includes(self.location.hostname);
@@ -72,6 +72,27 @@ self.addEventListener('fetch', (event) => {
     }
 
     if (url.pathname.startsWith('/_next/static/')) {
+        // JS chunks: network-first to ensure fresh chunks after deployments.
+        // Falls back to cache only for non-JS assets (fonts, images in _next/static).
+        const isJsChunk = url.pathname.includes('/chunks/') || url.pathname.endsWith('.js');
+        if (isJsChunk) {
+            event.respondWith(
+                fetch(request)
+                    .then((response) => {
+                        if (response.ok) {
+                            caches.open(STATIC_CACHE).then((cache) => cache.put(request, response.clone()));
+                        }
+                        return response;
+                    })
+                    .catch(async () => {
+                        // Only fall back to cached chunk if network is unavailable
+                        const cached = await caches.match(request);
+                        return cached || new Response('Chunk not available offline', { status: 503 });
+                    })
+            );
+            return;
+        }
+        // Non-JS static assets: cache-first (fonts, CSS, etc.)
         event.respondWith(
             caches.open(STATIC_CACHE).then(async (cache) => {
                 const cached = await cache.match(request);

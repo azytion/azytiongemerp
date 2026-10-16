@@ -98,25 +98,20 @@ export default async function RootLayout({
                 };
 
                 if (isLocalHost || isDevelopment) {
+                  // Dev/localhost: unregister any existing SW and clear caches.
+                  // Do NOT reload — reloading disrupts auth sessionStorage flags.
                   Promise.all([
                     navigator.serviceWorker.getRegistrations().then(function(registrations) {
-                      return Promise.all(registrations.map(function(reg) {
-                        return reg.unregister();
-                      }));
+                      return Promise.all(registrations.map(function(reg) { return reg.unregister(); }));
                     }),
                     clearAzytionCaches()
-                  ]).then(function() {
-                    if (navigator.serviceWorker.controller && !sessionStorage.getItem('azytion_sw_refresh_done')) {
-                      sessionStorage.setItem('azytion_sw_refresh_done', 'true');
-                      window.location.reload();
-                    }
-                  }).catch(function(err) {
+                  ]).catch(function(err) {
                     console.warn('ServiceWorker cleanup failed:', err);
                   });
                   return;
                 }
 
-                navigator.serviceWorker.register('/sw.js?v=8').then(function(reg) {
+                navigator.serviceWorker.register('/sw.js?v=9').then(function(reg) {
                   // When a new SW is waiting, prompt it to activate immediately
                   reg.addEventListener('updatefound', function() {
                     var newWorker = reg.installing;

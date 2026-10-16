@@ -4,15 +4,25 @@ import path from 'path';
 import { randomUUID } from 'crypto';
 import { getSession } from '@/app/actions/auth';
 import { getUploadRoot } from '@/lib/runtime-paths';
+import { checkRateLimit } from '@/lib/rate-limit';
 
 const ALLOWED_EXTENSIONS = new Set(['pdf', 'png', 'jpg', 'jpeg', 'webp', 'gif']);
 const ALLOWED_MIME_PREFIXES = ['image/', 'application/pdf'];
 const MAX_UPLOAD_BYTES = 10 * 1024 * 1024;
 
+const UPLOAD_RATE = { limit: 30, windowMs: 60_000, blockDurationMs: 60_000 };
+
 export async function POST(request: NextRequest) {
-    const session = await getSession() as { role?: string } | null;
+    const session = await getSession() as { role?: string; sub?: string } | null;
     if (!session || !['manager', 'admin', 'super_admin'].includes(session.role || '')) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Rate limit per user: max 30 uploads/minute
+    const rateKey = `upload:${session.sub || 'anon'}`;
+    const rateResult = checkRateLimit(rateKey, UPLOAD_RATE);
+    if (!rateResult.allowed) {
+        return NextResponse.json({ error: 'Too many upload requests. Please wait a moment.' }, { status: 429 });
     }
 
     try {

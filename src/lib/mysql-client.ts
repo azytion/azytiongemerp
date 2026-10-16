@@ -31,14 +31,19 @@ export function getDbName(): string {
 }
 
 export function getMysqlConfig() {
+  // Opt-in SSL: set MYSQL_SSL=true to enable SSL/TLS for the DB connection.
+  // Most managed MySQL hosts (PlanetScale, Railway, etc.) require this.
+  const useSSL = process.env.MYSQL_SSL === 'true' || process.env.MYSQL_SSL === '1';
+  const sslConfig = useSSL ? { ssl: { rejectUnauthorized: process.env.MYSQL_SSL_REJECT_UNAUTHORIZED !== 'false' } } : {};
+
   const url = process.env.DATABASE_URL?.trim();
-  if (url?.startsWith('mysql://')) {
-    // Parse URL and build config object so we can add required options
-    // that aren't expressible in a URL string (multipleStatements, timezone, dateStrings)
+  if (url?.startsWith('mysql://') || url?.startsWith('mysql+tls://')) {
     try {
-      const parsed = new URL(url);
+      const parsed = new URL(url.replace('mysql+tls://', 'mysql://'));
       const rawHost = parsed.hostname;
       const host = rawHost === 'localhost' ? '127.0.0.1' : rawHost;
+      // Auto-enable SSL for non-localhost hosts unless explicitly disabled
+      const autoSSL = host !== '127.0.0.1' && process.env.MYSQL_SSL !== 'false';
       return {
         host,
         port: Number(parsed.port || 3306),
@@ -51,15 +56,18 @@ export function getMysqlConfig() {
         timezone: 'Z',
         dateStrings: true,
         multipleStatements: true,
+        ...(autoSSL ? { ssl: { rejectUnauthorized: process.env.MYSQL_SSL_REJECT_UNAUTHORIZED !== 'false' } } : {}),
+        ...sslConfig,
       };
     } catch {
-      // Fallback: return raw URL (loses extra options but avoids crash)
       return url;
     }
   }
   const rawHost = process.env.MYSQL_HOST || '127.0.0.1';
+  const host = rawHost === 'localhost' ? '127.0.0.1' : rawHost;
+  const autoSSL = host !== '127.0.0.1' && process.env.MYSQL_SSL !== 'false';
   return {
-    host: rawHost === 'localhost' ? '127.0.0.1' : rawHost,
+    host,
     port: Number(process.env.MYSQL_PORT || 3306),
     user: process.env.MYSQL_USER || 'root',
     password: process.env.MYSQL_PASSWORD || '',
@@ -70,6 +78,8 @@ export function getMysqlConfig() {
     timezone: 'Z',
     dateStrings: true,
     multipleStatements: true,
+    ...(autoSSL ? { ssl: { rejectUnauthorized: process.env.MYSQL_SSL_REJECT_UNAUTHORIZED !== 'false' } } : {}),
+    ...sslConfig,
   };
 }
 

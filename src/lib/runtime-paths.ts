@@ -23,7 +23,7 @@ export function getCompanyUploadDir() {
 
 export function getJwtSecret() {
   const secret = process.env.JWT_SECRET;
-  if (process.env.NODE_ENV === 'production' && (!secret || secret === 'zation-pos-secret-key-change-this')) {
+  if (process.env.NODE_ENV === 'production' && (!secret || secret === 'zation-pos-secret-key-change-this' || secret === 'azytion-pos-secret-key-change-this')) {
     throw new Error('JWT_SECRET must be set to a strong random value in production');
   }
   return secret || 'zation-pos-secret-key-change-this';

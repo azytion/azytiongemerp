@@ -518,6 +518,9 @@ async function ensureColumn(table: string, column: string, definition: string) {
 }
 
 export async function runSchemaInit(): Promise<void> {
+  // Validate environment variables on first run
+  const { checkProductionEnv } = await import('./env-check');
+  checkProductionEnv();
   const pool = getPool();
   const dbName = getDbName();
 

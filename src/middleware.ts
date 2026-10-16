@@ -2,15 +2,20 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
 
-async function getSecretKey() {
+async function getSecretKey(): Promise<Uint8Array | null> {
     const secret = process.env.JWT_SECRET;
-    if (
-        process.env.NODE_ENV === 'production' &&
-        (!secret || secret === 'azytion-pos-secret-key-change-this')
-    ) {
-        throw new Error('JWT_SECRET must be set to a strong random value in production');
+    const isInsecureDefault =
+        secret === 'azytion-pos-secret-key-change-this' ||
+        secret === 'zation-pos-secret-key-change-this';
+
+    if (process.env.NODE_ENV === 'production' && (!secret || isInsecureDefault)) {
+        // JWT_SECRET not properly configured — log the error but don't throw.
+        // Returning null causes all requests to be treated as unauthenticated,
+        // which safely redirects to /login rather than crashing the server.
+        console.error('[SECURITY] JWT_SECRET is not set or uses an insecure default. All sessions will be rejected until this is fixed.');
+        return null;
     }
-    return new TextEncoder().encode(secret || 'azytion-pos-secret-key-change-this');
+    return new TextEncoder().encode(secret || 'zation-pos-secret-key-change-this');
 }
 
 // ── Role-based access control ─────────────────────────────────────────────────
@@ -94,6 +99,15 @@ export default async function middleware(request: NextRequest) {
     // Verify JWT
     try {
         const secret = await getSecretKey();
+
+        // If secret key is misconfigured (null), treat all sessions as invalid
+        if (!secret) {
+            if (isLoginPage) return NextResponse.next();
+            const response = NextResponse.redirect(new URL('/login', request.url));
+            response.cookies.delete('session');
+            return response;
+        }
+
         const { payload } = await jwtVerify(sessionCookie, secret);
         const role = (payload.role as string) || '';
 

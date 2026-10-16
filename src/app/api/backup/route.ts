@@ -4,6 +4,9 @@ import { jwtVerify } from 'jose';
 import { getJwtSecret } from '@/lib/runtime-paths';
 import { getPool } from '@/lib/mysql-client';
 import { getDb } from '@/lib/db';
+import { checkRateLimit } from '@/lib/rate-limit';
+
+const BACKUP_RATE = { limit: 5, windowMs: 60_000, blockDurationMs: 300_000 };
 
 export async function GET() {
     try {
@@ -25,6 +28,13 @@ export async function GET() {
 
         if (!payload || payload.role !== 'super_admin') {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        }
+
+        // Rate limit: max 5 backup downloads per minute per user
+        const rateKey = `backup:${payload.sub || 'anon'}`;
+        const rateResult = checkRateLimit(rateKey, BACKUP_RATE);
+        if (!rateResult.allowed) {
+            return NextResponse.json({ error: 'Too many backup requests. Please wait.' }, { status: 429 });
         }
 
         // Cross-reference against DB to confirm user is still active and super_admin

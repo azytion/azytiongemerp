@@ -1,11 +1,23 @@
 import { scryptSync, randomBytes, createCipheriv, createDecipheriv } from 'node:crypto';
 import os from 'node:os';
 
+// Salt is public — it only prevents rainbow tables against the derived key
+const SCRYPT_SALT = 'azytion-pos-key-v2';
+
 function getKey(): Buffer {
-    // In a web app, we should use an environment variable for the secret key.
-    // Falling back to hostname or a default for now, but recommend setting PROCESS.ENV.SECRET_KEY
-    const id = process.env.SECRET_KEY || os.hostname() || 'azytion-pos-host';
-    return scryptSync(id, 'azytion-pos-key', 32);
+    const secret = process.env.SECRET_KEY;
+    if (process.env.NODE_ENV === 'production' && !secret) {
+        // In production without SECRET_KEY, fall back to JWT_SECRET so encrypted
+        // settings are still consistently decryptable across restarts.
+        // If neither is set, the server will throw at JWT level first — so
+        // this fallback is a last-resort safety net.
+        const jwt = process.env.JWT_SECRET;
+        if (jwt) return scryptSync(jwt, SCRYPT_SALT, 32);
+        throw new Error('SECRET_KEY environment variable must be set in production');
+    }
+    // Dev: use SECRET_KEY > hostname > fixed default (for reproducibility on same machine)
+    const id = secret || os.hostname() || 'azytion-pos-dev-host';
+    return scryptSync(id, SCRYPT_SALT, 32);
 }
 
 export function encryptSecret(plain: string): string {
