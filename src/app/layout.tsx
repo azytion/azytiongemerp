@@ -39,7 +39,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: appName,
     applicationName: appName,
     description: appDescription,
-    manifest: '/manifest.json?v=8',
+    manifest: '/manifest.json?v=9',
     icons: {
       icon: appIcon,
       shortcut: appIcon,
@@ -111,7 +111,7 @@ export default async function RootLayout({
                   return;
                 }
 
-                navigator.serviceWorker.register('/sw.js?v=9').then(function(reg) {
+                navigator.serviceWorker.register('/sw.js?v=10').then(function(reg) {
                   // When a new SW is waiting, prompt it to activate immediately
                   reg.addEventListener('updatefound', function() {
                     var newWorker = reg.installing;

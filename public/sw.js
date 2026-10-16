@@ -1,8 +1,8 @@
-// Azytion GemERP - Service Worker v9
+// Azytion GemERP - Service Worker v10
 // Production only. Localhost/dev is always network-only so UI changes are never
 // hidden by stale PWA caches during development.
 
-const CACHE_VERSION = 'azytion-v9';
+const CACHE_VERSION = 'azytion-v10';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const PAGE_CACHE = `${CACHE_VERSION}-pages`;
 const IS_LOCAL_DEV = ['localhost', '127.0.0.1', '::1'].includes(self.location.hostname);
@@ -74,7 +74,7 @@ self.addEventListener('fetch', (event) => {
     if (url.pathname.startsWith('/_next/static/')) {
         // JS chunks: network-first to ensure fresh chunks after deployments.
         // Falls back to cache only for non-JS assets (fonts, images in _next/static).
-        const isJsChunk = url.pathname.includes('/chunks/') || url.pathname.endsWith('.js');
+        const isJsChunk = url.pathname.endsWith('.js');
         if (isJsChunk) {
             event.respondWith(
                 fetch(request)

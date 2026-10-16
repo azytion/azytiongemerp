@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "node -e \"require('child_process').execSync('next start -H 0.0.0.0 -p ' + (process.env.PORT || 3000), {stdio: 'inherit'})\"",
+    "start": "next start -H 0.0.0.0",
     "lint": "eslint",
     "db:init": "node scripts/init-mysql.mjs"
   },
