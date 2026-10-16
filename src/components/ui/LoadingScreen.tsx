@@ -24,8 +24,10 @@ export default function LoadingScreen() {
       flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
-      background: 'var(--background)',
-      color: 'var(--foreground)',
+      // Keep the startup screen branded even if the app stylesheet fails to load.
+      background: '#0B132B',
+      color: '#F8FAFC',
+      fontFamily: '"Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
       gap: '2rem',
       position: 'relative',
       overflow: 'hidden',
@@ -46,10 +48,10 @@ export default function LoadingScreen() {
       <div style={{
         width: 96, height: 96,
         borderRadius: 24,
-        background: 'var(--primary-subtle)',
+        background: 'rgba(212,175,55,0.08)',
         border: '2px solid rgba(212,175,55,0.3)',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        boxShadow: 'var(--shadow-gold-lg)',
+        boxShadow: '0 16px 40px rgba(212,175,55,0.3), 0 4px 12px rgba(212,175,55,0.15)',
         animation: 'pulse 2.5s ease-in-out infinite',
         position: 'relative',
         zIndex: 1,
@@ -68,19 +70,19 @@ export default function LoadingScreen() {
           fontWeight: 900,
           letterSpacing: '-0.03em',
           marginBottom: '0.5rem',
-          background: 'var(--gradient-primary)',
+          background: 'linear-gradient(135deg, #F0D060 0%, #D4AF37 45%, #A67C00 100%)',
           WebkitBackgroundClip: 'text',
           WebkitTextFillColor: 'transparent',
           backgroundClip: 'text',
         }}>
           {appName}
         </h1>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', color: 'var(--muted-foreground)', fontSize: '0.875rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', color: '#94A3B8', fontSize: '0.875rem' }}>
           <div style={{ display: 'flex', gap: '0.375rem' }}>
             {[0, 1, 2].map(i => (
               <div key={i} style={{
                 width: 6, height: 6, borderRadius: '50%',
-                background: 'var(--primary)',
+                background: '#D4AF37',
                 animation: `bounce 1.2s ease-in-out ${i * 0.2}s infinite`,
               }} />
             ))}
@@ -93,7 +95,7 @@ export default function LoadingScreen() {
       <div style={{
         position: 'fixed', bottom: 0, left: 0, right: 0,
         height: 3,
-        background: 'linear-gradient(90deg, transparent, var(--primary), var(--primary-light), var(--primary), transparent)',
+        background: 'linear-gradient(90deg, transparent, #D4AF37, #E6C84A, #D4AF37, transparent)',
         backgroundSize: '200% 100%',
         animation: 'goldShimmer 2s linear infinite',
       }} />

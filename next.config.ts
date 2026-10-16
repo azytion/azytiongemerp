@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 const securityHeaders = [
   // Prevent clickjacking
@@ -7,7 +8,7 @@ const securityHeaders = [
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   // Control referrer information
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-  // Enforce HTTPS for 1 year (production only)
+  // Enforce HTTPS for 1 year (production only — set via env check below)
   ...(process.env.NODE_ENV === 'production'
     ? [{ key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains' }]
     : []),
@@ -16,7 +17,7 @@ const securityHeaders = [
     key: 'Permissions-Policy',
     value: 'camera=(), microphone=(), geolocation=(), payment=()',
   },
-  // CSP — allows same-origin scripts/styles + Google AI API
+  // Basic CSP — allows same-origin scripts/styles + Google AI API
   {
     key: 'Content-Security-Policy',
     value: [
@@ -38,14 +39,14 @@ const nextConfig: NextConfig = {
     },
   },
   serverExternalPackages: ['mysql2'],
-  // Required in Next.js 16: silence the webpack-config-with-turbopack error.
-  // The empty object tells Next.js that Turbopack is intentionally configured.
-  turbopack: {},
+  turbopack: {
+    resolveExtensions: ['.tsx', '.ts', '.jsx', '.js', '.mjs', '.cjs'],
+  },
   async headers() {
     return [
       {
-        // Security headers on all HTML/API routes.
-        // Excludes /_next/static/ so the proxy doesn't break static asset MIME types.
+        // Keep Next.js static assets out of app-level headers. The hosting
+        // proxy serves these files directly and must preserve their MIME types.
         source: '/((?!_next/static|_next/image).*)',
         headers: securityHeaders,
       },
@@ -56,6 +57,20 @@ const nextConfig: NextConfig = {
         ],
       },
     ];
+  },
+  webpack: (config) => {
+    config.watchOptions = {
+      ...config.watchOptions,
+      ignored: [
+        path.resolve('node_modules'),
+        path.resolve('dist-new4'),
+        path.resolve('dist'),
+        path.resolve('.next'),
+      ],
+    };
+    config.resolve = config.resolve || {};
+    config.resolve.alias = { ...config.resolve.alias };
+    return config;
   },
 };
 
