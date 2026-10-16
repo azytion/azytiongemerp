@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import path from "path";
 
 const securityHeaders = [
   // Prevent clickjacking
@@ -8,7 +7,7 @@ const securityHeaders = [
   { key: 'X-Content-Type-Options', value: 'nosniff' },
   // Control referrer information
   { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-  // Enforce HTTPS for 1 year (production only — set via env check below)
+  // Enforce HTTPS for 1 year (production only)
   ...(process.env.NODE_ENV === 'production'
     ? [{ key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains' }]
     : []),
@@ -17,7 +16,7 @@ const securityHeaders = [
     key: 'Permissions-Policy',
     value: 'camera=(), microphone=(), geolocation=(), payment=()',
   },
-  // Basic CSP — allows same-origin scripts/styles + Google AI API
+  // CSP — allows same-origin scripts/styles + Google AI API
   {
     key: 'Content-Security-Policy',
     value: [
@@ -39,23 +38,16 @@ const nextConfig: NextConfig = {
     },
   },
   serverExternalPackages: ['mysql2'],
-  turbopack: {
-    resolveExtensions: ['.tsx', '.ts', '.jsx', '.js', '.mjs', '.cjs'],
-  },
+  // Required in Next.js 16: silence the webpack-config-with-turbopack error.
+  // The empty object tells Next.js that Turbopack is intentionally configured.
+  turbopack: {},
   async headers() {
     return [
       {
-        // Apply security headers to all routes
-        source: '/(.*)',
+        // Security headers on all HTML/API routes.
+        // Excludes /_next/static/ so the proxy doesn't break static asset MIME types.
+        source: '/((?!_next/static|_next/image).*)',
         headers: securityHeaders,
-      },
-      {
-        // Ensure Next.js static chunks are always revalidated
-        // Fixes "Failed to load chunk" errors after new deployments
-        source: '/_next/static/(.*)',
-        headers: [
-          { key: 'Cache-Control', value: 'public, max-age=31536000, immutable' },
-        ],
       },
       {
         source: '/manifest.json',
@@ -64,20 +56,6 @@ const nextConfig: NextConfig = {
         ],
       },
     ];
-  },
-  webpack: (config) => {
-    config.watchOptions = {
-      ...config.watchOptions,
-      ignored: [
-        path.resolve('node_modules'),
-        path.resolve('dist-new4'),
-        path.resolve('dist'),
-        path.resolve('.next'),
-      ],
-    };
-    config.resolve = config.resolve || {};
-    config.resolve.alias = { ...config.resolve.alias };
-    return config;
   },
 };
 
