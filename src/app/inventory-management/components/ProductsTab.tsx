@@ -55,7 +55,10 @@ export default function ProductsTab() {
                     const full = await getProducts('', undefined, 1, 2000, false);
                     if (full?.data) { await localDB.products.clear(); await localDB.products.bulkPut(full.data as any); }
                 }
-            } catch { await loadFromCache(); }
+            } catch (err) {
+                console.error('Failed to load products from server:', err);
+                await loadFromCache();
+            }
         } else {
             await loadFromCache();
         }

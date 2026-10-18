@@ -356,7 +356,14 @@ export async function exportAllData(filter?: {
         for (const section of reportStructure) {
             for (const r of section.reports) {
                 try {
-                    const rawResult = await (r.fn as any)(fullRange, 1, 1000000);
+                    let rawResult: any;
+                    if (['ItemList', 'SupplierWiseStock', 'ReorderLevel', 'TypeWise', 'CategoryAnalysis'].includes(r.name)) {
+                        rawResult = await (r.fn as any)('', 1, 1000000);
+                    } else if (r.name === 'BalanceSheet') {
+                        rawResult = await (r.fn as any)();
+                    } else {
+                        rawResult = await (r.fn as any)(fullRange, 1, 1000000);
+                    }
                     let data: any[] = [];
                     if (rawResult && typeof rawResult === 'object') {
                         if (Array.isArray(rawResult)) data = rawResult;
@@ -633,6 +640,11 @@ function mapLegacyImportRow(tableName: string, row: Record<string, unknown>) {
     delete row.min_stock_level;
 
     if (tableName === 'products') {
+        if (row.id === undefined || row.id === null || row.id === '') {
+            row.id = row.product_id ?? row.item_id;
+        }
+        row.id = cleanInt(row.id, null);
+
         // Natural synonyms for products
         if (!row.name) {
             row.name = row.product_name || row.item_name || row.product || row.item || row.title;
@@ -678,12 +690,54 @@ function mapLegacyImportRow(tableName: string, row: Record<string, unknown>) {
     }
 
     if (tableName === 'categories') {
+        if (row.id === undefined || row.id === null || row.id === '') {
+            row.id = row.category_id;
+        }
+        row.id = cleanInt(row.id, null);
         if (!row.name) {
             row.name = row.category_name || row.category;
         }
     }
 
+    if (tableName === 'customers') {
+        if (row.id === undefined || row.id === null || row.id === '') {
+            row.id = row.customer_id;
+        }
+        row.id = cleanInt(row.id, null);
+        if (!row.name) row.name = row.customer_name || row.customer;
+        if (!row.phone) row.phone = row.customer_phone || row.mobile || row.contact || row.phone_number;
+        if (!row.email) row.email = row.customer_email || row.email_address;
+        if (!row.address) row.address = row.customer_address;
+        row.balance = cleanNumber(row.balance, 0);
+    }
+
+    if (tableName === 'suppliers') {
+        if (row.id === undefined || row.id === null || row.id === '') {
+            row.id = row.supplier_id;
+        }
+        row.id = cleanInt(row.id, null);
+        if (!row.name) row.name = row.supplier_name || row.supplier || row.company || row.vendor;
+        if (!row.phone) row.phone = row.supplier_phone || row.mobile || row.contact || row.phone_number;
+        if (!row.email) row.email = row.supplier_email || row.email_address;
+        if (!row.address) row.address = row.supplier_address;
+        row.balance = cleanNumber(row.balance, 0);
+        delete row.contact_person;
+    }
+
+    if (tableName === 'brokers') {
+        if (row.id === undefined || row.id === null || row.id === '') {
+            row.id = row.broker_id;
+        }
+        row.id = cleanInt(row.id, null);
+        if (!row.name) row.name = row.broker_name || row.broker;
+        if (!row.phone) row.phone = row.broker_phone || row.mobile || row.contact || row.phone_number;
+    }
+
     if (tableName === 'accounts') {
+        if (row.id === undefined || row.id === null || row.id === '') {
+            row.id = row.account_id;
+        }
+        row.id = cleanInt(row.id, null);
         if (row.account_number && !row.account_code) row.account_code = row.account_number;
         if (row.name && !row.account_name) row.account_name = row.name;
         if (row.type && !row.account_type) row.account_type = row.type;
@@ -696,6 +750,11 @@ function mapLegacyImportRow(tableName: string, row: Record<string, unknown>) {
     }
 
     if (tableName === 'sales') {
+        if (row.id === undefined || row.id === null || row.id === '') {
+            row.id = row.sale_id ?? row.invoice_id;
+        }
+        row.id = cleanInt(row.id, null);
+        if (!row.invoice_number) row.invoice_number = row.sale_number || row.bill_number || row.invoice_no || row.invoice;
         if (row.discount_amount !== undefined && row.discount === undefined) row.discount = row.discount_amount;
         row.total_amount = cleanNumber(row.total_amount, 0);
         row.received_cash = cleanNumber(row.received_cash, 0);
@@ -709,6 +768,11 @@ function mapLegacyImportRow(tableName: string, row: Record<string, unknown>) {
     }
 
     if (tableName === 'sale_items') {
+        if (row.id === undefined || row.id === null || row.id === '') {
+            row.id = row.sale_item_id ?? row.item_id;
+        }
+        row.id = cleanInt(row.id, null);
+        if (!row.sale_id) row.sale_id = row.invoice_id;
         if (row.quantity === undefined) row.quantity = row.qty !== undefined ? row.qty : 1;
         row.quantity = cleanInt(row.quantity, 1);
         row.price = cleanNumber(row.price ?? row.rate, 0);
@@ -725,6 +789,11 @@ function mapLegacyImportRow(tableName: string, row: Record<string, unknown>) {
     }
 
     if (tableName === 'purchase_orders') {
+        if (row.id === undefined || row.id === null || row.id === '') {
+            row.id = row.po_id ?? row.order_id ?? row.purchase_id;
+        }
+        row.id = cleanInt(row.id, null);
+        if (!row.po_number) row.po_number = row.order_number || row.po || row.purchase_number;
         row.total_amount = cleanNumber(row.total_amount, 0);
         row.paid_amount = cleanNumber(row.paid_amount, 0);
         delete row.created_at;
@@ -732,6 +801,12 @@ function mapLegacyImportRow(tableName: string, row: Record<string, unknown>) {
     }
 
     if (tableName === 'purchase_order_items') {
+        if (row.id === undefined || row.id === null || row.id === '') {
+            row.id = row.item_id ?? row.po_item_id;
+        }
+        row.id = cleanInt(row.id, null);
+        if (!row.po_id) row.po_id = row.purchase_order_id || row.order_id;
+        if (!row.product_id) row.product_id = row.item_id;
         if (row.quantity === undefined) row.quantity = row.qty !== undefined ? row.qty : 1;
         row.quantity = cleanInt(row.quantity, 1);
         row.expected_price = cleanNumber(row.expected_price ?? row.price, 0);
@@ -781,9 +856,14 @@ function mapLegacyImportRow(tableName: string, row: Record<string, unknown>) {
     }
 
     if (tableName === 'inventory_adjustments') {
+        if (row.id === undefined || row.id === null || row.id === '') {
+            row.id = row.adjustment_id;
+        }
+        row.id = cleanInt(row.id, null);
+        if (!row.product_name && row.product) row.product_name = row.product;
         if (row.quantity === undefined) row.quantity = row.qty !== undefined ? row.qty : 0;
         row.quantity = cleanInt(row.quantity, 0);
-        if (!row.adjustment_type) row.adjustment_type = (row.type as string) || 'correction';
+        if (!row.adjustment_type) row.adjustment_type = (row.type as string) || (row.adj_type as string) || 'correction';
         delete row.user_id;
     }
 
@@ -878,6 +958,10 @@ async function upsertTableData(db: any, tableName: string, data: any[]) {
 
     try {
         await db.transaction(async () => {
+            try {
+                await db.prepare('SET FOREIGN_KEY_CHECKS = 0').run();
+            } catch (_fkErr) { }
+
             const txInsertStmt = db.prepare(
                 `INSERT OR IGNORE INTO ${tableName} (${quotedColumns.join(',')}) VALUES (${validColumns.map((k: string) => '@' + k).join(',')})`
             );
@@ -1007,6 +1091,30 @@ async function upsertTableData(db: any, tableName: string, data: any[]) {
                     else clean[c] = null;
                 });
 
+                if (tableName === 'products') {
+                    if (clean.category_id) {
+                        const existingCat = await db.prepare('SELECT id FROM categories WHERE id = ?').get(clean.category_id);
+                        if (!existingCat) {
+                            if (clean.category) {
+                                const found = await findByNameCaseInsensitive(db, 'categories', clean.category);
+                                if (found) clean.category_id = found.id;
+                                else {
+                                    try {
+                                        const ins = await db.prepare('INSERT INTO categories (name) VALUES (?)').run(clean.category);
+                                        clean.category_id = ins.lastInsertRowid;
+                                    } catch {
+                                        clean.category_id = null;
+                                    }
+                                }
+                            } else {
+                                clean.category_id = null;
+                            }
+                        }
+                    }
+                }
+
+                if (clean.id === 0) clean.id = null;
+
                 for (const column of ['date', 'created_at', 'updated_at', 'timestamp', 'issue_date', 'due_date', 'date_created', 'expected_date', 'date_out', 'date_due']) {
                     if (column in clean) {
                         clean[column] = normalizeDateValue(clean[column]);
@@ -1046,18 +1154,20 @@ async function upsertTableData(db: any, tableName: string, data: any[]) {
 
                     if (existingRecord && txUpdateStmt) {
                         clean.id = existingRecord.id;
-                        await txUpdateStmt.run(clean);
+                        const updateRes = await txUpdateStmt.run(clean);
+                        if (updateRes.changes > 0) count++;
                         lastId = Number(existingRecord.id);
-                        count++;
                     } else {
                         const insertResult = await txInsertStmt.run(clean);
                         if (insertResult.changes > 0) {
                             lastId = Number(clean.id || insertResult.lastInsertRowid);
                             count++;
                         } else if (txUpdateStmt && clean.id) {
-                            await txUpdateStmt.run(clean);
-                            lastId = Number(clean.id);
-                            count++;
+                            const updateRes = await txUpdateStmt.run(clean);
+                            if (updateRes.changes > 0) {
+                                lastId = Number(clean.id);
+                                count++;
+                            }
                         } else if (tableName === 'products' && txUpdateStmt) {
                             let recovered: { id: number } | undefined;
                             if (clean.barcode) {
@@ -1068,9 +1178,9 @@ async function upsertTableData(db: any, tableName: string, data: any[]) {
                             }
                             if (recovered) {
                                 clean.id = recovered.id;
-                                await txUpdateStmt.run(clean);
+                                const updateRes = await txUpdateStmt.run(clean);
+                                if (updateRes.changes > 0) count++;
                                 lastId = Number(recovered.id);
-                                count++;
                             } else {
                                 // INSERT IGNORE fired due to a constraint (e.g., duplicate id or barcode collision).
                                 // Assign a new auto-generated barcode and retry as a fresh insert.
@@ -1142,6 +1252,10 @@ async function upsertTableData(db: any, tableName: string, data: any[]) {
                     if (!firstError) firstError = e.message;
                 }
             }
+
+            try {
+                await db.prepare('SET FOREIGN_KEY_CHECKS = 1').run();
+            } catch (_fkErr) { }
         })();
     } catch (err: any) {
         firstError = err.message;
@@ -1150,11 +1264,13 @@ async function upsertTableData(db: any, tableName: string, data: any[]) {
     return { count, error: firstError };
 }
 
-export async function importAllData(prevState: any, formData: FormData) {
-    try {
-        await requireAnyRole(['admin', 'super_admin']);
-    } catch (error) {
-        return authError(error);
+export async function importAllData(prevState: any, formData: FormData, internalToken?: string) {
+    if (internalToken !== INTERNAL_ACTION_TOKEN) {
+        try {
+            await requireAnyRole(['admin', 'super_admin']);
+        } catch (error) {
+            return authError(error);
+        }
     }
 
     const file = formData.get('file') as File;

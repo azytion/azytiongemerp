@@ -105,7 +105,7 @@ export async function getProducts(
         LIMIT ? OFFSET ?
     `;
 
-    const products = await db.prepare(sql).all(...params, pageSize, offset) as any[];
+    const products = await db.prepare(sql).all(...params, Number(pageSize) | 0, Number(offset) | 0) as any[];
 
     // Build product objects
     const data = products.map(p => {
@@ -130,7 +130,7 @@ export async function getProducts(
 
         return {
             ...p,
-            category: p.category_name || p.category,
+            category: p.category_name || p.category || 'Uncategorized',
             pricing_method: p.pricing_method || 'per_piece',
             type: p.type || 'single',
             gem_details,

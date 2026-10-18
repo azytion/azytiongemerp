@@ -51,7 +51,7 @@ export async function getAdjustments(
         LIMIT ? OFFSET ?
     `;
 
-    const adjustments = await db.prepare(sql).all(...params, pageSize, offset) as InventoryAdjustment[];
+    const adjustments = await db.prepare(sql).all(...params, Number(pageSize) | 0, Number(offset) | 0) as InventoryAdjustment[];
 
     return {
         data: adjustments,
