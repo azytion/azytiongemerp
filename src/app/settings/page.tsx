@@ -2,6 +2,11 @@
 
 import { useCallback, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import dynamic from 'next/dynamic';
+import {
+  Building2, Receipt, Settings as SettingsIcon, Mail, Users, Barcode,
+  Database, FileText, Monitor, ShieldAlert, Loader2, Smartphone, AppWindow
+} from 'lucide-react';
 import { getSettings } from '@/app/actions/settings';
 import { getSession } from '@/app/actions/auth';
 import { useLoadEffect } from '@/hooks/useLoadEffect';
@@ -16,7 +21,6 @@ import POSSettings from './components/POSSettings';
 import ActivityLogSettings from './components/ActivityLogSettings';
 import FeatureSettings from './components/FeatureSettings';
 import AppSettings from './components/AppSettings';
-import dynamic from 'next/dynamic';
 
 const DataManagementTab = dynamic(() => import('./components/DataManagementTab'), {
   loading: () => (
@@ -35,10 +39,6 @@ const PWASettings = dynamic(() => import('./components/PWASettings'), {
   ),
   ssr: false
 });
-import {
-  Building2, Receipt, Settings as SettingsIcon, Mail, Users, Barcode,
-  Database, FileText, Monitor, ShieldAlert, Loader2, Smartphone, AppWindow
-} from 'lucide-react';
 
 export default function SettingsPage() {
   const router = useRouter();

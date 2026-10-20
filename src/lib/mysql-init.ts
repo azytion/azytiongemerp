@@ -532,7 +532,7 @@ export async function runSchemaInit(): Promise<void> {
   if (typeof baseConfig === 'string') {
     bootstrapConfig = baseConfig.replace(/\/[^/?]*(\?|$)/, '/$1');
   } else {
-    const { waitForConnections, connectionLimit, queueLimit, ...rest } = baseConfig;
+    const { waitForConnections: _waitForConnections, connectionLimit: _connectionLimit, queueLimit: _queueLimit, ...rest } = baseConfig;
     bootstrapConfig = {
       ...rest,
       host: rest.host === 'localhost' ? '127.0.0.1' : rest.host,

@@ -1,8 +1,8 @@
-// Azytion GemERP - Service Worker v10
+// Azytion GemERP - Service Worker v11
 // Production only. Localhost/dev is always network-only so UI changes are never
 // hidden by stale PWA caches during development.
 
-const CACHE_VERSION = 'azytion-v10';
+const CACHE_VERSION = 'azytion-v11';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const PAGE_CACHE = `${CACHE_VERSION}-pages`;
 const IS_LOCAL_DEV = ['localhost', '127.0.0.1', '::1'].includes(self.location.hostname);
@@ -78,9 +78,13 @@ self.addEventListener('fetch', (event) => {
         if (isJsChunk) {
             event.respondWith(
                 fetch(request)
-                    .then((response) => {
+                    .then(async (response) => {
                         if (response.ok) {
-                            caches.open(STATIC_CACHE).then((cache) => cache.put(request, response.clone()));
+                            // Clone BEFORE reading/returning so both the cache
+                            // and the browser can consume the body independently.
+                            const clone = response.clone();
+                            const cache = await caches.open(STATIC_CACHE);
+                            await cache.put(request, clone);
                         }
                         return response;
                     })
@@ -137,9 +141,13 @@ self.addEventListener('fetch', (event) => {
 
     event.respondWith(
         fetch(request)
-            .then((response) => {
+            .then(async (response) => {
                 if (response.ok) {
-                    caches.open(PAGE_CACHE).then((cache) => cache.put(request, response.clone()));
+                    // Clone BEFORE returning so both the cache and the browser
+                    // can consume the body without a "body already used" error.
+                    const clone = response.clone();
+                    const cache = await caches.open(PAGE_CACHE);
+                    await cache.put(request, clone);
                 }
                 return response;
             })
