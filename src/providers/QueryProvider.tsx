@@ -3,18 +3,15 @@
 import { QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { queryClient } from '@/lib/query-client';
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { updateFormatSettings } from '@/lib/utils';
 import { getSettings } from '@/app/actions/settings';
 import { getCurrencySymbol } from '@/lib/currencies';
-import LoadingScreen from '@/components/ui/LoadingScreen';
 
 // Module-level flag so Fast Refresh re-mounts don't re-save the timezone on every HMR cycle
 let timezoneSaved = false;
 
 export function QueryProvider({ children }: { children: ReactNode }) {
-    const [isSettingsLoaded, setIsSettingsLoaded] = useState(false);
-
     useEffect(() => {
         // In React 18 Strict Mode, effects run twice. We use a cancelled flag so the
         // first (discarded) run bails out before updating state, avoiding a double DB call.
@@ -73,8 +70,6 @@ export function QueryProvider({ children }: { children: ReactNode }) {
                         country: 'US',
                     });
                 }
-            } finally {
-                if (!cancelled) setIsSettingsLoaded(true);
             }
         };
 
@@ -83,10 +78,6 @@ export function QueryProvider({ children }: { children: ReactNode }) {
             cancelled = true;
         };
     }, []);
-
-    if (!isSettingsLoaded) {
-        return <LoadingScreen />;
-    }
 
     return (
         <QueryClientProvider client={queryClient}>
