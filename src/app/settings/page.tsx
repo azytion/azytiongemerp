@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState } from 'react';
+import { useCallback, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import {
@@ -10,6 +10,7 @@ import {
 import { getSettings } from '@/app/actions/settings';
 import { getSession } from '@/app/actions/auth';
 import { useLoadEffect } from '@/hooks/useLoadEffect';
+import ErrorBoundary from '@/components/ErrorBoundary';
 import CompanySettings from './components/CompanySettings';
 import TaxSettings from './components/TaxSettings';
 import SystemSettings from './components/SystemSettings';
@@ -40,7 +41,7 @@ const PWASettings = dynamic(() => import('./components/PWASettings'), {
   ssr: false
 });
 
-export default function SettingsPage() {
+function SettingsContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   type SettingsTab = 'company' | 'tax' | 'system' | 'notification' | 'users' | 'barcodes' | 'hardware' | 'data' | 'logs' | 'pos' | 'features' | 'pwa' | 'app';
@@ -156,20 +157,34 @@ export default function SettingsPage() {
 
       {/* Content */}
       <div className="card" style={{ padding: '1.5rem' }}>
-        {activeTab === 'app'      && <AppSettings settings={settings} />}
-        {activeTab === 'features' && <FeatureSettings settings={settings} />}
-        {activeTab === 'company' && <CompanySettings settings={settings} isSuperAdmin={isSuperAdmin} />}
-        {activeTab === 'pos' && <POSSettings settings={settings} />}
-        {activeTab === 'tax' && <TaxSettings settings={settings} />}
-        {activeTab === 'system' && <SystemSettings settings={settings} />}
-        {activeTab === 'notification' && <EmailSettings settings={settings} isSuperAdmin={isSuperAdmin} />}
-        {activeTab === 'users' && <UsersSettings />}
-        {activeTab === 'barcodes' && <BarcodesSettings />}
-        {activeTab === 'hardware' && <HardwareSettings settings={settings} />}
-        {activeTab === 'data' && <DataManagementTab />}
-        {activeTab === 'logs' && <ActivityLogSettings />}
-        {activeTab === 'pwa' && <PWASettings />}
+        <ErrorBoundary fallbackTitle="Failed to load settings tab">
+          {activeTab === 'app'      && <AppSettings settings={settings} />}
+          {activeTab === 'features' && <FeatureSettings settings={settings} />}
+          {activeTab === 'company' && <CompanySettings settings={settings} isSuperAdmin={isSuperAdmin} />}
+          {activeTab === 'pos' && <POSSettings settings={settings} />}
+          {activeTab === 'tax' && <TaxSettings settings={settings} />}
+          {activeTab === 'system' && <SystemSettings settings={settings} />}
+          {activeTab === 'notification' && <EmailSettings settings={settings} isSuperAdmin={isSuperAdmin} />}
+          {activeTab === 'users' && <UsersSettings />}
+          {activeTab === 'barcodes' && <BarcodesSettings />}
+          {activeTab === 'hardware' && <HardwareSettings settings={settings} />}
+          {activeTab === 'data' && <DataManagementTab />}
+          {activeTab === 'logs' && <ActivityLogSettings />}
+          {activeTab === 'pwa' && <PWASettings />}
+        </ErrorBoundary>
       </div>
     </div>
+  );
+}
+
+export default function SettingsPage() {
+  return (
+    <Suspense fallback={
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 300 }}>
+        <Loader2 size={32} className="animate-spin" color="var(--primary)" />
+      </div>
+    }>
+      <SettingsContent />
+    </Suspense>
   );
 }

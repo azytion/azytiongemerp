@@ -111,7 +111,7 @@ export default async function RootLayout({
                   return;
                 }
 
-                navigator.serviceWorker.register('/sw.js?v=11').then(function(reg) {
+                navigator.serviceWorker.register('/sw.js?v=12').then(function(reg) {
                   // When a new SW is waiting, prompt it to activate immediately
                   reg.addEventListener('updatefound', function() {
                     var newWorker = reg.installing;

@@ -1,8 +1,8 @@
-// Azytion GemERP - Service Worker v11
+// Azytion GemERP - Service Worker v12
 // Production only. Localhost/dev is always network-only so UI changes are never
 // hidden by stale PWA caches during development.
 
-const CACHE_VERSION = 'azytion-v11';
+const CACHE_VERSION = 'azytion-v12';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const PAGE_CACHE = `${CACHE_VERSION}-pages`;
 const IS_LOCAL_DEV = ['localhost', '127.0.0.1', '::1'].includes(self.location.hostname);
@@ -64,6 +64,9 @@ self.addEventListener('fetch', (event) => {
 
     if (
         url.pathname.startsWith('/api/') ||
+        url.searchParams.has('_rsc') ||
+        request.headers.has('rsc') ||
+        request.headers.has('next-router-state-tree') ||
         (url.pathname.startsWith('/_next/static/chunks/') && url.pathname.includes('server')) ||
         request.headers.get('next-action') !== null ||
         request.headers.get('content-type')?.includes('multipart/form-data')
@@ -72,28 +75,11 @@ self.addEventListener('fetch', (event) => {
     }
 
     if (url.pathname.startsWith('/_next/static/')) {
-        // JS chunks: network-first to ensure fresh chunks after deployments.
-        // Falls back to cache only for non-JS assets (fonts, images in _next/static).
+        // JS chunks: pass-through to network. Next.js chunks have content hashes
+        // and are handled by the browser HTTP cache. Never store them in SW cache
+        // or return 503 for them, which causes ChunkLoadError reload loops.
         const isJsChunk = url.pathname.endsWith('.js');
         if (isJsChunk) {
-            event.respondWith(
-                fetch(request)
-                    .then(async (response) => {
-                        if (response.ok) {
-                            // Clone BEFORE reading/returning so both the cache
-                            // and the browser can consume the body independently.
-                            const clone = response.clone();
-                            const cache = await caches.open(STATIC_CACHE);
-                            await cache.put(request, clone);
-                        }
-                        return response;
-                    })
-                    .catch(async () => {
-                        // Only fall back to cached chunk if network is unavailable
-                        const cached = await caches.match(request);
-                        return cached || new Response('Chunk not available offline', { status: 503 });
-                    })
-            );
             return;
         }
         // Non-JS static assets: cache-first (fonts, CSS, etc.)

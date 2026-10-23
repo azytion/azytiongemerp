@@ -9,30 +9,41 @@ export default function GlobalError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  useEffect(() => {
-    console.error('Global application error:', error);
-
-    // Chunk load failures after a new deployment → hard-reload once to fetch fresh chunks
-    const isChunkError =
-      error.message?.includes('Failed to load chunk') ||
-      error.message?.includes('Loading chunk') ||
-      error.message?.includes('ChunkLoadError') ||
-      error.name === 'ChunkLoadError';
-
-    if (isChunkError) {
-      const key = 'chunk_reload_attempted';
-      if (!sessionStorage.getItem(key)) {
-        sessionStorage.setItem(key, '1');
-        window.location.reload();
-      }
-    }
-  }, [error]);
-
   const isChunkError =
     error.message?.includes('Failed to load chunk') ||
     error.message?.includes('Loading chunk') ||
     error.message?.includes('ChunkLoadError') ||
     error.name === 'ChunkLoadError';
+
+  const purgeAndReload = async () => {
+    try {
+      sessionStorage.removeItem('chunk_reload_attempted');
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map((k) => caches.delete(k)));
+      }
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map((r) => r.unregister()));
+      }
+    } catch {
+      // ignore
+    }
+    const target = window.location.pathname + (window.location.search ? window.location.search + '&' : '?') + '_bust=' + Date.now();
+    window.location.replace(target);
+  };
+
+  useEffect(() => {
+    console.error('Global application error:', error);
+
+    if (isChunkError) {
+      const key = 'chunk_reload_attempted';
+      if (!sessionStorage.getItem(key)) {
+        sessionStorage.setItem(key, '1');
+        purgeAndReload();
+      }
+    }
+  }, [error, isChunkError]);
 
   return (
     <html lang="en">
@@ -44,15 +55,14 @@ export default function GlobalError({
             </h1>
             <p style={{ color: '#a3a3a3', marginBottom: '1.5rem' }}>
               {isChunkError
-                ? 'The app was updated. Please reload to get the latest version.'
+                ? 'A new version of the app was published. Click below to refresh your browser cache.'
                 : (error.message || 'A critical error occurred. Please reload the application.')}
             </p>
             <button
               type="button"
               onClick={() => {
                 if (isChunkError) {
-                  sessionStorage.removeItem('chunk_reload_attempted');
-                  window.location.reload();
+                  purgeAndReload();
                 } else {
                   reset();
                 }
@@ -67,7 +77,7 @@ export default function GlobalError({
                 cursor: 'pointer',
               }}
             >
-              {isChunkError ? 'Reload Page' : 'Try again'}
+              {isChunkError ? 'Refresh & Clear Cache' : 'Try again'}
             </button>
           </div>
         </div>

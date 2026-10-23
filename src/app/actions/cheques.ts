@@ -101,43 +101,55 @@ export async function getCheques(
     page: number = 1,
     pageSize: number = 50
 ): Promise<PaginatedResult<Cheque>> {
-    const db = await getDb();
-    const offset = (page - 1) * pageSize;
+    try {
+        const db = await getDb();
+        const offset = (page - 1) * pageSize;
 
-    let baseSql = `
-        FROM cheques c
-        LEFT JOIN users u ON c.user_id = u.id
-    `;
+        let baseSql = `
+            FROM cheques c
+            LEFT JOIN users u ON c.user_id = u.id
+        `;
 
-    const params: any[] = [];
+        const params: any[] = [];
 
-    if (status) {
-        baseSql += ` WHERE c.status = ?`;
-        params.push(status);
+        if (status) {
+            baseSql += ` WHERE c.status = ?`;
+            params.push(status);
+        }
+
+        // Total count
+        const totalCount = await db.prepare(`SELECT COUNT(*) as count ${baseSql}`).get(...params) as { count: number } | undefined;
+        const total = totalCount?.count || 0;
+
+        // Paginated items
+        const sql = `
+            SELECT 
+                c.*,
+                u.username
+            ${baseSql}
+            ORDER BY c.due_date ASC
+            LIMIT ? OFFSET ?
+        `;
+
+        const cheques = await db.prepare(sql).all(...params, Number(pageSize)|0, Number(offset)|0) as Cheque[];
+
+        return {
+            data: cheques || [],
+            total,
+            page,
+            pageSize,
+            totalPages: Math.ceil(total / pageSize) || 1
+        };
+    } catch (error) {
+        console.error('Error fetching cheques:', error);
+        return {
+            data: [],
+            total: 0,
+            page,
+            pageSize,
+            totalPages: 1
+        };
     }
-
-    // Total count
-    const totalCount = await db.prepare(`SELECT COUNT(*) as count ${baseSql}`).get(...params) as { count: number };
-
-    // Paginated items
-    const sql = `
-        SELECT 
-            c.*,
-            u.username
-        ${baseSql}
-        ORDER BY c.due_date ASC
-        LIMIT ? OFFSET ?
-    `;
-
-    const cheques = await db.prepare(sql).all(...params, Number(pageSize)|0, Number(offset)|0) as Cheque[];
-
-    return {
-        data: cheques,
-        total: totalCount.count,
-        page,
-        pageSize,
-        totalPages: Math.ceil(totalCount.count / pageSize)
-    };
 }
 
 export async function getCheque(id: number) {

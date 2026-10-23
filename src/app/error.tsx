@@ -10,31 +10,41 @@ export default function Error({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  useEffect(() => {
-    console.error('Application error:', error);
-
-    // Chunk load failures (e.g., after a new deployment) → hard-reload once to fetch fresh chunks
-    const isChunkError =
-      error.message?.includes('Failed to load chunk') ||
-      error.message?.includes('Loading chunk') ||
-      error.message?.includes('ChunkLoadError') ||
-      error.name === 'ChunkLoadError';
-
-    if (isChunkError) {
-      // Avoid reload loops: only auto-reload once per session
-      const key = 'chunk_reload_attempted';
-      if (!sessionStorage.getItem(key)) {
-        sessionStorage.setItem(key, '1');
-        window.location.reload();
-      }
-    }
-  }, [error]);
-
   const isChunkError =
     error.message?.includes('Failed to load chunk') ||
     error.message?.includes('Loading chunk') ||
     error.message?.includes('ChunkLoadError') ||
     error.name === 'ChunkLoadError';
+
+  const purgeAndReload = async () => {
+    try {
+      sessionStorage.removeItem('chunk_reload_attempted');
+      if ('caches' in window) {
+        const keys = await caches.keys();
+        await Promise.all(keys.map((k) => caches.delete(k)));
+      }
+      if ('serviceWorker' in navigator) {
+        const registrations = await navigator.serviceWorker.getRegistrations();
+        await Promise.all(registrations.map((r) => r.unregister()));
+      }
+    } catch {
+      // ignore
+    }
+    const target = window.location.pathname + (window.location.search ? window.location.search + '&' : '?') + '_bust=' + Date.now();
+    window.location.replace(target);
+  };
+
+  useEffect(() => {
+    console.error('Application error:', error);
+
+    if (isChunkError) {
+      const key = 'chunk_reload_attempted';
+      if (!sessionStorage.getItem(key)) {
+        sessionStorage.setItem(key, '1');
+        purgeAndReload();
+      }
+    }
+  }, [error, isChunkError]);
 
   return (
     <div
@@ -74,7 +84,7 @@ export default function Error({
         </h2>
         <p style={{ color: 'var(--muted-foreground)', fontSize: '0.875rem', marginBottom: '1.5rem' }}>
           {isChunkError
-            ? 'The app was updated. Please reload to get the latest version.'
+            ? 'A new version of the app was published. Click below to refresh your browser cache.'
             : (error.message || 'An unexpected error occurred while loading this page.')}
         </p>
         <button
@@ -82,15 +92,14 @@ export default function Error({
           className="btn btn-primary"
           onClick={() => {
             if (isChunkError) {
-              sessionStorage.removeItem('chunk_reload_attempted');
-              window.location.reload();
+              purgeAndReload();
             } else {
               reset();
             }
           }}
         >
           <RefreshCw size={16} />
-          {isChunkError ? 'Reload Page' : 'Try again'}
+          {isChunkError ? 'Refresh & Clear Cache' : 'Try again'}
         </button>
       </div>
     </div>
