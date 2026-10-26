@@ -11,7 +11,7 @@
  * Usage:
  *   const { data, loading, isStale } = useOfflineData(
  *     'products_cache',
- *     () => getProducts('', undefined, 1, 2000),
+ *     () => getProducts('', null, 1, 200),
  *     async () => localDB.products.toArray(),
  *     async (data) => { await localDB.products.clear(); await localDB.products.bulkPut(data); }
  *   );
@@ -92,16 +92,19 @@ export function useOfflineData<T>({
                     const fresh = await fetchFn();
                     setData(fresh);
                     setIsStale(false);
-                    await writeCache(fresh);
-                    const { setSyncMeta } = await import('@/lib/db/LocalDB');
-                    await setSyncMeta(cacheKey, new Date().toISOString());
-                    setCachedAt(new Date());
+                    const isEmptyArray = Array.isArray(fresh) && fresh.length === 0;
+                    if (!isEmptyArray) {
+                        await writeCache(fresh);
+                        const { setSyncMeta } = await import('@/lib/db/LocalDB');
+                        await setSyncMeta(cacheKey, new Date().toISOString());
+                        setCachedAt(new Date());
+                    }
                 } catch (_networkErr: any) {
-                    // Network failed — use cache if available
-                    if (!cached) {
-                        setError('Unable to load data. Check your connection.');
-                    } else {
+                    // Network failed — keep whatever is already on screen; don't wipe it
+                    if (cached) {
                         setIsStale(true);
+                    } else {
+                        setError('Unable to load data. Check your connection.');
                     }
                 }
             } else if (!cached) {

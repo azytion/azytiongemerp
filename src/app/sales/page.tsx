@@ -99,7 +99,7 @@ export default function SalesHistoryPage() {
                 pageSize,
                 totalPages: Math.ceil(total / pageSize),
             });
-            setIsStale(true);
+            setIsStale(data.length > 0 || total > 0);
 
             const ts = await getSyncMeta('sales_cached_at');
             setCachedAt(ts ? new Date(ts) : null);
@@ -145,11 +145,17 @@ export default function SalesHistoryPage() {
                 setSalesResult(res);
                 setIsStale(false);
                 if (!debouncedSearch && dateRange === 'all' && page === 1) {
-                    const full = await getSales(1, 500);
-                    if (full?.data) {
-                        await localDB.sales.clear();
-                        await localDB.sales.bulkPut(full.data as any);
-                    }
+                    void (async () => {
+                        try {
+                            const full = await getSales(1, 200);
+                            if (full?.data?.length) {
+                                const { replaceCacheTable } = await import('@/lib/db/LocalDB');
+                                await replaceCacheTable('sales', full.data, 'sales_cached_at');
+                            }
+                        } catch (cacheErr) {
+                            console.warn('Sales cache update failed:', cacheErr);
+                        }
+                    })();
                 }
             } catch {
                 await loadFromCache(start, end);

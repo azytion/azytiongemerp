@@ -18,6 +18,7 @@ import { useConfirm } from '@/components/ConfirmDialog';
 import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 import StaleBanner from '@/components/StaleBanner';
 import { localDB, getSyncMeta } from '@/lib/db/LocalDB';
+import { prefetchProductsToLocalCache } from '@/lib/productLocalCache';
 
 export default function ProductsTab() {
     const isOnline = useOnlineStatus();
@@ -47,25 +48,23 @@ export default function ProductsTab() {
         setLoading(true);
         if (isOnline) {
             try {
-                const result = await getProducts(query, undefined, page, 10, showArchived);
+                const result = await getProducts(query, null, page, 10, showArchived);
                 setProductsResult(result);
                 setIsStale(false);
-                // Cache on unfiltered load
                 if (!query && !showArchived && page === 1) {
-                    const full = await getProducts('', undefined, 1, 2000, false);
-                    if (full?.data) { await localDB.products.clear(); await localDB.products.bulkPut(full.data as any); }
+                    void prefetchProductsToLocalCache();
                 }
             } catch (err) {
                 console.error('Failed to load products from server:', err);
-                await loadFromCache();
+                await loadFromCache(true);
             }
         } else {
-            await loadFromCache();
+            await loadFromCache(false);
         }
         setLoading(false);
     }
 
-    async function loadFromCache() {
+    async function loadFromCache(preserveOnEmpty = false) {
         try {
             let all = await localDB.products.toArray();
             if (!showArchived) all = all.filter(p => !p.is_archived);
@@ -74,11 +73,19 @@ export default function ProductsTab() {
             const total = all.length;
             const pageSize = 10;
             const offset = (page - 1) * pageSize;
+            if (preserveOnEmpty && total === 0) {
+                setIsStale(true);
+                const ts = await getSyncMeta('products_cached_at');
+                setCachedAt(ts ? new Date(ts) : null);
+                return;
+            }
             setProductsResult({ data: all.slice(offset, offset + pageSize) as any, total, page, pageSize, totalPages: Math.ceil(total / pageSize) });
-            setIsStale(true);
+            setIsStale(total > 0);
             const ts = await getSyncMeta('products_cached_at');
             setCachedAt(ts ? new Date(ts) : null);
-        } catch { setProductsResult({ data: [], total: 0, page: 1, pageSize: 10, totalPages: 0 }); }
+        } catch {
+            if (!preserveOnEmpty) setProductsResult({ data: [], total: 0, page: 1, pageSize: 10, totalPages: 0 });
+        }
     }
 
     async function handleDelete(id: number) {
@@ -155,7 +162,7 @@ export default function ProductsTab() {
             const missingIds = selectedIds.filter(id => !selectedProducts.find(p => p.id === id));
             if (missingIds.length > 0) {
                 // Fetch remaining pages to get all selected products
-                const allRes = await getProducts('', undefined, 1, 9999, showArchived);
+                const allRes = await getProducts('', null, 1, 9999, showArchived);
                 const extra = allRes.data.filter(p => missingIds.includes(p.id));
                 selectedProducts = [...selectedProducts, ...extra];
             }

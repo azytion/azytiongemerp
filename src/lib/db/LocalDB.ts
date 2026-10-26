@@ -255,6 +255,17 @@ export async function setSyncMeta(key: string, value: string): Promise<void> {
     await localDB.syncMeta.put({ key, value });
 }
 
+/** Replace an IndexedDB table only when new rows exist — never wipe on empty/failed fetches. */
+export async function replaceCacheTable(tableName: 'products' | 'customers' | 'suppliers' | 'brokers' | 'categories' | 'sales' | 'purchaseOrders' | 'settings', rows: unknown[] | null | undefined, metaKey?: string): Promise<void> {
+    if (!rows || rows.length === 0) return;
+    const table = localDB[tableName] as { clear: () => Promise<unknown>; bulkPut: (rows: unknown[]) => Promise<unknown> };
+    await localDB.transaction('rw', table as never, async () => {
+        await table.clear();
+        await table.bulkPut(rows);
+    });
+    if (metaKey) await setSyncMeta(metaKey, new Date().toISOString());
+}
+
 export async function getSyncMeta(key: string): Promise<string | null> {
     const row = await localDB.syncMeta.get(key);
     return row?.value ?? null;

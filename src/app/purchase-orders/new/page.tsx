@@ -18,7 +18,7 @@ export default function NewPurchaseOrderPage() {
     useEffect(() => {
         Promise.all([
             getSuppliers('', 1, 1000),
-            getProducts('', undefined, 1, 1000)
+            getProducts('', null, 1, 500)
         ]).then(([s, p]) => {
             setSuppliers(s.data);
             setProducts(p.data);

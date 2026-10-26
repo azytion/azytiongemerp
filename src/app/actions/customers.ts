@@ -25,7 +25,9 @@ export async function getCustomers(
     pageSize: number = 10
 ): Promise<PaginatedResult<Customer>> {
     const db = await getDb();
-    const offset = (page - 1) * pageSize;
+    const safePage = Math.max(1, Number(page) || 1);
+    const safePageSize = Math.max(1, Number(pageSize) || 10);
+    const offset = (safePage - 1) * safePageSize;
 
     let baseSql = 'FROM customers';
     const params: any[] = [];
@@ -45,14 +47,15 @@ export async function getCustomers(
         LIMIT ? OFFSET ?
     `;
 
-    const customers = await db.prepare(sql).all(...params, Number(pageSize)|0, Number(offset)|0) as Customer[];
+    const customers = await db.prepare(sql).all(...params, safePageSize, offset) as Customer[];
+    const total = Number(totalCount?.count ?? 0);
 
     return {
         data: customers,
-        total: totalCount.count,
-        page,
-        pageSize,
-        totalPages: Math.ceil(totalCount.count / pageSize)
+        total,
+        page: safePage,
+        pageSize: safePageSize,
+        totalPages: Math.ceil(total / safePageSize)
     };
 }
 

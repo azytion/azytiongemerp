@@ -37,7 +37,7 @@ export default function CreateSetModal({ isOpen, onClose }: CreateSetModalProps)
     async function loadCandidates() {
         setLoading(true);
         try {
-            const res = await getProducts(search, undefined, 1, 100);
+            const res = await getProducts(search, null, 1, 100);
             // Available for set: singles not already in a set/lot and not archived
             const valid = res.data.filter(p =>
                 p.type === 'single' &&

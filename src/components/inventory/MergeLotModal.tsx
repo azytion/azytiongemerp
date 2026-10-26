@@ -35,7 +35,7 @@ export default function MergeLotModal({ isOpen, onClose, targetLot }: MergeLotMo
             // detailed filter later, for now fetch all singles
             // In a real app, we'd have a specific API for "available for merge"
             // getProducts(query, categoryId, page, pageSize)
-            const res = await getProducts(search, undefined, 1, 100);
+            const res = await getProducts(search, null, 1, 100);
             // client side filter for simplicity in prototype
             const valid = res.data.filter(p =>
                 p.type === 'single' &&

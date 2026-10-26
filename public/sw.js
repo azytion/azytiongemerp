@@ -1,8 +1,8 @@
-// Azytion GemERP - Service Worker v12
+// Azytion GemERP - Service Worker v13
 // Production only. Localhost/dev is always network-only so UI changes are never
 // hidden by stale PWA caches during development.
 
-const CACHE_VERSION = 'azytion-v12';
+const CACHE_VERSION = 'azytion-v13';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const PAGE_CACHE = `${CACHE_VERSION}-pages`;
 const IS_LOCAL_DEV = ['localhost', '127.0.0.1', '::1'].includes(self.location.hostname);
@@ -64,34 +64,16 @@ self.addEventListener('fetch', (event) => {
 
     if (
         url.pathname.startsWith('/api/') ||
+        url.pathname.startsWith('/_next/') ||
         url.searchParams.has('_rsc') ||
         request.headers.has('rsc') ||
         request.headers.has('next-router-state-tree') ||
-        (url.pathname.startsWith('/_next/static/chunks/') && url.pathname.includes('server')) ||
+        request.headers.has('next-router-prefetch') ||
+        request.headers.has('next-url') ||
         request.headers.get('next-action') !== null ||
+        request.headers.get('accept')?.includes('text/x-component') ||
         request.headers.get('content-type')?.includes('multipart/form-data')
     ) {
-        return;
-    }
-
-    if (url.pathname.startsWith('/_next/static/')) {
-        // JS chunks: pass-through to network. Next.js chunks have content hashes
-        // and are handled by the browser HTTP cache. Never store them in SW cache
-        // or return 503 for them, which causes ChunkLoadError reload loops.
-        const isJsChunk = url.pathname.endsWith('.js');
-        if (isJsChunk) {
-            return;
-        }
-        // Non-JS static assets: cache-first (fonts, CSS, etc.)
-        event.respondWith(
-            caches.open(STATIC_CACHE).then(async (cache) => {
-                const cached = await cache.match(request);
-                if (cached) return cached;
-                const response = await fetch(request);
-                if (response.ok) cache.put(request, response.clone());
-                return response;
-            })
-        );
         return;
     }
 
@@ -125,23 +107,9 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    event.respondWith(
-        fetch(request)
-            .then(async (response) => {
-                if (response.ok) {
-                    // Clone BEFORE returning so both the cache and the browser
-                    // can consume the body without a "body already used" error.
-                    const clone = response.clone();
-                    const cache = await caches.open(PAGE_CACHE);
-                    await cache.put(request, clone);
-                }
-                return response;
-            })
-            .catch(async () => {
-                const cached = await caches.match(request);
-                return cached || new Response('Offline', { status: 503 });
-            })
-    );
+    // Let the browser handle everything else (RSC, documents, fonts already matched).
+    // Intercepting these previously mixed stale HTML with new server actions.
+    return;
 });
 
 self.addEventListener('message', (event) => {

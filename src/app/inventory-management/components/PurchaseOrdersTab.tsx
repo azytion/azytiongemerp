@@ -47,7 +47,7 @@ export default function PurchaseOrdersTab() {
             const total = all.length;
             const offset = (page - 1) * pageSize;
             setResult({ data: all.slice(offset, offset + pageSize) as any, total, page, pageSize, totalPages: Math.ceil(total / pageSize) });
-            setIsStale(true);
+            setIsStale(total > 0);
             const ts = await getSyncMeta('purchase_orders_cached_at');
             setCachedAt(ts ? new Date(ts) : null);
         } catch { setResult({ data: [], total: 0, page: 1, pageSize, totalPages: 0 }); }
@@ -57,12 +57,21 @@ export default function PurchaseOrdersTab() {
         setLoading(true);
         if (isOnline) {
             try {
-                const data = await getPurchaseOrders(statusFilter === 'all' ? undefined : statusFilter, page, pageSize);
+                const data = await getPurchaseOrders(statusFilter === 'all' ? null : statusFilter, page, pageSize);
                 setResult(data);
                 setIsStale(false);
                 if (statusFilter === 'all' && page === 1) {
-                    const full = await getPurchaseOrders(undefined, 1, 500);
-                    if (full?.data) { await localDB.purchaseOrders.clear(); await localDB.purchaseOrders.bulkPut(full.data as any); }
+                    void (async () => {
+                        try {
+                            const full = await getPurchaseOrders(null, 1, 200);
+                            if (full?.data?.length) {
+                                const { replaceCacheTable } = await import('@/lib/db/LocalDB');
+                                await replaceCacheTable('purchaseOrders', full.data, 'purchase_orders_cached_at');
+                            }
+                        } catch (cacheErr) {
+                            console.warn('Purchase order cache update failed:', cacheErr);
+                        }
+                    })();
                 }
             } catch { await loadFromCache(); }
         } else {

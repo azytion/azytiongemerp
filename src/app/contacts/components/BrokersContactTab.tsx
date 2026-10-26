@@ -68,10 +68,15 @@ function ManageBrokersSubTab() {
                 if (res.success) {
                     setBrokers(res.brokers || []);
                     setIsStale(false);
-                    // Cache
-                    const { localDB } = await import('@/lib/db/LocalDB');
-                    await localDB.brokers.clear();
-                    await localDB.brokers.bulkPut((res.brokers || []) as any);
+                    try {
+                        const { localDB } = await import('@/lib/db/LocalDB');
+                        await localDB.transaction('rw', localDB.brokers, async () => {
+                            await localDB.brokers.clear();
+                            await localDB.brokers.bulkPut((res.brokers || []) as any);
+                        });
+                    } catch (cacheErr) {
+                        console.warn('Broker cache update failed:', cacheErr);
+                    }
                 }
             } catch {
                 await loadFromCache();

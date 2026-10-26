@@ -276,7 +276,7 @@ export async function getSession() {
         const token = cookieStore.get('session')?.value;
         if (!token) return null;
         const { payload } = await jwtVerify(token, await getSecretKey());
-        return payload;
+        return JSON.parse(JSON.stringify(payload));
     } catch (err) {
         console.error('--- Server Action: getSession Error ---', err);
         return null;

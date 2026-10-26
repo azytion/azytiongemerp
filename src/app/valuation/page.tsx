@@ -44,7 +44,7 @@ export default function ValuationPage() {
 
   const { data: productsData, isLoading: prodLoading } = useQuery({
     queryKey: ['products-valuation'],
-    queryFn: () => getProducts('', undefined, 1, 200),
+    queryFn: () => getProducts('', null, 1, 200),
     staleTime: 1000 * 60,
   });
 

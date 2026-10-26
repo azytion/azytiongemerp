@@ -15,6 +15,7 @@ import { EmptyState } from '@/components/ui/EmptyState';
 import { Pagination } from '@/components/ui/Pagination';
 import Link from 'next/link';
 import { localDB } from '@/lib/db/LocalDB';
+import { prefetchProductsToLocalCache } from '@/lib/productLocalCache';
 import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 import StaleBanner from '@/components/StaleBanner';
 import { downloadRowsAsXlsx } from '@/lib/excel-utils';
@@ -26,11 +27,9 @@ type SortOption = 'name' | 'price-asc' | 'price-desc' | 'stock';
 async function getProductsWithCache(search: string, categoryFilter: number | null, page: number) {
     if (navigator.onLine) {
         try {
-            const res = await getProducts(search, categoryFilter || undefined, page, 100);
-            // Cache all products on first unfiltered load
+            const res = await getProducts(search, categoryFilter, page, 100);
             if (!search && !categoryFilter && page === 1) {
-                const full = await getProducts('', undefined, 1, 2000);
-                if (full?.data) { await localDB.products.clear(); await localDB.products.bulkPut(full.data as any); }
+                void prefetchProductsToLocalCache();
             }
             return { ...res, isStale: false };
         } catch { /* fall through */ }
@@ -41,14 +40,18 @@ async function getProductsWithCache(search: string, categoryFilter: number | nul
     if (categoryFilter) all = all.filter(p => p.category_id === categoryFilter);
     const pageSize = 100;
     const offset = (page - 1) * pageSize;
-    return { data: all.slice(offset, offset + pageSize), total: all.length, page, pageSize, totalPages: Math.ceil(all.length / pageSize), isStale: true };
+    const data = all.slice(offset, offset + pageSize);
+    return { data, total: all.length, page, pageSize, totalPages: Math.ceil(all.length / pageSize), isStale: data.length > 0 };
 }
 
 async function getCategoriesWithCache() {
     if (navigator.onLine) {
         try {
             const res = await getCategories('', 1, 100);
-            if (res?.data) { await localDB.categories.clear(); await localDB.categories.bulkPut(res.data as any); }
+            if (res?.data?.length) {
+                const { replaceCacheTable } = await import('@/lib/db/LocalDB');
+                await replaceCacheTable('categories', res.data, 'categories_cached_at');
+            }
             return res;
         } catch { /* fall through */ }
     }
@@ -140,11 +143,11 @@ export default function ProductsPage() {
         selected = sortedProducts.filter(p => selectedIds.includes(p.id));
         const missingIds = selectedIds.filter(id => !selected.find(p => p.id === id));
         if (missingIds.length > 0) {
-          const allRes = await getProducts(search, categoryFilter || undefined, 1, 9999);
+          const allRes = await getProducts(search, categoryFilter, 1, 9999);
           selected = [...selected, ...allRes.data.filter(p => missingIds.includes(p.id))];
         }
       } else {
-        const allRes = await getProducts(search, categoryFilter || undefined, 1, 9999);
+        const allRes = await getProducts(search, categoryFilter, 1, 9999);
         selected = allRes.data;
       }
       const doc = generateOfferLetterPDF(selected, buildCompanyInfo(settings), settings.currency_symbol || settings.currency_code || '$');

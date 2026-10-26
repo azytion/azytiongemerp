@@ -111,7 +111,7 @@ export default async function RootLayout({
                   return;
                 }
 
-                navigator.serviceWorker.register('/sw.js?v=12').then(function(reg) {
+                navigator.serviceWorker.register('/sw.js?v=13').then(function(reg) {
                   // When a new SW is waiting, prompt it to activate immediately
                   reg.addEventListener('updatefound', function() {
                     var newWorker = reg.installing;
@@ -125,6 +125,11 @@ export default async function RootLayout({
                   });
                 }).catch(function(err) {
                   console.warn('ServiceWorker registration failed:', err);
+                });
+                navigator.serviceWorker.addEventListener('controllerchange', function() {
+                  if (sessionStorage.getItem('azytion_sw_reloaded')) return;
+                  sessionStorage.setItem('azytion_sw_reloaded', '1');
+                  window.location.reload();
                 });
               });
             }

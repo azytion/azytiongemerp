@@ -324,7 +324,10 @@ export async function getSales(page: number = 1, pageSize: number = 10, searchQu
         return { data: [], total: 0, page, pageSize, totalPages: 0 };
     }
     const db = await getDb();
-    const offset = (page - 1) * pageSize;
+    const safePage = Math.max(1, Number(page) || 1);
+    const safePageSize = Math.max(1, Math.min(100, Number(pageSize) || 10));
+    const offset = (safePage - 1) * safePageSize;
+    const fetchCap = Math.min(500, Math.max(safePage * safePageSize + safePageSize, 100));
 
     let baseQuery = `
         FROM sales s 
@@ -350,13 +353,15 @@ export async function getSales(page: number = 1, pageSize: number = 10, searchQu
          JOIN products p ON si.product_id = p.id
         WHERE si.sale_id = s.id), 0) as profit
         ${baseQuery.replace('LEFT JOIN customers c ON s.customer_id = c.id', 'LEFT JOIN customers c ON s.customer_id = c.id LEFT JOIN brokers b ON s.broker_id = b.id')}
+        ORDER BY s.id DESC
+        LIMIT ?
     `;
 
     const startMs = startDate ? salesDateMs(startDate) : 0;
     const endInput = endDate && endDate.length === 10 ? `${endDate}T23:59:59.999` : endDate;
     const endMs = endInput ? salesDateMs(endInput) : Number.POSITIVE_INFINITY;
 
-    const allSales = (await db.prepare(salesSql).all(...params) as any[])
+    const allSales = (await db.prepare(salesSql).all(...params, fetchCap) as any[])
         .filter((sale) => {
             const time = salesDateMs(sale.date);
             return time >= startMs && time <= endMs;
@@ -370,14 +375,14 @@ export async function getSales(page: number = 1, pageSize: number = 10, searchQu
             return Number(b.id || 0) - Number(a.id || 0);
         });
 
-    const sales = allSales.slice(offset, offset + pageSize);
+    const sales = allSales.slice(offset, offset + safePageSize);
 
     return {
         data: sales,
         total: allSales.length,
-        page,
-        pageSize,
-        totalPages: Math.ceil(allSales.length / pageSize)
+        page: safePage,
+        pageSize: safePageSize,
+        totalPages: Math.ceil(allSales.length / safePageSize)
     };
 }
 

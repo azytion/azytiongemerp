@@ -20,7 +20,7 @@ export default function StockTakeTab() {
     const startStockTake = async () => {
         setLoading(true);
         // Load all products (snapshot)
-        const res = await getProducts('', undefined, 1, 1000);
+        const res = await getProducts('', null, 1, 500);
         const allProducts = res.data;
         setProducts(allProducts);
         // Initialize counts with system stock

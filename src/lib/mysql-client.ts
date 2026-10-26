@@ -243,6 +243,43 @@ export type RunResult = {
   changes: number;
 };
 
+/** Convert mysql2 values into JSON-safe primitives for Next.js server actions. */
+function serializeSqlValue(value: unknown, seen?: WeakSet<object>): unknown {
+  if (value === null || value === undefined) return value;
+  const t = typeof value;
+  if (t === 'bigint') return Number(value);
+  if (t === 'number' || t === 'string' || t === 'boolean') return value;
+  if (value instanceof Date) return value.toISOString();
+  if (typeof Buffer !== 'undefined' && Buffer.isBuffer(value)) {
+    return value.toString('utf8');
+  }
+  if (value instanceof Uint8Array) {
+    return typeof Buffer !== 'undefined' ? Buffer.from(value).toString('utf8') : Array.from(value).join(',');
+  }
+  if (Array.isArray(value)) {
+    return value.map((item) => serializeSqlValue(item, seen));
+  }
+  if (t === 'object') {
+    const obj = value as object;
+    const tracker = seen ?? new WeakSet<object>();
+    if (tracker.has(obj)) return null;
+    tracker.add(obj);
+    const out: Record<string, unknown> = {};
+    for (const key of Object.keys(obj)) {
+      // Skip mysql2 duplicate numeric indexes (0, 1, …) — named columns are enough.
+      if (/^\d+$/.test(key)) continue;
+      out[key] = serializeSqlValue((obj as Record<string, unknown>)[key], tracker);
+    }
+    return out;
+  }
+  return String(value);
+}
+
+function serializeRow(row: RowDataPacket | undefined): RowDataPacket | undefined {
+  if (!row) return row;
+  return serializeSqlValue(row) as RowDataPacket;
+}
+
 export class Statement {
   constructor(
     private readonly sql: string,
@@ -252,13 +289,13 @@ export class Statement {
   async get(...params: unknown[]): Promise<RowDataPacket | undefined> {
     const [sql, values] = normalizeParams(this.sql, paramsToBind(params));
     const [rows] = await this.executor.execute<RowDataPacket[]>(sql, values as never);
-    return rows[0];
+    return serializeRow(rows[0]);
   }
 
   async all(...params: unknown[]): Promise<RowDataPacket[]> {
     const [sql, values] = normalizeParams(this.sql, paramsToBind(params));
     const [rows] = await this.executor.execute<RowDataPacket[]>(sql, values as never);
-    return rows;
+    return rows.map((row) => serializeRow(row)!);
   }
 
   async run(...params: unknown[]): Promise<RunResult> {
@@ -324,7 +361,7 @@ export async function query<T extends RowDataPacket = RowDataPacket>(
   params: unknown[] = []
 ): Promise<T[]> {
   const [rows] = await getExecutor().execute<T[]>(convertSql(sql), params as never);
-  return rows;
+  return rows.map((row) => serializeRow(row) as T);
 }
 
 export async function queryOne<T extends RowDataPacket = RowDataPacket>(

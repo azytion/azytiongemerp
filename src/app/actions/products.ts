@@ -55,14 +55,17 @@ import { PaginatedResult } from './types';
 
 export async function getProducts(
     query: string = '',
-    categoryId?: number,
+    categoryId: number | null = null,
     page: number = 1,
     pageSize: number = 10,
     includeArchived: boolean = false
 ): Promise<PaginatedResult<Product>> {
     const db = await getDb();
     const _session = await getSession();
-    const offset = (page - 1) * pageSize;
+    const safePage = Math.max(1, Number(page) || 1);
+    const safePageSize = Math.max(1, Number(pageSize) || 10);
+    const offset = (safePage - 1) * safePageSize;
+    const search = typeof query === 'string' ? query : '';
 
     let baseSql = `
         FROM products p
@@ -80,22 +83,27 @@ export async function getProducts(
         baseSql += ` AND p.is_archived = 1`;
     }
 
-    if (query) {
+    if (search) {
         baseSql += ` AND (p.name LIKE ? OR p.barcode LIKE ?)`;
-        params.push(`%${query}%`, `%${query}%`);
+        params.push(`%${search}%`, `%${search}%`);
     }
 
-    if (categoryId) {
+    if (categoryId != null && Number(categoryId) > 0) {
         baseSql += ` AND p.category_id = ?`;
-        params.push(categoryId);
+        params.push(Number(categoryId));
     }
 
     // Get total count
-    const totalCount = await db.prepare(`SELECT COUNT(*) as count ${baseSql}`).get(...params) as { count: number };
+    const totalCount = await db.prepare(`SELECT COUNT(DISTINCT p.id) as count ${baseSql}`).get(...params) as { count: number };
+    const total = Number(totalCount?.count ?? 0);
 
     // Get paginated data
     const sql = `
-        SELECT p.*, c.name as category_name,
+        SELECT p.id, p.barcode, p.name, p.category, p.category_id, p.stock, p.reorder_level,
+               p.cost_price, p.selling_price, p.notes, p.image_url, p.created_at, p.updated_at,
+               p.pricing_method, p.is_archived, p.archived_at, p.archived_reason, p.type,
+               p.parent_lot_id, p.parent_set_id,
+               c.name as category_name,
                gd.id as gd_id, gd.carat_weight, gd.dimensions, gd.shape, gd.color,
                gd.clarity, gd.cut_grade, gd.origin, gd.treatment,
                gd.certificate_provider, gd.certificate_number, gd.certificate_url,
@@ -105,44 +113,64 @@ export async function getProducts(
         LIMIT ? OFFSET ?
     `;
 
-    const products = await db.prepare(sql).all(...params, Number(pageSize) | 0, Number(offset) | 0) as any[];
+    const products = await db.prepare(sql).all(...params, safePageSize, offset) as any[];
 
-    // Build product objects
-    const data = products.map(p => {
-        // Build gem_details object from joined columns
+    // Build product objects as plain data (no mysql RowDataPacket / duplicate join rows)
+    const byId = new Map<number, Product>();
+    for (const p of products) {
+        const id = Number(p.id);
+        if (!Number.isFinite(id) || byId.has(id)) continue;
+
         const gem_details = p.gd_id ? {
-            id: p.gd_id,
-            product_id: p.id,
+            id: Number(p.gd_id),
+            product_id: id,
             variant_id: null,
-            carat_weight: p.carat_weight,
-            dimensions: p.dimensions,
-            shape: p.shape,
-            color: p.color,
-            clarity: p.clarity,
-            cut_grade: p.cut_grade,
-            origin: p.origin,
-            treatment: p.treatment,
-            certificate_provider: p.certificate_provider,
-            certificate_number: p.certificate_number,
-            certificate_url: p.certificate_url,
-            lot_origin_weight: p.lot_origin_weight,
+            carat_weight: Number(p.carat_weight) || 0,
+            dimensions: p.dimensions ?? null,
+            shape: p.shape ?? null,
+            color: p.color ?? null,
+            clarity: p.clarity ?? null,
+            cut_grade: p.cut_grade ?? null,
+            origin: p.origin ?? null,
+            treatment: p.treatment ?? null,
+            certificate_provider: p.certificate_provider ?? null,
+            certificate_number: p.certificate_number ?? null,
+            certificate_url: p.certificate_url ?? null,
+            lot_origin_weight: p.lot_origin_weight != null ? Number(p.lot_origin_weight) : null,
         } : null;
 
-        return {
-            ...p,
+        byId.set(id, {
+            id,
+            barcode: p.barcode ?? null,
+            name: String(p.name ?? ''),
             category: p.category_name || p.category || 'Uncategorized',
+            category_id: p.category_id != null ? Number(p.category_id) : null,
+            stock: Number(p.stock) || 0,
+            reorder_level: Number(p.reorder_level) || 0,
+            cost_price: Number(p.cost_price) || 0,
+            selling_price: Number(p.selling_price) || 0,
+            notes: p.notes ?? null,
+            image_url: p.image_url ?? null,
+            created_at: p.created_at != null ? String(p.created_at) : '',
+            updated_at: p.updated_at != null ? String(p.updated_at) : '',
+            category_name: p.category_name ?? null,
             pricing_method: p.pricing_method || 'per_piece',
-            type: p.type || 'single',
             gem_details,
-        };
-    }) as Product[];
+            is_archived: p.is_archived != null ? Number(p.is_archived) : 0,
+            archived_at: p.archived_at ?? null,
+            archived_reason: p.archived_reason ?? null,
+            type: p.type || 'single',
+            parent_lot_id: p.parent_lot_id != null ? Number(p.parent_lot_id) : null,
+            parent_set_id: p.parent_set_id != null ? Number(p.parent_set_id) : null,
+        } as Product);
+    }
 
     return {
-        data,
-        total: totalCount.count,
-        page,
-        pageSize,
-        totalPages: Math.ceil(totalCount.count / pageSize)
+        data: Array.from(byId.values()),
+        total,
+        page: safePage,
+        pageSize: safePageSize,
+        totalPages: Math.ceil(total / safePageSize)
     };
 }
 
@@ -427,10 +455,10 @@ export async function getProductStats(query: string = '', categoryId?: number) {
         ${baseSql}
     `).get(...params) as any;
     return {
-        total: row?.total || 0,
-        inStock: row?.inStock || 0,
-        totalValue: row?.totalValue || 0,
-        lowStock: row?.lowStock || 0,
+        total: Number(row?.total) || 0,
+        inStock: Number(row?.inStock) || 0,
+        totalValue: Number(row?.totalValue) || 0,
+        lowStock: Number(row?.lowStock) || 0,
     };
 }
 

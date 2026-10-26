@@ -52,8 +52,17 @@ export default function SuppliersTab() {
                 setResult(res);
                 setIsStale(false);
                 if (!query && targetPage === 1) {
-                    const full = await getSuppliers('', 1, 2000);
-                    if (full?.data) { await localDB.suppliers.clear(); await localDB.suppliers.bulkPut(full.data as any); }
+                    void (async () => {
+                        try {
+                            const full = await getSuppliers('', 1, 200);
+                            if (full?.data?.length) {
+                                const { replaceCacheTable } = await import('@/lib/db/LocalDB');
+                                await replaceCacheTable('suppliers', full.data, 'suppliers_cached_at');
+                            }
+                        } catch (cacheErr) {
+                            console.warn('Supplier cache update failed:', cacheErr);
+                        }
+                    })();
                 }
             } catch { await loadFromCache(targetPage); }
         } else {
@@ -69,7 +78,7 @@ export default function SuppliersTab() {
             const total = all.length;
             const offset = (targetPage - 1) * pageSize;
             setResult({ data: all.slice(offset, offset + pageSize) as any, total, page: targetPage, pageSize, totalPages: Math.ceil(total / pageSize) });
-            setIsStale(true);
+            setIsStale(total > 0);
             const ts = await getSyncMeta('suppliers_cached_at');
             setCachedAt(ts ? new Date(ts) : null);
         } catch { setResult({ data: [], total: 0, page: 1, pageSize, totalPages: 0 }); }

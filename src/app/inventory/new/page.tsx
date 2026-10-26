@@ -13,7 +13,7 @@ export default function NewInventoryAdjustmentPage() {
     const [products, setProducts] = useState<any[]>([]);
 
     useEffect(() => {
-        getProducts('', undefined, 1, 1000).then(res => setProducts(res.data));
+        getProducts('', null, 1, 500).then(res => setProducts(res.data));
     }, []);
 
     async function handleSubmit(formData: FormData) {

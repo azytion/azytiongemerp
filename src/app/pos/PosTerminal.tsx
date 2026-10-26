@@ -254,27 +254,23 @@ export default function PosTerminal() {
         if (!navigator.onLine) return;
         try {
             const [prodRes, custRes] = await Promise.all([
-                getProducts('', undefined, 1, 1000), // Get first 1000 products
-                getCustomers('', 1, 1000)
+                getProducts('', null, 1, 200),
+                getCustomers('', 1, 200)
             ]);
 
-            if (prodRes.data) {
-                const formattedProds = prodRes.data.map(p => ({
-                    ...p,
-                    has_variants: 0
-                }));
-                await localDB.products.clear();
-                await localDB.products.bulkAdd(formattedProds as any);
+            if (prodRes.data?.length) {
+                const { cacheProductsLocally } = await import('@/lib/productLocalCache');
+                await cacheProductsLocally(prodRes.data);
             }
-            if (custRes.data) {
-                await localDB.customers.clear();
-                await localDB.customers.bulkAdd(custRes.data);
+            if (custRes.data?.length) {
+                const { replaceCacheTable } = await import('@/lib/db/LocalDB');
+                await replaceCacheTable('customers', custRes.data, 'customers_cached_at');
             }
 
             const catRes = await getCategories();
-            if (catRes.data) {
-                await localDB.categories.clear();
-                await localDB.categories.bulkAdd(catRes.data);
+            if (catRes.data?.length) {
+                const { replaceCacheTable } = await import('@/lib/db/LocalDB');
+                await replaceCacheTable('categories', catRes.data, 'categories_cached_at');
             }
 
             // Hydrate Session
@@ -524,7 +520,7 @@ export default function PosTerminal() {
     }
     async function loadProducts(query = '', categoryId?: number) {
         try {
-            const data = await getProducts(query, categoryId, 1, 500);
+            const data = await getProducts(query, categoryId ?? null, 1, 500);
             setProducts(data.data);
         } catch (_error) {
             console.warn('Network failed, searching local DB...');

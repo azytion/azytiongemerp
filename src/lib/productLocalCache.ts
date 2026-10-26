@@ -3,9 +3,7 @@ import { localDB, setSyncMeta } from '@/lib/db/LocalDB';
 /** Strip server-only / join columns and coerce types for IndexedDB. */
 export function sanitizeProductForLocalCache(p: Record<string, unknown>) {
     const id = Number(p.id);
-    if (!Number.isFinite(id)) {
-        throw new Error(`Invalid product id: ${String(p.id)}`);
-    }
+    if (!Number.isFinite(id)) return null;
     return {
         id,
         name: String(p.name ?? ''),
@@ -40,15 +38,28 @@ export function dedupeProductsById<T extends { id: number }>(items: T[]): T[] {
 /** Persist products for offline use; never throws — failures are logged only. */
 export async function cacheProductsLocally(products: unknown[]): Promise<void> {
     try {
-        const deduped = dedupeProductsById(
-            products.map((p) => sanitizeProductForLocalCache(p as Record<string, unknown>)) as { id: number }[]
-        );
-        await localDB.products.clear();
-        if (deduped.length > 0) {
+        const sanitized = products
+            .map((p) => sanitizeProductForLocalCache(p as Record<string, unknown>))
+            .filter((p): p is NonNullable<typeof p> => p != null && Number.isFinite(p.id));
+        const deduped = dedupeProductsById(sanitized);
+        if (deduped.length === 0) return;
+        await localDB.transaction('rw', localDB.products, async () => {
+            await localDB.products.clear();
             await localDB.products.bulkPut(deduped as any);
-        }
+        });
         await setSyncMeta('products_cached_at', new Date().toISOString());
     } catch (err) {
         console.warn('Product local cache update failed:', err);
+    }
+}
+
+/** Background cache refresh — must never clobber a successful on-screen list load. */
+export async function prefetchProductsToLocalCache(): Promise<void> {
+    try {
+        const { getProducts } = await import('@/app/actions/products');
+        const res = await getProducts('', null, 1, 200, false);
+        if (res?.data?.length) await cacheProductsLocally(res.data);
+    } catch (err) {
+        console.warn('Product prefetch cache failed:', err);
     }
 }

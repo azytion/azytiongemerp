@@ -50,7 +50,7 @@ export default function NewMemoForm() {
 
     useEffect(() => {
         const fetchProducts = async () => {
-            const res = await getProducts(productQuery, undefined, 1, 500);
+            const res = await getProducts(productQuery, null, 1, 500);
             if (res?.data) {
                 setProducts(res.data);
                 setShowProductResults(true);

@@ -43,13 +43,18 @@ export default function CustomersContactTab() {
                 const res = await getCustomers(query, page, pageSize);
                 setResult(res);
                 setIsStale(false);
-                // Update cache
                 if (!query && page === 1) {
-                    const full = await getCustomers('', 1, 2000);
-                    if (full?.data) {
-                        await localDB.customers.clear();
-                        await localDB.customers.bulkPut(full.data as any);
-                    }
+                    void (async () => {
+                        try {
+                            const full = await getCustomers('', 1, 200);
+                            if (full?.data?.length) {
+                                const { replaceCacheTable } = await import('@/lib/db/LocalDB');
+                                await replaceCacheTable('customers', full.data, 'customers_cached_at');
+                            }
+                        } catch (cacheErr) {
+                            console.warn('Customer cache update failed:', cacheErr);
+                        }
+                    })();
                 }
             } catch {
                 await loadFromCache();
@@ -72,7 +77,7 @@ export default function CustomersContactTab() {
             const total = all.length;
             const offset = (page - 1) * pageSize;
             setResult({ data: all.slice(offset, offset + pageSize) as any, total, page, pageSize, totalPages: Math.ceil(total / pageSize) });
-            setIsStale(true);
+            setIsStale(total > 0);
             const ts = await getSyncMeta('customers_cached_at');
             setCachedAt(ts ? new Date(ts) : null);
         } catch {
