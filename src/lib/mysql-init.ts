@@ -564,6 +564,21 @@ export async function runSchemaInit(): Promise<void> {
   }
 
   // Additive migrations for existing MySQL installs
+
+  // products table — columns added after initial release
+  await ensureColumn('products', 'pricing_method', "VARCHAR(50) DEFAULT 'per_piece'");
+  await ensureColumn('products', 'is_archived', 'TINYINT DEFAULT 0');
+  await ensureColumn('products', 'archived_at', 'VARCHAR(50) NULL');
+  await ensureColumn('products', 'archived_reason', 'TEXT NULL');
+  await ensureColumn('products', 'type', "VARCHAR(50) DEFAULT 'single'");
+  await ensureColumn('products', 'parent_lot_id', 'INT NULL');
+  await ensureColumn('products', 'parent_set_id', 'INT NULL');
+
+  // gem_details table — columns added after initial release
+  await ensureColumn('gem_details', 'lot_origin_weight', 'DOUBLE NULL');
+  await ensureColumn('gem_details', 'lot_tracking', 'TEXT NULL');
+
+  // sales table
   await ensureColumn('sales', 'client_sale_id', 'VARCHAR(64) UNIQUE NULL');
 
   for (const stmt of INDEX_STATEMENTS) {
