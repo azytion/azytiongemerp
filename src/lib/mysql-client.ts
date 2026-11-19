@@ -232,7 +232,7 @@ function coerceLimitOffset(sql: string, params: unknown[]): unknown[] {
     if (sqlPos !== undefined && limitOffsetPositions.has(sqlPos)) {
       // Force to integer — null/undefined become 0
       const n = Number(value);
-      return Number.isFinite(n) ? Math.floor(n) : 0;
+      return Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0;
     }
     return value;
   });
@@ -288,23 +288,56 @@ export class Statement {
 
   async get(...params: unknown[]): Promise<RowDataPacket | undefined> {
     const [sql, values] = normalizeParams(this.sql, paramsToBind(params));
-    const [rows] = await this.executor.execute<RowDataPacket[]>(sql, values as never);
-    return serializeRow(rows[0]);
+    try {
+      const [rows] = await this.executor.execute<RowDataPacket[]>(sql, values as never);
+      return serializeRow(rows[0]);
+    } catch (executeErr) {
+      // Fallback to text protocol query() if prepared statement execution fails
+      try {
+        const [rows] = await this.executor.query<RowDataPacket[]>(sql, values as never);
+        return serializeRow(rows[0]);
+      } catch {
+        throw executeErr;
+      }
+    }
   }
 
   async all(...params: unknown[]): Promise<RowDataPacket[]> {
     const [sql, values] = normalizeParams(this.sql, paramsToBind(params));
-    const [rows] = await this.executor.execute<RowDataPacket[]>(sql, values as never);
-    return rows.map((row) => serializeRow(row)!);
+    try {
+      const [rows] = await this.executor.execute<RowDataPacket[]>(sql, values as never);
+      return rows.map((row) => serializeRow(row)!);
+    } catch (executeErr) {
+      // Fallback to text protocol query() if prepared statement execution fails
+      try {
+        const [rows] = await this.executor.query<RowDataPacket[]>(sql, values as never);
+        return rows.map((row) => serializeRow(row)!);
+      } catch {
+        throw executeErr;
+      }
+    }
   }
 
   async run(...params: unknown[]): Promise<RunResult> {
     const [sql, values] = normalizeParams(this.sql, paramsToBind(params));
-    const [result] = await this.executor.execute<ResultSetHeader>(sql, values as never);
-    return {
-      lastInsertRowid: Number(result.insertId || 0),
-      changes: result.affectedRows,
-    };
+    try {
+      const [result] = await this.executor.execute<ResultSetHeader>(sql, values as never);
+      return {
+        lastInsertRowid: Number(result.insertId || 0),
+        changes: result.affectedRows,
+      };
+    } catch (executeErr) {
+      // Fallback to text protocol query() if prepared statement execution fails
+      try {
+        const [result] = await this.executor.query<ResultSetHeader>(sql, values as never);
+        return {
+          lastInsertRowid: Number(result.insertId || 0),
+          changes: result.affectedRows,
+        };
+      } catch {
+        throw executeErr;
+      }
+    }
   }
 }
 

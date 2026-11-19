@@ -507,13 +507,24 @@ const DEFAULT_SETTINGS = [
 
 async function ensureColumn(table: string, column: string, definition: string) {
   const pool = getPool();
-  const [rows] = await pool.execute<any[]>(
-    `SELECT COUNT(*) AS cnt FROM information_schema.COLUMNS
-     WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ? AND COLUMN_NAME = ?`,
-    [table, column]
-  );
-  if (Number(rows[0]?.cnt) === 0) {
-    await pool.query(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+  try {
+    const [rows] = await pool.query<any[]>(
+      `SELECT COUNT(*) AS cnt FROM information_schema.COLUMNS
+       WHERE TABLE_SCHEMA = DATABASE() AND LOWER(TABLE_NAME) = LOWER(?) AND LOWER(COLUMN_NAME) = LOWER(?)`,
+      [table, column]
+    );
+    if (Number(rows[0]?.cnt) === 0) {
+      await pool.query(`ALTER TABLE \`${table}\` ADD COLUMN \`${column}\` ${definition}`);
+    }
+  } catch (err: any) {
+    if (err?.code === 'ER_DUP_FIELDNAME' || err?.errno === 1060) {
+      return;
+    }
+    try {
+      await pool.query(`ALTER TABLE \`${table}\` ADD COLUMN IF NOT EXISTS \`${column}\` ${definition}`);
+    } catch {
+      console.warn(`[ensureColumn] Notice for ${table}.${column}:`, err?.message || err);
+    }
   }
 }
 
@@ -557,10 +568,16 @@ export async function runSchemaInit(): Promise<void> {
     console.warn('[Bootstrap] Database check notice:', bootstrapErr?.message || bootstrapErr);
   }
 
-  await pool.query('SET FOREIGN_KEY_CHECKS = 0');
+  try {
+    await pool.query('SET FOREIGN_KEY_CHECKS = 0');
+  } catch (_e) {}
 
   for (const stmt of SCHEMA_STATEMENTS) {
-    await pool.query(stmt);
+    try {
+      await pool.query(stmt);
+    } catch (stmtErr: any) {
+      console.warn('[runSchemaInit] Statement notice:', stmtErr?.message || stmtErr);
+    }
   }
 
   // Additive migrations for existing MySQL installs
@@ -573,13 +590,35 @@ export async function runSchemaInit(): Promise<void> {
   await ensureColumn('products', 'type', "VARCHAR(50) DEFAULT 'single'");
   await ensureColumn('products', 'parent_lot_id', 'INT NULL');
   await ensureColumn('products', 'parent_set_id', 'INT NULL');
+  await ensureColumn('products', 'has_variants', 'TINYINT DEFAULT 0');
+  await ensureColumn('products', 'image_url', 'TEXT NULL');
+  await ensureColumn('products', 'notes', 'TEXT NULL');
+  await ensureColumn('products', 'reorder_level', 'INT DEFAULT 5');
+  await ensureColumn('products', 'metadata', 'TEXT NULL');
 
   // gem_details table — columns added after initial release
+  await ensureColumn('gem_details', 'variant_id', 'INT NULL');
   await ensureColumn('gem_details', 'lot_origin_weight', 'DOUBLE NULL');
   await ensureColumn('gem_details', 'lot_tracking', 'TEXT NULL');
+  await ensureColumn('gem_details', 'dimensions', 'VARCHAR(255) NULL');
+  await ensureColumn('gem_details', 'shape', 'VARCHAR(100) NULL');
+  await ensureColumn('gem_details', 'color', 'VARCHAR(100) NULL');
+  await ensureColumn('gem_details', 'clarity', 'VARCHAR(100) NULL');
+  await ensureColumn('gem_details', 'cut_grade', 'VARCHAR(100) NULL');
+  await ensureColumn('gem_details', 'origin', 'VARCHAR(100) NULL');
+  await ensureColumn('gem_details', 'treatment', 'VARCHAR(100) NULL');
+  await ensureColumn('gem_details', 'certificate_provider', 'VARCHAR(255) NULL');
+  await ensureColumn('gem_details', 'certificate_number', 'VARCHAR(255) NULL');
+  await ensureColumn('gem_details', 'certificate_url', 'TEXT NULL');
 
   // sales table
   await ensureColumn('sales', 'client_sale_id', 'VARCHAR(64) UNIQUE NULL');
+  await ensureColumn('sales', 'broker_id', 'INT NULL');
+  await ensureColumn('sales', 'broker_commission', 'DOUBLE DEFAULT 0');
+  await ensureColumn('sales', 'discount', 'DOUBLE DEFAULT 0');
+  await ensureColumn('sales', 'payment_status', "VARCHAR(50) DEFAULT 'paid'");
+  await ensureColumn('sales', 'status', "VARCHAR(50) DEFAULT 'completed'");
+  await ensureColumn('sales', 'type', "VARCHAR(50) DEFAULT 'sale'");
 
   for (const stmt of INDEX_STATEMENTS) {
     try {
@@ -589,7 +628,10 @@ export async function runSchemaInit(): Promise<void> {
     }
   }
 
-  await pool.query('SET FOREIGN_KEY_CHECKS = 1');
+  try {
+    await pool.query('SET FOREIGN_KEY_CHECKS = 1');
+  } catch (_e) {}
+
   await seedDefaults();
 }
 

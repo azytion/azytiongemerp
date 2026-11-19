@@ -60,118 +60,181 @@ export async function getProducts(
     pageSize: number = 10,
     includeArchived: boolean = false
 ): Promise<PaginatedResult<Product>> {
-    const db = await getDb();
-    const _session = await getSession();
     const safePage = Math.max(1, Number(page) || 1);
     const safePageSize = Math.max(1, Number(pageSize) || 10);
     const offset = (safePage - 1) * safePageSize;
     const search = typeof query === 'string' ? query : '';
 
-    let baseSql = `
-        FROM products p
-        LEFT JOIN categories c ON p.category_id = c.id
-        LEFT JOIN gem_details gd ON gd.product_id = p.id AND gd.variant_id IS NULL
-        WHERE 1=1
-    `;
-    const params: any[] = [];
+    try {
+        const db = await getDb();
+        const _session = await getSession();
 
-    // Exclude archived products by default
-    if (!includeArchived) {
-        baseSql += ` AND (p.is_archived IS NULL OR p.is_archived = 0)`;
-    } else {
-        // When includeArchived=true, show ONLY archived products
-        baseSql += ` AND p.is_archived = 1`;
+        let baseSql = `
+            FROM products p
+            LEFT JOIN categories c ON p.category_id = c.id
+            LEFT JOIN gem_details gd ON gd.product_id = p.id AND gd.variant_id IS NULL
+            WHERE 1=1
+        `;
+        const params: any[] = [];
+
+        // Exclude archived products by default
+        if (!includeArchived) {
+            baseSql += ` AND (p.is_archived IS NULL OR p.is_archived = 0)`;
+        } else {
+            // When includeArchived=true, show ONLY archived products
+            baseSql += ` AND p.is_archived = 1`;
+        }
+
+        if (search) {
+            baseSql += ` AND (p.name LIKE ? OR p.barcode LIKE ?)`;
+            params.push(`%${search}%`, `%${search}%`);
+        }
+
+        if (categoryId != null && Number(categoryId) > 0) {
+            baseSql += ` AND p.category_id = ?`;
+            params.push(Number(categoryId));
+        }
+
+        // Get total count safely
+        let total = 0;
+        try {
+            const totalCount = await db.prepare(`SELECT COUNT(DISTINCT p.id) as count ${baseSql}`).get(...params) as { count: number } | undefined;
+            total = Number(totalCount?.count ?? 0);
+        } catch (countErr) {
+            console.warn('[getProducts] Count query failed, trying basic count:', countErr);
+            try {
+                const countSql = `SELECT COUNT(*) as count FROM products p WHERE 1=1 ${!includeArchived ? 'AND (p.is_archived IS NULL OR p.is_archived = 0)' : 'AND p.is_archived = 1'}`;
+                const fallbackCount = await db.prepare(countSql).get() as { count: number } | undefined;
+                total = Number(fallbackCount?.count ?? 0);
+            } catch {
+                total = 0;
+            }
+        }
+
+        // Get paginated data
+        const sql = `
+            SELECT p.id, p.barcode, p.name, p.category, p.category_id, p.stock, p.reorder_level,
+                   p.cost_price, p.selling_price, p.notes, p.image_url, p.created_at, p.updated_at,
+                   p.pricing_method, p.is_archived, p.archived_at, p.archived_reason, p.type,
+                   p.parent_lot_id, p.parent_set_id,
+                   c.name as category_name,
+                   gd.id as gd_id, gd.carat_weight, gd.dimensions, gd.shape, gd.color,
+                   gd.clarity, gd.cut_grade, gd.origin, gd.treatment,
+                   gd.certificate_provider, gd.certificate_number, gd.certificate_url,
+                   gd.lot_origin_weight
+            ${baseSql}
+            ORDER BY p.name ASC
+            LIMIT ? OFFSET ?
+        `;
+
+        let products: any[] = [];
+        try {
+            products = await db.prepare(sql).all(...params, safePageSize, offset) as any[];
+        } catch (fetchErr: any) {
+            console.warn('[getProducts] Primary query failed, attempting resilient query:', fetchErr?.message || fetchErr);
+            // Resilient fallback query avoiding additive columns that may not exist in older tables
+            try {
+                const fallbackSql = `
+                    SELECT p.*, c.name as category_name,
+                           gd.id as gd_id, gd.carat_weight, gd.dimensions, gd.shape, gd.color,
+                           gd.clarity, gd.cut_grade, gd.origin, gd.treatment,
+                           gd.certificate_provider, gd.certificate_number, gd.certificate_url
+                    FROM products p
+                    LEFT JOIN categories c ON p.category_id = c.id
+                    LEFT JOIN gem_details gd ON gd.product_id = p.id AND gd.variant_id IS NULL
+                    WHERE 1=1
+                    ${!includeArchived ? 'AND (p.is_archived IS NULL OR p.is_archived = 0)' : 'AND p.is_archived = 1'}
+                    ${search ? 'AND (p.name LIKE ? OR p.barcode LIKE ?)' : ''}
+                    ${categoryId != null && Number(categoryId) > 0 ? 'AND p.category_id = ?' : ''}
+                    ORDER BY p.name ASC
+                    LIMIT ? OFFSET ?
+                `;
+                products = await db.prepare(fallbackSql).all(...params, safePageSize, offset) as any[];
+            } catch (fallbackErr: any) {
+                console.warn('[getProducts] Resilient fallback 1 failed, trying simplest fallback:', fallbackErr?.message || fallbackErr);
+                // Simplest fallback: only products and categories
+                const simplestSql = `
+                    SELECT p.*, c.name as category_name
+                    FROM products p
+                    LEFT JOIN categories c ON p.category_id = c.id
+                    WHERE 1=1
+                    ${search ? 'AND (p.name LIKE ? OR p.barcode LIKE ?)' : ''}
+                    ${categoryId != null && Number(categoryId) > 0 ? 'AND p.category_id = ?' : ''}
+                    ORDER BY p.name ASC
+                    LIMIT ? OFFSET ?
+                `;
+                products = await db.prepare(simplestSql).all(...params, safePageSize, offset) as any[];
+            }
+        }
+
+        // Build product objects as plain data (no mysql RowDataPacket / duplicate join rows)
+        const byId = new Map<number, Product>();
+        for (const p of products) {
+            const id = Number(p.id);
+            if (!Number.isFinite(id) || byId.has(id)) continue;
+
+            const gem_details = p.gd_id ? {
+                id: Number(p.gd_id),
+                product_id: id,
+                variant_id: null,
+                carat_weight: Number(p.carat_weight) || 0,
+                dimensions: p.dimensions ?? null,
+                shape: p.shape ?? null,
+                color: p.color ?? null,
+                clarity: p.clarity ?? null,
+                cut_grade: p.cut_grade ?? null,
+                origin: p.origin ?? null,
+                treatment: p.treatment ?? null,
+                certificate_provider: p.certificate_provider ?? null,
+                certificate_number: p.certificate_number ?? null,
+                certificate_url: p.certificate_url ?? null,
+                lot_origin_weight: p.lot_origin_weight != null ? Number(p.lot_origin_weight) : null,
+            } : null;
+
+            byId.set(id, {
+                id,
+                barcode: p.barcode ?? null,
+                name: String(p.name ?? ''),
+                category: p.category_name || p.category || 'Uncategorized',
+                category_id: p.category_id != null ? Number(p.category_id) : null,
+                stock: Number(p.stock) || 0,
+                reorder_level: Number(p.reorder_level) || 0,
+                cost_price: Number(p.cost_price) || 0,
+                selling_price: Number(p.selling_price) || 0,
+                notes: p.notes ?? null,
+                image_url: p.image_url ?? null,
+                created_at: p.created_at != null ? String(p.created_at) : '',
+                updated_at: p.updated_at != null ? String(p.updated_at) : '',
+                category_name: p.category_name ?? null,
+                pricing_method: p.pricing_method || 'per_piece',
+                gem_details,
+                is_archived: p.is_archived != null ? Number(p.is_archived) : 0,
+                archived_at: p.archived_at ?? null,
+                archived_reason: p.archived_reason ?? null,
+                type: p.type || 'single',
+                parent_lot_id: p.parent_lot_id != null ? Number(p.parent_lot_id) : null,
+                parent_set_id: p.parent_set_id != null ? Number(p.parent_set_id) : null,
+            } as Product);
+        }
+
+        const effectiveTotal = Math.max(total, byId.size);
+        return {
+            data: Array.from(byId.values()),
+            total: effectiveTotal,
+            page: safePage,
+            pageSize: safePageSize,
+            totalPages: Math.max(1, Math.ceil(effectiveTotal / safePageSize))
+        };
+    } catch (error) {
+        console.error('[getProducts] Unexpected error:', error);
+        return {
+            data: [],
+            total: 0,
+            page: safePage,
+            pageSize: safePageSize,
+            totalPages: 1
+        };
     }
-
-    if (search) {
-        baseSql += ` AND (p.name LIKE ? OR p.barcode LIKE ?)`;
-        params.push(`%${search}%`, `%${search}%`);
-    }
-
-    if (categoryId != null && Number(categoryId) > 0) {
-        baseSql += ` AND p.category_id = ?`;
-        params.push(Number(categoryId));
-    }
-
-    // Get total count
-    const totalCount = await db.prepare(`SELECT COUNT(DISTINCT p.id) as count ${baseSql}`).get(...params) as { count: number };
-    const total = Number(totalCount?.count ?? 0);
-
-    // Get paginated data
-    const sql = `
-        SELECT p.id, p.barcode, p.name, p.category, p.category_id, p.stock, p.reorder_level,
-               p.cost_price, p.selling_price, p.notes, p.image_url, p.created_at, p.updated_at,
-               p.pricing_method, p.is_archived, p.archived_at, p.archived_reason, p.type,
-               p.parent_lot_id, p.parent_set_id,
-               c.name as category_name,
-               gd.id as gd_id, gd.carat_weight, gd.dimensions, gd.shape, gd.color,
-               gd.clarity, gd.cut_grade, gd.origin, gd.treatment,
-               gd.certificate_provider, gd.certificate_number, gd.certificate_url,
-               gd.lot_origin_weight
-        ${baseSql}
-        ORDER BY p.name ASC
-        LIMIT ? OFFSET ?
-    `;
-
-    const products = await db.prepare(sql).all(...params, safePageSize, offset) as any[];
-
-    // Build product objects as plain data (no mysql RowDataPacket / duplicate join rows)
-    const byId = new Map<number, Product>();
-    for (const p of products) {
-        const id = Number(p.id);
-        if (!Number.isFinite(id) || byId.has(id)) continue;
-
-        const gem_details = p.gd_id ? {
-            id: Number(p.gd_id),
-            product_id: id,
-            variant_id: null,
-            carat_weight: Number(p.carat_weight) || 0,
-            dimensions: p.dimensions ?? null,
-            shape: p.shape ?? null,
-            color: p.color ?? null,
-            clarity: p.clarity ?? null,
-            cut_grade: p.cut_grade ?? null,
-            origin: p.origin ?? null,
-            treatment: p.treatment ?? null,
-            certificate_provider: p.certificate_provider ?? null,
-            certificate_number: p.certificate_number ?? null,
-            certificate_url: p.certificate_url ?? null,
-            lot_origin_weight: p.lot_origin_weight != null ? Number(p.lot_origin_weight) : null,
-        } : null;
-
-        byId.set(id, {
-            id,
-            barcode: p.barcode ?? null,
-            name: String(p.name ?? ''),
-            category: p.category_name || p.category || 'Uncategorized',
-            category_id: p.category_id != null ? Number(p.category_id) : null,
-            stock: Number(p.stock) || 0,
-            reorder_level: Number(p.reorder_level) || 0,
-            cost_price: Number(p.cost_price) || 0,
-            selling_price: Number(p.selling_price) || 0,
-            notes: p.notes ?? null,
-            image_url: p.image_url ?? null,
-            created_at: p.created_at != null ? String(p.created_at) : '',
-            updated_at: p.updated_at != null ? String(p.updated_at) : '',
-            category_name: p.category_name ?? null,
-            pricing_method: p.pricing_method || 'per_piece',
-            gem_details,
-            is_archived: p.is_archived != null ? Number(p.is_archived) : 0,
-            archived_at: p.archived_at ?? null,
-            archived_reason: p.archived_reason ?? null,
-            type: p.type || 'single',
-            parent_lot_id: p.parent_lot_id != null ? Number(p.parent_lot_id) : null,
-            parent_set_id: p.parent_set_id != null ? Number(p.parent_set_id) : null,
-        } as Product);
-    }
-
-    return {
-        data: Array.from(byId.values()),
-        total,
-        page: safePage,
-        pageSize: safePageSize,
-        totalPages: Math.ceil(total / safePageSize)
-    };
 }
 
 export async function getProduct(id: number) {
@@ -244,30 +307,62 @@ export async function createProduct(formData: FormData) {
 
     try {
         const createProductTxn = db.transaction(async () => {
-            const result = await db.prepare(`
-                INSERT INTO products (
-                    name, barcode, category_id, stock, cost_price, selling_price, reorder_level, 
-                    notes, has_variants, image_url, pricing_method, type, parent_lot_id
-                )
-                VALUES (@name, @barcode, @category_id, @stock, @cost_price, @selling_price, @reorder_level, 
-                    @notes, @has_variants, @image_url, @pricing_method, @type, @parent_lot_id)
-            `).run(product);
-
-            const pid = Number(result.lastInsertRowid);
+            let pid: number;
+            try {
+                const result = await db.prepare(`
+                    INSERT INTO products (
+                        name, barcode, category_id, stock, cost_price, selling_price, reorder_level, 
+                        notes, has_variants, image_url, pricing_method, type, parent_lot_id
+                    )
+                    VALUES (@name, @barcode, @category_id, @stock, @cost_price, @selling_price, @reorder_level, 
+                        @notes, @has_variants, @image_url, @pricing_method, @type, @parent_lot_id)
+                `).run(product);
+                pid = Number(result.lastInsertRowid);
+            } catch (insErr: any) {
+                console.warn('[createProduct] Primary insert failed, falling back to base columns:', insErr?.message);
+                const result = await db.prepare(`
+                    INSERT INTO products (
+                        name, barcode, category_id, stock, cost_price, selling_price, reorder_level, 
+                        notes, has_variants, image_url
+                    )
+                    VALUES (@name, @barcode, @category_id, @stock, @cost_price, @selling_price, @reorder_level, 
+                        @notes, @has_variants, @image_url)
+                `).run(product);
+                pid = Number(result.lastInsertRowid);
+            }
 
             // Insert gem details
-            await db.prepare(`
-                INSERT INTO gem_details (
-                    product_id, carat_weight, dimensions, shape, color, clarity, cut_grade, origin, 
-                    treatment, certificate_provider, certificate_number, certificate_url, lot_origin_weight
-                )
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            `).run(
-                pid, gemDetails.carat_weight, gemDetails.dimensions, gemDetails.shape, gemDetails.color,
-                gemDetails.clarity, gemDetails.cut_grade, gemDetails.origin, gemDetails.treatment,
-                gemDetails.certificate_provider, gemDetails.certificate_number, gemDetails.certificate_url,
-                gemDetails.lot_origin_weight
-            );
+            try {
+                await db.prepare(`
+                    INSERT INTO gem_details (
+                        product_id, carat_weight, dimensions, shape, color, clarity, cut_grade, origin, 
+                        treatment, certificate_provider, certificate_number, certificate_url, lot_origin_weight
+                    )
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                `).run(
+                    pid, gemDetails.carat_weight, gemDetails.dimensions, gemDetails.shape, gemDetails.color,
+                    gemDetails.clarity, gemDetails.cut_grade, gemDetails.origin, gemDetails.treatment,
+                    gemDetails.certificate_provider, gemDetails.certificate_number, gemDetails.certificate_url,
+                    gemDetails.lot_origin_weight
+                );
+            } catch (gemErr: any) {
+                console.warn('[createProduct] Gem details primary insert failed, falling back:', gemErr?.message);
+                try {
+                    await db.prepare(`
+                        INSERT INTO gem_details (
+                            product_id, carat_weight, dimensions, shape, color, clarity, cut_grade, origin, 
+                            treatment, certificate_provider, certificate_number, certificate_url
+                        )
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    `).run(
+                        pid, gemDetails.carat_weight, gemDetails.dimensions, gemDetails.shape, gemDetails.color,
+                        gemDetails.clarity, gemDetails.cut_grade, gemDetails.origin, gemDetails.treatment,
+                        gemDetails.certificate_provider, gemDetails.certificate_number, gemDetails.certificate_url
+                    );
+                } catch (gemErr2) {
+                    console.warn('[createProduct] Gem details fallback notice:', gemErr2);
+                }
+            }
 
             return pid;
         });
@@ -276,6 +371,8 @@ export async function createProduct(formData: FormData) {
         await logActivity(userIdFromSession(session), 'CREATE', 'product', productId, null, product);
 
         revalidatePath('/products');
+        revalidatePath('/inventory-management');
+        revalidatePath('/pos');
         return { success: true };
     } catch (error) {
         console.error('Failed to create product:', error);
@@ -299,17 +396,17 @@ export async function updateProduct(id: number, formData: FormData) {
 
     const product = {
         id,
-        name: (formData.get('name') as string) || oldProduct.name,
-        barcode: (formData.get('barcode') as string) || oldProduct.barcode,
-        category_id: formData.get('category_id') ? Number(formData.get('category_id')) : oldProduct.category_id,
-        stock: formData.has('stock') ? Number(formData.get('stock')) : oldProduct.stock,
-        cost_price: formData.has('cost_price') ? Number(formData.get('cost_price')) : oldProduct.cost_price,
-        selling_price: formData.has('selling_price') ? Number(formData.get('selling_price')) : oldProduct.selling_price,
-        reorder_level: formData.has('reorder_level') ? Number(formData.get('reorder_level')) : oldProduct.reorder_level,
-        notes: formData.has('notes') ? (formData.get('notes') as string) : oldProduct.notes,
-        image_url: formData.has('image_url') ? (formData.get('image_url') as string) : oldProduct.image_url,
-        pricing_method: (formData.get('pricing_method') as string) || oldProduct.pricing_method,
-        type: (formData.get('type') as string) || oldProduct.type
+        name: (formData.get('name') as string) || oldProduct?.name || '',
+        barcode: (formData.get('barcode') as string) || oldProduct?.barcode,
+        category_id: formData.get('category_id') ? Number(formData.get('category_id')) : oldProduct?.category_id,
+        stock: formData.has('stock') ? Number(formData.get('stock')) : oldProduct?.stock ?? 0,
+        cost_price: formData.has('cost_price') ? Number(formData.get('cost_price')) : oldProduct?.cost_price ?? 0,
+        selling_price: formData.has('selling_price') ? Number(formData.get('selling_price')) : oldProduct?.selling_price ?? 0,
+        reorder_level: formData.has('reorder_level') ? Number(formData.get('reorder_level')) : oldProduct?.reorder_level ?? 5,
+        notes: formData.has('notes') ? (formData.get('notes') as string) : oldProduct?.notes,
+        image_url: formData.has('image_url') ? (formData.get('image_url') as string) : oldProduct?.image_url,
+        pricing_method: (formData.get('pricing_method') as string) || oldProduct?.pricing_method || 'per_piece',
+        type: (formData.get('type') as string) || oldProduct?.type || 'single'
     };
 
     const gemDetails = {
@@ -330,49 +427,90 @@ export async function updateProduct(id: number, formData: FormData) {
     try {
         await db.transaction(async () => {
             // Update product fields 
-            await db.prepare(`
-                UPDATE products 
-                SET name = @name, barcode = @barcode, category_id = @category_id, 
-                    stock = @stock, reorder_level = @reorder_level,
-                    cost_price = @cost_price, selling_price = @selling_price, 
-                    notes = @notes, image_url = @image_url, pricing_method = @pricing_method,
-                    type = @type,
-                    updated_at = CURRENT_TIMESTAMP
-                WHERE id = @id
-            `).run(product);
+            try {
+                await db.prepare(`
+                    UPDATE products 
+                    SET name = @name, barcode = @barcode, category_id = @category_id, 
+                        stock = @stock, reorder_level = @reorder_level,
+                        cost_price = @cost_price, selling_price = @selling_price, 
+                        notes = @notes, image_url = @image_url, pricing_method = @pricing_method,
+                        type = @type,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE id = @id
+                `).run(product);
+            } catch (updErr: any) {
+                console.warn('[updateProduct] Primary update failed, trying base update:', updErr?.message);
+                await db.prepare(`
+                    UPDATE products 
+                    SET name = @name, barcode = @barcode, category_id = @category_id, 
+                        stock = @stock, reorder_level = @reorder_level,
+                        cost_price = @cost_price, selling_price = @selling_price, 
+                        notes = @notes, image_url = @image_url,
+                        updated_at = CURRENT_TIMESTAMP
+                    WHERE id = @id
+                `).run(product);
+            }
 
             // Upsert gem details
             const existingGemDetails = await db.prepare('SELECT id FROM gem_details WHERE product_id = ? AND variant_id IS NULL').get(id) as any;
 
             if (existingGemDetails) {
-                await db.prepare(`
-                    UPDATE gem_details 
-                    SET carat_weight = ?, dimensions = ?, shape = ?, color = ?, clarity = ?, 
-                        cut_grade = ?, origin = ?, treatment = ?, certificate_provider = ?, 
-                        certificate_number = ?, certificate_url = ?, lot_origin_weight = ?
-                    WHERE id = ?
-                `).run(
-                    gemDetails.carat_weight, gemDetails.dimensions, gemDetails.shape, gemDetails.color,
-                    gemDetails.clarity, gemDetails.cut_grade, gemDetails.origin, gemDetails.treatment,
-                    gemDetails.certificate_provider, gemDetails.certificate_number, gemDetails.certificate_url,
-                    gemDetails.lot_origin_weight,
-                    existingGemDetails.id
-                );
+                try {
+                    await db.prepare(`
+                        UPDATE gem_details 
+                        SET carat_weight = ?, dimensions = ?, shape = ?, color = ?, clarity = ?, 
+                            cut_grade = ?, origin = ?, treatment = ?, certificate_provider = ?, 
+                            certificate_number = ?, certificate_url = ?, lot_origin_weight = ?
+                        WHERE id = ?
+                    `).run(
+                        gemDetails.carat_weight, gemDetails.dimensions, gemDetails.shape, gemDetails.color,
+                        gemDetails.clarity, gemDetails.cut_grade, gemDetails.origin, gemDetails.treatment,
+                        gemDetails.certificate_provider, gemDetails.certificate_number, gemDetails.certificate_url,
+                        gemDetails.lot_origin_weight,
+                        existingGemDetails.id
+                    );
+                } catch {
+                    await db.prepare(`
+                        UPDATE gem_details 
+                        SET carat_weight = ?, dimensions = ?, shape = ?, color = ?, clarity = ?, 
+                            cut_grade = ?, origin = ?, treatment = ?, certificate_provider = ?, 
+                            certificate_number = ?, certificate_url = ?
+                        WHERE id = ?
+                    `).run(
+                        gemDetails.carat_weight, gemDetails.dimensions, gemDetails.shape, gemDetails.color,
+                        gemDetails.clarity, gemDetails.cut_grade, gemDetails.origin, gemDetails.treatment,
+                        gemDetails.certificate_provider, gemDetails.certificate_number, gemDetails.certificate_url,
+                        existingGemDetails.id
+                    );
+                }
             } else {
-                await db.prepare(`
-                    INSERT INTO gem_details (
-                        product_id, carat_weight, dimensions, shape, color, clarity, cut_grade, origin, 
-                        treatment, certificate_provider, certificate_number, certificate_url, lot_origin_weight
-                    )
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-                `).run(
-                    id, gemDetails.carat_weight, gemDetails.dimensions, gemDetails.shape, gemDetails.color,
-                    gemDetails.clarity, gemDetails.cut_grade, gemDetails.origin, gemDetails.treatment,
-                    gemDetails.certificate_provider, gemDetails.certificate_number, gemDetails.certificate_url,
-                    gemDetails.lot_origin_weight
-                );
+                try {
+                    await db.prepare(`
+                        INSERT INTO gem_details (
+                            product_id, carat_weight, dimensions, shape, color, clarity, cut_grade, origin, 
+                            treatment, certificate_provider, certificate_number, certificate_url, lot_origin_weight
+                        )
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    `).run(
+                        id, gemDetails.carat_weight, gemDetails.dimensions, gemDetails.shape, gemDetails.color,
+                        gemDetails.clarity, gemDetails.cut_grade, gemDetails.origin, gemDetails.treatment,
+                        gemDetails.certificate_provider, gemDetails.certificate_number, gemDetails.certificate_url,
+                        gemDetails.lot_origin_weight
+                    );
+                } catch {
+                    await db.prepare(`
+                        INSERT INTO gem_details (
+                            product_id, carat_weight, dimensions, shape, color, clarity, cut_grade, origin, 
+                            treatment, certificate_provider, certificate_number, certificate_url
+                        )
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    `).run(
+                        id, gemDetails.carat_weight, gemDetails.dimensions, gemDetails.shape, gemDetails.color,
+                        gemDetails.clarity, gemDetails.cut_grade, gemDetails.origin, gemDetails.treatment,
+                        gemDetails.certificate_provider, gemDetails.certificate_number, gemDetails.certificate_url
+                    );
+                }
             }
-
         })();
 
         const userId = session?.sub ? Number(session.sub) : 1;

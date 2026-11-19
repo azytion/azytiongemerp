@@ -944,10 +944,25 @@ async function upsertTableData(db: any, tableName: string, data: any[]) {
         return { count: 0, error: `Table "${tableName}" is not allowed for import.` };
     }
 
-    const columnRows = await db.prepare(
-        `SELECT COLUMN_NAME AS name FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = ?`
-    ).all(tableName) as { name: string }[];
-    const validColumns = columnRows.map((c) => c.name);
+    let validColumns: string[] = [];
+    try {
+        const rows = await db.prepare(`SHOW COLUMNS FROM \`${tableName}\``).all() as any[];
+        validColumns = rows.map((r: any) => r.Field || r.COLUMN_NAME || r.name).filter(Boolean);
+    } catch {
+        try {
+            const columnRows = await db.prepare(
+                `SELECT COLUMN_NAME AS name FROM information_schema.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND LOWER(TABLE_NAME) = LOWER(?)`
+            ).all(tableName) as { name: string }[];
+            validColumns = columnRows.map((c) => c.name);
+        } catch {
+            validColumns = [];
+        }
+    }
+
+    if (validColumns.length === 0) {
+        return { count: 0, error: `Could not retrieve table columns for "${tableName}".` };
+    }
+
     const hasId = validColumns.includes('id');
 
     // Use INSERT OR IGNORE + UPDATE to avoid cascade-deleting related rows

@@ -13,167 +13,191 @@ export interface DateRange {
 // ============ MAIN TAB REPORTS ============
 
 export async function getStatementReport(dateRange?: DateRange, page: number = 1, pageSize: number = 10, search?: string): Promise<PaginatedResult<any>> {
-    await requireSession();
-    const db = await getDb();
-    const offset = (page - 1) * pageSize;
+    try {
+        await requireSession();
+        const db = await getDb();
+        const offset = (page - 1) * pageSize;
 
-    let whereClause = "WHERE 1=1";
-    const params: any[] = [];
-    if (dateRange) {
-        whereClause += ` AND date(date) >= date(?) AND date(date) <= date(?)`;
-        params.push(dateRange.start, dateRange.end);
+        let whereClause = "WHERE 1=1";
+        const params: any[] = [];
+        if (dateRange?.start && dateRange?.end) {
+            whereClause += ` AND date(date) >= date(?) AND date(date) <= date(?)`;
+            params.push(dateRange.start, dateRange.end);
+        }
+        if (search) {
+            whereClause += ` AND (transaction_type LIKE ? OR description LIKE ? OR reference_type LIKE ?)`;
+            params.push(`%${search}%`, `%${search}%`, `%${search}%`);
+        }
+
+        const totalCount = await db.prepare(`SELECT COUNT(*) as count FROM daybook ${whereClause}`).get(...params) as { count: number } | undefined;
+        const total = Number(totalCount?.count ?? 0);
+        const query = `
+            SELECT 
+                date || 'T' || time as date,
+                transaction_type as type, 
+                COALESCE(reference_type || ' #' || reference_id, '-') as reference, 
+                CASE WHEN credit > 0 THEN credit ELSE -debit END as amount,
+                description
+            FROM daybook
+            ${whereClause}
+            ORDER BY date DESC, time DESC
+            LIMIT ? OFFSET ?
+        `;
+
+        const data = await db.prepare(query).all(...params, Number(pageSize)|0, Number(offset)|0);
+        return {
+            data: data || [],
+            total,
+            page,
+            pageSize,
+            totalPages: Math.max(1, Math.ceil(total / pageSize))
+        };
+    } catch (error) {
+        console.error('getStatementReport error:', error);
+        return { data: [], total: 0, page, pageSize, totalPages: 1 };
     }
-    if (search) {
-        whereClause += ` AND (transaction_type LIKE ? OR description LIKE ? OR reference_type LIKE ?)`;
-        params.push(`%${search}%`, `%${search}%`, `%${search}%`);
-    }
-
-    const totalCount = await db.prepare(`SELECT COUNT(*) as count FROM daybook ${whereClause}`).get(...params) as { count: number };
-    const query = `
-        SELECT 
-            date || 'T' || time as date,
-            transaction_type as type, 
-            COALESCE(reference_type || ' #' || reference_id, '-') as reference, 
-            CASE WHEN credit > 0 THEN credit ELSE -debit END as amount,
-            description
-        FROM daybook
-        ${whereClause}
-        ORDER BY date DESC, time DESC
-        LIMIT ? OFFSET ?
-    `;
-
-    const data = await db.prepare(query).all(...params, Number(pageSize)|0, Number(offset)|0);
-    return {
-        data,
-        total: totalCount.count,
-        page,
-        pageSize,
-        totalPages: Math.ceil(totalCount.count / pageSize)
-    };
 }
 
 export async function getAdjustmentReport(dateRange?: DateRange, page: number = 1, pageSize: number = 10, search?: string): Promise<PaginatedResult<any>> {
-    await requireSession();
-    const db = await getDb();
-    const offset = (page - 1) * pageSize;
+    try {
+        await requireSession();
+        const db = await getDb();
+        const offset = (page - 1) * pageSize;
 
-    let whereClause = "WHERE 1=1";
-    const params: any[] = [];
+        let whereClause = "WHERE 1=1";
+        const params: any[] = [];
 
-    if (dateRange) {
-        whereClause += ` AND date(ia.date) >= date(?) AND date(ia.date) <= date(?)`;
-        params.push(dateRange.start, dateRange.end);
+        if (dateRange?.start && dateRange?.end) {
+            whereClause += ` AND date(ia.date) >= date(?) AND date(ia.date) <= date(?)`;
+            params.push(dateRange.start, dateRange.end);
+        }
+        if (search) {
+            whereClause += ` AND (p.name LIKE ? OR ia.reason LIKE ? OR ia.adjustment_type LIKE ?)`;
+            params.push(`%${search}%`, `%${search}%`, `%${search}%`);
+        }
+
+        const totalCount = await db.prepare(`
+            SELECT COUNT(*) as count 
+            FROM inventory_adjustments ia
+            JOIN products p ON ia.product_id = p.id
+            ${whereClause}
+        `).get(...params) as { count: number } | undefined;
+        const total = Number(totalCount?.count ?? 0);
+
+        const query = `
+            SELECT ia.date, p.name as product, ia.adjustment_type as type, ia.quantity, ia.reason, ia.notes
+            FROM inventory_adjustments ia
+            JOIN products p ON ia.product_id = p.id
+            ${whereClause}
+            ORDER BY ia.date DESC
+            LIMIT ? OFFSET ?
+        `;
+
+        const data = await db.prepare(query).all(...params, Number(pageSize)|0, Number(offset)|0);
+        return {
+            data: data || [],
+            total,
+            page,
+            pageSize,
+            totalPages: Math.max(1, Math.ceil(total / pageSize))
+        };
+    } catch (error) {
+        console.error('getAdjustmentReport error:', error);
+        return { data: [], total: 0, page, pageSize, totalPages: 1 };
     }
-    if (search) {
-        whereClause += ` AND (p.name LIKE ? OR ia.reason LIKE ? OR ia.adjustment_type LIKE ?)`;
-        params.push(`%${search}%`, `%${search}%`, `%${search}%`);
-    }
-
-    const totalCount = await db.prepare(`
-        SELECT COUNT(*) as count 
-        FROM inventory_adjustments ia
-        JOIN products p ON ia.product_id = p.id
-        ${whereClause}
-    `).get(...params) as { count: number };
-
-    const query = `
-        SELECT ia.date, p.name as product, ia.adjustment_type as type, ia.quantity, ia.reason, ia.notes
-        FROM inventory_adjustments ia
-        JOIN products p ON ia.product_id = p.id
-        ${whereClause}
-        ORDER BY ia.date DESC
-        LIMIT ? OFFSET ?
-    `;
-
-    const data = await db.prepare(query).all(...params, Number(pageSize)|0, Number(offset)|0);
-    return {
-        data,
-        total: totalCount.count,
-        page,
-        pageSize,
-        totalPages: Math.ceil(totalCount.count / pageSize)
-    };
 }
 
 export async function getActivityLogReport(dateRange?: DateRange, page: number = 1, pageSize: number = 10, search?: string): Promise<PaginatedResult<any>> {
-    await requireSession();
-    const db = await getDb();
-    const offset = (page - 1) * pageSize;
+    try {
+        await requireSession();
+        const db = await getDb();
+        const offset = (page - 1) * pageSize;
 
-    let whereClause = "WHERE 1=1";
-    const params: any[] = [];
+        let whereClause = "WHERE 1=1";
+        const params: any[] = [];
 
-    if (dateRange) {
-        whereClause += ` AND date(timestamp) >= date(?) AND date(timestamp) <= date(?)`;
-        params.push(dateRange.start, dateRange.end);
+        if (dateRange?.start && dateRange?.end) {
+            whereClause += ` AND date(timestamp) >= date(?) AND date(timestamp) <= date(?)`;
+            params.push(dateRange.start, dateRange.end);
+        }
+        if (search) {
+            whereClause += ` AND (u.username LIKE ? OR al.action LIKE ? OR al.entity_type LIKE ?)`;
+            params.push(`%${search}%`, `%${search}%`, `%${search}%`);
+        }
+
+        const totalCount = await db.prepare(`
+            SELECT COUNT(*) as count 
+            FROM user_activity_log al
+            JOIN users u ON al.user_id = u.id
+            ${whereClause}
+        `).get(...params) as { count: number } | undefined;
+        const total = Number(totalCount?.count ?? 0);
+
+        const query = `
+            SELECT al.timestamp as date, u.username as user, al.action, al.entity_type, al.entity_id, al.new_values as details
+            FROM user_activity_log al
+            JOIN users u ON al.user_id = u.id
+            ${whereClause}
+            ORDER BY al.timestamp DESC
+            LIMIT ? OFFSET ?
+        `;
+
+        const data = await db.prepare(query).all(...params, Number(pageSize)|0, Number(offset)|0);
+        return {
+            data: data || [],
+            total,
+            page,
+            pageSize,
+            totalPages: Math.max(1, Math.ceil(total / pageSize))
+        };
+    } catch (error) {
+        console.error('getActivityLogReport error:', error);
+        return { data: [], total: 0, page, pageSize, totalPages: 1 };
     }
-    if (search) {
-        whereClause += ` AND (u.username LIKE ? OR al.action LIKE ? OR al.entity_type LIKE ?)`;
-        params.push(`%${search}%`, `%${search}%`, `%${search}%`);
-    }
-
-    const totalCount = await db.prepare(`
-        SELECT COUNT(*) as count 
-        FROM user_activity_log al
-        JOIN users u ON al.user_id = u.id
-        ${whereClause}
-    `).get(...params) as { count: number };
-
-    const query = `
-        SELECT al.timestamp as date, u.username as user, al.action, al.entity_type, al.entity_id, al.new_values as details
-        FROM user_activity_log al
-        JOIN users u ON al.user_id = u.id
-        ${whereClause}
-        ORDER BY al.timestamp DESC
-        LIMIT ? OFFSET ?
-    `;
-
-    const data = await db.prepare(query).all(...params, Number(pageSize)|0, Number(offset)|0);
-    return {
-        data,
-        total: totalCount.count,
-        page,
-        pageSize,
-        totalPages: Math.ceil(totalCount.count / pageSize)
-    };
 }
 
 export async function getTransactionsReport(dateRange?: DateRange, page: number = 1, pageSize: number = 10, search?: string): Promise<PaginatedResult<any>> {
-    await requireSession();
-    const db = await getDb();
-    const offset = (page - 1) * pageSize;
+    try {
+        await requireSession();
+        const db = await getDb();
+        const offset = (page - 1) * pageSize;
 
-    let whereClause = "WHERE 1=1";
-    const params: any[] = [];
-    if (dateRange) {
-        whereClause += ` AND date(date) >= date(?) AND date(date) <= date(?)`;
-        params.push(dateRange.start, dateRange.end);
+        let whereClause = "WHERE 1=1";
+        const params: any[] = [];
+        if (dateRange?.start && dateRange?.end) {
+            whereClause += ` AND date(date) >= date(?) AND date(date) <= date(?)`;
+            params.push(dateRange.start, dateRange.end);
+        }
+        if (search) {
+            whereClause += ` AND (invoice_number LIKE ? OR payment_method LIKE ? OR status LIKE ?)`;
+            params.push(`%${search}%`, `%${search}%`, `%${search}%`);
+        }
+
+        const totalCount = await db.prepare(`SELECT COUNT(*) as count FROM sales ${whereClause}`).get(...params) as { count: number } | undefined;
+        const total = Number(totalCount?.count ?? 0);
+        const query = `
+            SELECT s.id, s.date, s.invoice_number, s.total_amount, s.payment_method, 
+                   s.status, s.payment_status, s.type,
+                   COALESCE(c.name, 'Walk-in') as customer_name
+            FROM sales s
+            LEFT JOIN customers c ON s.customer_id = c.id
+            ${whereClause}
+            ORDER BY s.date DESC
+            LIMIT ? OFFSET ?
+        `;
+
+        const data = await db.prepare(query).all(...params, Number(pageSize)|0, Number(offset)|0);
+        return {
+            data: data || [],
+            total,
+            page,
+            pageSize,
+            totalPages: Math.max(1, Math.ceil(total / pageSize))
+        };
+    } catch (error) {
+        console.error('getTransactionsReport error:', error);
+        return { data: [], total: 0, page, pageSize, totalPages: 1 };
     }
-    if (search) {
-        whereClause += ` AND (invoice_number LIKE ? OR payment_method LIKE ? OR status LIKE ?)`;
-        params.push(`%${search}%`, `%${search}%`, `%${search}%`);
-    }
-
-    const totalCount = await db.prepare(`SELECT COUNT(*) as count FROM sales ${whereClause}`).get(...params) as { count: number };
-    const query = `
-        SELECT s.id, s.date, s.invoice_number, s.total_amount, s.payment_method, 
-               s.status, s.payment_status, s.type,
-               COALESCE(c.name, 'Walk-in') as customer_name
-        FROM sales s
-        LEFT JOIN customers c ON s.customer_id = c.id
-        ${whereClause}
-        ORDER BY s.date DESC
-        LIMIT ? OFFSET ?
-    `;
-
-    const data = await db.prepare(query).all(...params, Number(pageSize)|0, Number(offset)|0);
-    return {
-        data,
-        total: totalCount.count,
-        page,
-        pageSize,
-        totalPages: Math.ceil(totalCount.count / pageSize)
-    };
 }
 
 export async function getPayablesReport(dateRange?: DateRange, search?: string) {
@@ -395,101 +419,113 @@ export async function getReorderLevelReport(search?: string) {
 }
 
 export async function getPurchaseOrderReport(dateRange?: DateRange, page: number = 1, pageSize: number = 10, search?: string): Promise<PaginatedResult<any>> {
-    await requireSession();
-    const db = await getDb();
-    const offset = (page - 1) * pageSize;
+    try {
+        await requireSession();
+        const db = await getDb();
+        const offset = (page - 1) * pageSize;
 
-    let whereClause = "WHERE 1=1";
-    const params: any[] = [];
-    if (dateRange) {
-        whereClause += ` AND date(po.date_created) >= date(?) AND date(po.date_created) <= date(?)`;
-        params.push(dateRange.start, dateRange.end);
+        let whereClause = "WHERE 1=1";
+        const params: any[] = [];
+        if (dateRange?.start && dateRange?.end) {
+            whereClause += ` AND date(po.date_created) >= date(?) AND date(po.date_created) <= date(?)`;
+            params.push(dateRange.start, dateRange.end);
+        }
+        if (search) {
+            whereClause += ` AND (po.po_number LIKE ? OR s.name LIKE ?)`;
+            params.push(`%${search}%`, `%${search}%`);
+        }
+
+        const totalCount = await db.prepare(`
+            SELECT COUNT(*) as count 
+            FROM purchase_orders po
+            LEFT JOIN suppliers s ON po.supplier_id = s.id
+            ${whereClause}
+        `).get(...params) as { count: number } | undefined;
+        const total = Number(totalCount?.count ?? 0);
+
+        const query = `
+            SELECT 
+                po.id as po_id,
+                po.po_number,
+                po.date_created as date,
+                s.name as supplier,
+                po.total_amount as amount,
+                po.status
+            FROM purchase_orders po
+            JOIN suppliers s ON po.supplier_id = s.id
+            ${whereClause}
+            ORDER BY po.date_created DESC
+            LIMIT ? OFFSET ?
+        `;
+
+        const data = await db.prepare(query).all(...params, Number(pageSize)|0, Number(offset)|0);
+        return {
+            data: data || [],
+            total,
+            page,
+            pageSize,
+            totalPages: Math.max(1, Math.ceil(total / pageSize))
+        };
+    } catch (error) {
+        console.error('getPurchaseOrderReport error:', error);
+        return { data: [], total: 0, page, pageSize, totalPages: 1 };
     }
-    if (search) {
-        whereClause += ` AND (po.po_number LIKE ? OR s.name LIKE ?)`;
-        params.push(`%${search}%`, `%${search}%`);
-    }
-
-    const totalCount = await db.prepare(`
-        SELECT COUNT(*) as count 
-        FROM purchase_orders po
-        LEFT JOIN suppliers s ON po.supplier_id = s.id
-        ${whereClause}
-    `).get(...params) as { count: number };
-
-    const query = `
-        SELECT 
-            po.id as po_id,
-            po.po_number,
-            po.date_created as date,
-            s.name as supplier,
-            po.total_amount as amount,
-            po.status
-        FROM purchase_orders po
-        JOIN suppliers s ON po.supplier_id = s.id
-        ${whereClause}
-        ORDER BY po.date_created DESC
-        LIMIT ? OFFSET ?
-    `;
-
-    const data = await db.prepare(query).all(...params, Number(pageSize)|0, Number(offset)|0);
-    return {
-        data,
-        total: totalCount.count,
-        page,
-        pageSize,
-        totalPages: Math.ceil(totalCount.count / pageSize)
-    };
 }
 
 export async function getSoldItemsReport(dateRange?: DateRange, page: number = 1, pageSize: number = 10, search?: string): Promise<PaginatedResult<any>> {
-    await requireSession();
-    const db = await getDb();
-    const offset = (page - 1) * pageSize;
+    try {
+        await requireSession();
+        const db = await getDb();
+        const offset = (page - 1) * pageSize;
 
-    let whereClause = "WHERE s.status = 'completed'";
-    const params: any[] = [];
-    if (dateRange) {
-        whereClause += ` AND date(s.date) >= date(?) AND date(s.date) <= date(?)`;
-        params.push(dateRange.start, dateRange.end);
+        let whereClause = "WHERE s.status = 'completed'";
+        const params: any[] = [];
+        if (dateRange?.start && dateRange?.end) {
+            whereClause += ` AND date(s.date) >= date(?) AND date(s.date) <= date(?)`;
+            params.push(dateRange.start, dateRange.end);
+        }
+        if (search) {
+            whereClause += ` AND (p.name LIKE ? OR s.invoice_number LIKE ?)`;
+            params.push(`%${search}%`, `%${search}%`);
+        }
+
+        const totalCountQuery = `SELECT COUNT(DISTINCT p.id) as count
+            FROM sale_items si
+            JOIN products p ON si.product_id = p.id
+            JOIN sales s ON si.sale_id = s.id
+            ${whereClause}`;
+        const totalCount = await db.prepare(totalCountQuery).get(...params) as { count: number } | undefined;
+        const total = Number(totalCount?.count ?? 0);
+
+        const query = `
+            SELECT 
+                p.id as product_id,
+                p.name as product_name,
+                p.barcode,
+                COALESCE(SUM(si.quantity), 0) as quantity,
+                COALESCE(SUM(si.quantity * si.price), 0) as total_sale_value,
+                s.invoice_number
+            FROM sale_items si
+            JOIN products p ON si.product_id = p.id
+            JOIN sales s ON si.sale_id = s.id
+            ${whereClause}
+            GROUP BY p.id, p.name, s.invoice_number
+            ORDER BY total_sale_value DESC
+            LIMIT ? OFFSET ?
+        `;
+
+        const data = await db.prepare(query).all(...params, Number(pageSize)|0, Number(offset)|0);
+        return {
+            data: data || [],
+            total,
+            page,
+            pageSize,
+            totalPages: Math.max(1, Math.ceil(total / pageSize))
+        };
+    } catch (error) {
+        console.error('getSoldItemsReport error:', error);
+        return { data: [], total: 0, page, pageSize, totalPages: 1 };
     }
-    if (search) {
-        whereClause += ` AND (p.name LIKE ? OR s.invoice_number LIKE ?)`;
-        params.push(`%${search}%`, `%${search}%`);
-    }
-
-    const totalCountQuery = `SELECT COUNT(DISTINCT p.id) as count
-        FROM sale_items si
-        JOIN products p ON si.product_id = p.id
-        JOIN sales s ON si.sale_id = s.id
-        ${whereClause}`;
-    const totalCount = await db.prepare(totalCountQuery).get(...params) as { count: number };
-
-    const query = `
-        SELECT 
-            p.id as product_id,
-            p.name as product_name,
-            p.barcode,
-            COALESCE(SUM(si.quantity), 0) as quantity,
-            COALESCE(SUM(si.quantity * si.price), 0) as total_sale_value,
-            s.invoice_number
-        FROM sale_items si
-        JOIN products p ON si.product_id = p.id
-        JOIN sales s ON si.sale_id = s.id
-        ${whereClause}
-        GROUP BY p.id, p.name, s.invoice_number
-        ORDER BY total_sale_value DESC
-        LIMIT ? OFFSET ?
-    `;
-
-    const data = await db.prepare(query).all(...params, Number(pageSize)|0, Number(offset)|0);
-    return {
-        data,
-        total: totalCount.count,
-        page,
-        pageSize,
-        totalPages: Math.ceil(totalCount.count / pageSize)
-    };
 }
 
 export async function getTypeWiseReport(search?: string) {

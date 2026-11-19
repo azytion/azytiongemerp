@@ -1,6 +1,5 @@
 'use client';
 
-/* eslint-disable react-hooks/set-state-in-effect */
 import { useCallback, useEffect, useState } from 'react';
 import { getPurchaseOrders, cancelPurchaseOrder, getPurchaseOrder, deletePurchaseOrder } from '@/app/actions/purchase-orders';
 import { processPurchaseReturn } from '@/app/actions/credit-notes';
