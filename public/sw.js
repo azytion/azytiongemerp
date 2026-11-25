@@ -1,8 +1,8 @@
-// Azytion GemERP - Service Worker v13
+// Azytion GemERP - Service Worker v14
 // Production only. Localhost/dev is always network-only so UI changes are never
 // hidden by stale PWA caches during development.
 
-const CACHE_VERSION = 'azytion-v13';
+const CACHE_VERSION = 'azytion-v14';
 const STATIC_CACHE = `${CACHE_VERSION}-static`;
 const PAGE_CACHE = `${CACHE_VERSION}-pages`;
 const IS_LOCAL_DEV = ['localhost', '127.0.0.1', '::1'].includes(self.location.hostname);

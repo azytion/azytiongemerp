@@ -632,7 +632,11 @@ export async function runSchemaInit(): Promise<void> {
     await pool.query('SET FOREIGN_KEY_CHECKS = 1');
   } catch (_e) {}
 
-  await seedDefaults();
+  try {
+    await seedDefaults();
+  } catch (seedErr: any) {
+    console.warn('[runSchemaInit] seedDefaults notice:', seedErr?.message || seedErr);
+  }
 }
 
 async function seedDefaults(): Promise<void> {

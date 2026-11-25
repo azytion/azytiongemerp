@@ -51,6 +51,14 @@ const nextConfig: NextConfig = {
         headers: securityHeaders,
       },
       {
+        // Prevent browsers and proxies/CDNs from caching HTML pages so new
+        // deployments never serve stale chunk hashes or Server Action IDs.
+        source: '/((?!_next/static|_next/image|.*\\.(?:png|jpg|jpeg|svg|gif|webp|ico|woff|woff2|ttf|otf|css|js)$).*)',
+        headers: [
+          { key: 'Cache-Control', value: 'no-store, no-cache, must-revalidate, proxy-revalidate' },
+        ],
+      },
+      {
         source: '/manifest.json',
         headers: [
           { key: 'Cache-Control', value: 'no-store, max-age=0' },

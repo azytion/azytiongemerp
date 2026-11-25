@@ -16,9 +16,11 @@ export default function Error({
     error.message?.includes('ChunkLoadError') ||
     error.name === 'ChunkLoadError';
 
-  const purgeAndReload = async () => {
+  const purgeAndReload = async (manual = false) => {
     try {
-      sessionStorage.removeItem('chunk_reload_attempted');
+      if (manual) {
+        sessionStorage.removeItem('chunk_reload_at');
+      }
       if ('caches' in window) {
         const keys = await caches.keys();
         await Promise.all(keys.map((k) => caches.delete(k)));
@@ -30,18 +32,20 @@ export default function Error({
     } catch {
       // ignore
     }
-    const target = window.location.pathname + (window.location.search ? window.location.search + '&' : '?') + '_bust=' + Date.now();
-    window.location.replace(target);
+    const url = new URL(window.location.href);
+    url.searchParams.set('_bust', String(Date.now()));
+    window.location.replace(url.toString());
   };
 
   useEffect(() => {
     console.error('Application error:', error);
 
     if (isChunkError) {
-      const key = 'chunk_reload_attempted';
-      if (!sessionStorage.getItem(key)) {
-        sessionStorage.setItem(key, '1');
-        purgeAndReload();
+      const key = 'chunk_reload_at';
+      const last = Number(sessionStorage.getItem(key) || 0);
+      if (!last || Date.now() - last > 60000) {
+        sessionStorage.setItem(key, String(Date.now()));
+        purgeAndReload(false);
       }
     }
   }, [error, isChunkError]);
@@ -92,7 +96,7 @@ export default function Error({
           className="btn btn-primary"
           onClick={() => {
             if (isChunkError) {
-              purgeAndReload();
+              purgeAndReload(true);
             } else {
               reset();
             }

@@ -1092,6 +1092,12 @@ async function upsertTableData(db: any, tableName: string, data: any[]) {
                     if (!row.name) {
                         row.name = row.barcode ? `Product ${row.barcode}` : 'Imported Item';
                     }
+                    if (row.cost_price === undefined || row.cost_price === null || row.cost_price === '') row.cost_price = 0;
+                    if (row.selling_price === undefined || row.selling_price === null || row.selling_price === '') row.selling_price = 0;
+                    if (row.stock === undefined || row.stock === null || row.stock === '') row.stock = 0;
+                    if (row.is_archived === undefined || row.is_archived === null || row.is_archived === '') row.is_archived = 0;
+                    if (!row.pricing_method) row.pricing_method = 'per_piece';
+                    if (!row.type) row.type = 'single';
                 }
                 if (tableName === 'inventory_adjustments' && !row.product_id) {
                     const firstProd = await db.prepare('SELECT id FROM products LIMIT 1').get() as any;
